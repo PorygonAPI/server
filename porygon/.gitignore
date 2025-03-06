@@ -1,0 +1,76 @@
+# Arquivos de ajuda
+HELP.md
+
+# Pasta de compilação do Maven
+target/
+!**/src/main/**/target/
+!**/src/test/**/target/
+
+# Pasta de dependências do Maven
+.mvn/
+.mvn/wrapper/maven-wrapper.properties
+!.mvn/wrapper/maven-wrapper.jar
+
+# Arquivos de log
+*.log
+logs/
+log/
+*.out
+*.err
+
+# Arquivos temporários do sistema operacional
+*.swp
+*.swo
+*.bak
+.DS_Store
+Thumbs.db
+
+# Arquivos específicos do Eclipse/STS
+.apt_generated
+.classpath
+.factorypath
+.project
+.settings/
+.springBeans
+.sts4-cache
+
+# Arquivos específicos do IntelliJ IDEA
+.idea/
+*.iws
+*.iml
+*.ipr
+out/
+
+# Arquivos específicos do NetBeans
+/nbproject/private/
+/nbbuild/
+/dist/
+/nbdist/
+/.nb-gradle/
+
+# Arquivos específicos do VS Code
+.vscode/
+
+# Arquivos do Gradle
+.gradle/
+build/
+!**/src/main/**/build/
+!**/src/test/**/build/
+
+# Dependências do Maven/Gradle
+**/target/**
+**/build/**
+**/out/**
+
+# Arquivos do Lombok
+lombok.config
+
+# Arquivos de ambiente e configuração sensível
+.env
+application.yml
+application-dev.properties
+application-prod.properties
+
+# Docker
+docker-compose.override.yml
+.dockerignore

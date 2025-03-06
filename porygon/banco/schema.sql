@@ -1,0 +1,12 @@
+CREATE TABLE cargo (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    nome VARCHAR(50) NOT NULL UNIQUE
+);
+
+CREATE TABLE usuario (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    nome VARCHAR(100) NOT NULL,
+    senha VARCHAR(255) NOT NULL,
+    cargo_id INT NOT NULL,
+    FOREIGN KEY (cargo_id) REFERENCES cargo(id)
+);
