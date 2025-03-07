@@ -8,6 +8,7 @@ import lombok.Setter;
 public class UsuarioDto {
     private Long id;
     private String nome;
+    private String senha;
     private String cargoNome; // Em vez de expor a entidade Cargo, apenas mostra o nome do cargo
 }
 
