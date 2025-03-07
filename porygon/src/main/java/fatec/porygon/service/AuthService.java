@@ -22,11 +22,11 @@ public class AuthService {
         this.passwordEncoder = new BCryptPasswordEncoder();
     }
 
-    public String autenticar(UsuarioDto UsuarioDto) {
-        Optional<Usuario> usuarioOpt = usuarioRepository.findByNome(UsuarioDto.getNome());
+    public String autenticar(UsuarioDto usuarioDto) {
+        Optional<Usuario> usuarioOpt = usuarioRepository.findByNome(usuarioDto.getNome());
         if (usuarioOpt.isPresent()) {
             Usuario usuario = usuarioOpt.get();
-            if (passwordEncoder.matches(UsuarioDto.getSenha(), usuario.getSenha())) {
+            if (passwordEncoder.matches(usuarioDto.getSenha(), usuario.getSenha())) {
                 return gerarToken(usuario);
             }
         }
