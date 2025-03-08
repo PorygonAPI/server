@@ -1,13 +1,34 @@
 package fatec.porygon.dto;
 
-import lombok.Getter;
-import lombok.Setter;
-
-@Getter
-@Setter
 public class UsuarioDto {
     private Long id;
     private String nome;
-    private String cargoNome; // Em vez de expor a entidade Cargo, apenas mostra o nome do cargo
-}
+    private String cargoNome; // Exibe apenas o nome do cargo, não a entidade Cargo
 
+    // Getter e Setter para id
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    // Getter e Setter para nome
+    public String getNome() {
+        return nome;
+    }
+
+    public void setNome(String nome) {
+        this.nome = nome;
+    }
+
+    // Getter e Setter para cargoNome
+    public String getCargoNome() {
+        return cargoNome;
+    }
+
+    public void setCargoNome(String cargoNome) {
+        this.cargoNome = cargoNome;
+    }
+}
