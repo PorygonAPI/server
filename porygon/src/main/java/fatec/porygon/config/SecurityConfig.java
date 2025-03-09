@@ -20,6 +20,7 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
+
                 .authorizeHttpRequests(authorizeRequests ->
                         authorizeRequests
                                 .anyRequest().authenticated() // Exige autenticação para qualquer requisição
@@ -45,3 +46,4 @@ public class SecurityConfig {
         return new BCryptPasswordEncoder(); // Usa BCrypt para codificar senhas de forma segura
     }
 }
+          
