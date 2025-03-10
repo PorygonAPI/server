@@ -3,6 +3,7 @@ package fatec.porygon.dto;
 public class UsuarioDto {
     private Long id;
     private String nome;
+    private String senha;
     private String cargoNome; // Exibe apenas o nome do cargo, não a entidade Cargo
 
     // Getter e Setter para id
@@ -17,6 +18,14 @@ public class UsuarioDto {
     // Getter e Setter para nome
     public String getNome() {
         return nome;
+    }
+
+    public String getSenha() {
+        return senha;
+    }
+
+    public void setSenha(String senha) {
+        this.senha = senha;
     }
 
     public void setNome(String nome) {

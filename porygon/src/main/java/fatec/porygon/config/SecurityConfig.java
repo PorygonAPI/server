@@ -20,12 +20,13 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-            .authorizeHttpRequests(authorizeRequests ->
-                authorizeRequests
-                    .anyRequest().authenticated() // Exige autenticação para qualquer requisição
-            )
-            .csrf(csrf -> csrf.disable()) // Desabilita CSRF para facilitar testes no Postman
-            .httpBasic(Customizer.withDefaults()); // Habilita autenticação básica
+
+                .authorizeHttpRequests(authorizeRequests ->
+                        authorizeRequests
+                                .anyRequest().authenticated() // Exige autenticação para qualquer requisição
+                )
+                .csrf(csrf -> csrf.disable()) // Desabilita CSRF para facilitar testes no Postman
+                .httpBasic(Customizer.withDefaults()); // Habilita autenticação básica
 
         return http.build();
     }
@@ -33,10 +34,10 @@ public class SecurityConfig {
     @Bean
     public UserDetailsService userDetailsService(PasswordEncoder passwordEncoder) {
         UserDetails user = User.builder()
-            .username("admin")
-            .password(passwordEncoder.encode("12345")) // Agora usando BCrypt
-            .roles("USER")
-            .build();
+                .username("admin")
+                .password(passwordEncoder.encode("12345")) // Agora usando BCrypt
+                .roles("USER")
+                .build();
         return new InMemoryUserDetailsManager(user);
     }
 
@@ -45,3 +46,4 @@ public class SecurityConfig {
         return new BCryptPasswordEncoder(); // Usa BCrypt para codificar senhas de forma segura
     }
 }
+          
