@@ -1,4 +1,4 @@
-package fatec.porygon.security;
+package fatec.porygon.config;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
@@ -13,7 +13,7 @@ import org.springframework.security.web.authentication.WebAuthenticationDetailsS
 import org.springframework.web.filter.OncePerRequestFilter;
 import java.io.IOException;
 
-public class JwtFilter extends OncePerRequestFilter {
+public class JwtConfig extends OncePerRequestFilter {
     private final String SECRET = "porygon123";
 
     @Override

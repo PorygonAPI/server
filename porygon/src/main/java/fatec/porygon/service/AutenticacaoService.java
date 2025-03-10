@@ -12,12 +12,12 @@ import java.util.Date;
 import java.util.Optional;
 
 @Service
-public class AuthService {
+public class AutenticacaoService {
     private final UsuarioRepository usuarioRepository;
     private final BCryptPasswordEncoder passwordEncoder;
     private final String SECRET = "porygon123";
 
-    public AuthService(UsuarioRepository usuarioRepository) {
+    public AutenticacaoService(UsuarioRepository usuarioRepository) {
         this.usuarioRepository = usuarioRepository;
         this.passwordEncoder = new BCryptPasswordEncoder();
     }
