@@ -12,6 +12,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.config.Customizer;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @Configuration
 @EnableWebSecurity
@@ -23,13 +24,18 @@ public class SecurityConfig {
 
                 .authorizeHttpRequests(authorizeRequests ->
                         authorizeRequests
+                                .requestMatchers("/auth/login").permitAll()
                                 .anyRequest().authenticated() // Exige autenticação para qualquer requisição
                 )
                 .csrf(csrf -> csrf.disable()) // Desabilita CSRF para facilitar testes no Postman
+
+                .addFilterBefore(jwtConfig(), UsernamePasswordAuthenticationFilter.class) // Adiciona o filtro JWT
                 .httpBasic(Customizer.withDefaults()); // Habilita autenticação básica
 
         return http.build();
     }
+
+
 
     @Bean
     public UserDetailsService userDetailsService(PasswordEncoder passwordEncoder) {
@@ -44,6 +50,11 @@ public class SecurityConfig {
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder(); // Usa BCrypt para codificar senhas de forma segura
+    }
+
+    @Bean
+    public JwtConfig jwtConfig() {
+        return new JwtConfig(); // Registra o filtro JWT
     }
 }
           
