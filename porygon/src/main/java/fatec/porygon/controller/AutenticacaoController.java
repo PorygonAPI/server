@@ -7,10 +7,10 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/auth")
-public class AutentificacaoController {
+public class AutenticacaoController {
     private final AutenticacaoService authService;
 
-    public AutentificacaoController(AutenticacaoService authService) {
+    public AutenticacaoController(AutenticacaoService authService) {
         this.authService = authService;
     }
 
