@@ -19,6 +19,13 @@ public class Usuario {
     @JoinColumn(name = "cargo_id", nullable = false)
     private Cargo cargo;
 
+    @Column(unique = true, nullable = false)
+    private String email;
+
+    public String getEmail() {return email;}
+
+    public void setEmail(String email) {this.email = email;}
+
     // Getter e Setter para id
     public Long getId() {
         return id;
