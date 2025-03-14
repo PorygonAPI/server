@@ -10,3 +10,6 @@ CREATE TABLE usuario (
     cargo_id INT NOT NULL,
     FOREIGN KEY (cargo_id) REFERENCES cargo(id)
 );
+
+ALTER TABLE usuario
+    ADD COLUMN email VARCHAR(255) NOT NULL UNIQUE;
