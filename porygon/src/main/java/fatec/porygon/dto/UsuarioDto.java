@@ -5,6 +5,8 @@ public class UsuarioDto {
     private String nome;
     private String senha;
     private String cargoNome; // Exibe apenas o nome do cargo, não a entidade Cargo
+    private Long cargoId;
+    private String email;
 
     // Getter e Setter para id
     public Long getId() {
@@ -40,4 +42,9 @@ public class UsuarioDto {
     public void setCargoNome(String cargoNome) {
         this.cargoNome = cargoNome;
     }
+
+    public Long getCargoId() {return cargoId;}
+    public void setCargoId(Long cargoId) {this.cargoId = cargoId;}
+    public String getEmail() {return email;}
+    public void setEmail(String email) {this.email = email;}
 }
