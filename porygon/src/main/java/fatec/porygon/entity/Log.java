@@ -22,8 +22,8 @@ public class Log {
     
     public Long getId() {return id;}
     public void setId(Long id) {this.id = id;}
-    public Usuario getUsuario() {return usuarioID;}
-    public void setUsuario(Usuario usuario) {this.usuario = usuarioID;}
+    public Usuario getUsuarioID() {return usuarioID;}
+    public void setUsuarioID(Usuario usuario) {this.usuario = usuarioID;}
     public String getAcao() {return acao;}
     public void setAcao(String acao) {this.acao = acao;}
     public LocalDateTime getDataHora() {return dataHora;}
