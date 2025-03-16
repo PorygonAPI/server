@@ -12,17 +12,18 @@ public class Log {
 
     @ManyToOne
     @JoinColumn(name = "usuario_id", nullable = false)
-    private Usuario usuario;
+    private Usuario usuarioID;
 
     @Column(nullable = false)
     private String acao;
 
     @Column(nullable = false)
     private LocalDateTime dataHora;
+    
     public Long getId() {return id;}
     public void setId(Long id) {this.id = id;}
-    public Usuario getUsuario() {return usuario;}
-    public void setUsuario(Usuario usuario) {this.usuario = usuario;}
+    public Usuario getUsuario() {return usuarioID;}
+    public void setUsuario(Usuario usuario) {this.usuario = usuarioID;}
     public String getAcao() {return acao;}
     public void setAcao(String acao) {this.acao = acao;}
     public LocalDateTime getDataHora() {return dataHora;}
