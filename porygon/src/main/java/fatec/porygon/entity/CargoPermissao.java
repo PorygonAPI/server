@@ -8,15 +8,15 @@ public class CargoPermissao {
 
     @ManyToOne
     @JoinColumn(name = "cargo_id", nullable = false)
-    private Cargo cargoID;
+    private Cargo cargo_id;
 
     @ManyToOne
     @JoinColumn(name = "permissao_id", nullable = false)
-    private Permissao permissaoID;
+    private Permissao permissao_id;
 
-    public Cargo getCargoID() {return cargoID;}
-    public void setCargoID(Cargo cargoID) {this.cargoID = cargoID;}
-    public Permissao getPermissaoID() {return permissaoID;}
-    public void setPermissaoID(Permissao permissaoID) {this.permissaoID = permissaoID;}
+    public Cargo getCargo_id() {return cargo_id;}
+    public void setCargo_id(Cargo cargo_id) {this.cargo_id = cargo_id;}
+    public Permissao getPermissao_id() {return permissao_id;}
+    public void setPermissao_id(Permissao permissao_id) {this.permissao_id = permissao_id;}
 }
 
