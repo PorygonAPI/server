@@ -6,23 +6,17 @@ import jakarta.persistence.*;
 @Table(name = "cargo_permissao")
 public class CargoPermissao {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-
     @ManyToOne
     @JoinColumn(name = "cargo_id", nullable = false)
-    private Cargo cargo;
+    private Cargo cargoID;
 
     @ManyToOne
     @JoinColumn(name = "permissao_id", nullable = false)
-    private Permissao permissao;
+    private Permissao permissaoID;
 
-    public Long getId() {return id;}
-    public void setId(Long id) {this.id = id;}
-    public Cargo getCargo() {return cargo;}
-    public void setCargo(Cargo cargo) {this.cargo = cargo;}
-    public Permissao getPermissao() {return permissao;}
-    public void setPermissao(Permissao permissao) {this.permissao = permissao;}
+    public Cargo getCargoID() {return cargoID;}
+    public void setCargoID(Cargo cargoID) {this.cargoID = cargoID;}
+    public Permissao getPermissaoID() {return permissaoID;}
+    public void setPermissaoID(Permissao permissaoID) {this.permissaoID = permissaoID;}
 }
 
