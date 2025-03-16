@@ -1,6 +1,6 @@
 package fatec.porygon.dto;
 
-public class PermissaoDTO {
+public class PermissaoDto {
 
     private Long id;
     private String tipo;
