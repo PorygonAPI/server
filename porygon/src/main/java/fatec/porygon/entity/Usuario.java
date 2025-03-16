@@ -12,8 +12,11 @@ public class Usuario {
     @Column(nullable = false)
     private String nome;
 
-    @Column(nullable = false, unique = true)
+    @Column(nullable = false)
     private String senha;
+
+    @Column(nullable = false, unique = true)
+    private String email;
 
     @ManyToOne
     @JoinColumn(name = "cargo_id", nullable = false)
@@ -44,6 +47,15 @@ public class Usuario {
 
     public void setSenha(String senha) {
         this.senha = senha;
+    }
+
+    // Getter e Setter para email
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
     }
 
     // Getter e Setter para cargo

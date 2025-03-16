@@ -22,6 +22,7 @@ public class UsuarioController {
             UsuarioDto dto = new UsuarioDto();
             dto.setId(usuario.getId());
             dto.setNome(usuario.getNome());
+            dto.setEmail(usuario.getEmail());
             dto.setCargoNome(usuario.getCargo().getNome());
             return dto;
         }).collect(Collectors.toList());
