@@ -23,7 +23,7 @@ public class AutenticacaoService {
     }
 
     public String autenticar(UsuarioDto usuarioDto) {
-        Optional<Usuario> usuarioOpt = usuarioRepository.findByNome(usuarioDto.getNome());
+        Optional<Usuario> usuarioOpt = usuarioRepository.findByEmail(usuarioDto.getEmail());
         if (usuarioOpt.isPresent()) {
             Usuario usuario = usuarioOpt.get();
 //            if (passwordEncoder.matches(usuarioDto.getSenha(), usuario.getSenha())) {
