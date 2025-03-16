@@ -3,7 +3,7 @@ package fatec.porygon.entity;
 import jakarta.persistence.*;
 
 @Entity
-@Table(name = "cargopermissao")
+@Table(name = "cargo_permissao")
 public class CargoPermissao {
 
     @Id
