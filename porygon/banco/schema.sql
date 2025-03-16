@@ -12,3 +12,24 @@ CREATE TABLE usuario (
     FOREIGN KEY (cargo_id) REFERENCES cargo(id)
 );
 
+CREATE TABLE permissao (
+	id INT AUTO_INCREMENT PRIMARY KEY,
+    tipo varchar(255) NOT NULL
+);
+
+CREATE TABLE cargo_permissao (
+	cargo_id INT NOT NULL,
+    permissao_id INT NOT NULL,
+    PRIMARY KEY (cargo_id, permissao_id),
+    FOREIGN KEY (cargo_id) REFERENCES cargo(id),
+    FOREIGN KEY (permissao_id) REFERENCES permissao(id)
+);
+
+CREATE TABLE log (
+	id INT AUTO_INCREMENT PRIMARY KEY,
+    usuario_id INT NOT NULL,
+	acao VARCHAR(255) NOT NULL,
+    data_hora DATETIME NOT NULL,
+    FOREIGN KEY (usuario_id) REFERENCES usuario(id)
+);
+
