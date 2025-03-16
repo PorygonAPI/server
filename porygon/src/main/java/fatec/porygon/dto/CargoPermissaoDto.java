@@ -1,6 +1,6 @@
 package fatec.porygon.dto;
 
-public class CargoPermissaoDTO {
+public class CargoPermissaoDto {
 
     private Long cargo_id;
     private Long permissao_id;
