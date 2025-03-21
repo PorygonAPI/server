@@ -6,10 +6,12 @@ import jakarta.persistence.*;
 @Table(name = "cargo_permissao")
 public class CargoPermissao {
 
+    @EmbeddedId
     @ManyToOne
     @JoinColumn(name = "cargo_id", nullable = false)
     private Cargo cargo_id;
 
+    @EmbeddedId
     @ManyToOne
     @JoinColumn(name = "permissao_id", nullable = false)
     private Permissao permissao_id;
