@@ -1,10 +1,8 @@
 package fatec.porygon.controller;
 
-import fatec.porygon.entity.Log;
+import fatec.porygon.dto.LogDto;
 import fatec.porygon.service.LogService;
-
 import java.util.List;
-
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -19,7 +17,7 @@ public class LogController {
     }
 
     @GetMapping
-    public ResponseEntity<List<Log>> buscarTodos() {
+    public ResponseEntity<List<LogDto>> buscarTodos() {
         return ResponseEntity.ok(logService.buscarTodos());
     }
 
