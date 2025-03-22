@@ -34,7 +34,7 @@ public class UsuarioService {
         Usuario usuario = new Usuario();
         usuario.setNome(usuarioDto.getNome());
         usuario.setEmail(usuarioDto.getEmail());
-        usuario.setSenha(passwordEncoder.encode(usuarioDto.getSenha()));
+        usuario.setSenha(usuarioDto.getSenha()); // usuario.setSenha(passwordEncoder.encode(usuarioDto.getSenha()));
         usuario.setCargo(cargoOpt.get());
         usuario = usuarioRepository.save(usuario);
         return toDto(usuario);
@@ -61,7 +61,7 @@ public class UsuarioService {
         usuario.setNome(usuarioDto.getNome());
         usuario.setEmail(usuarioDto.getEmail());
         if (usuarioDto.getSenha() != null && !usuarioDto.getSenha().isEmpty()) {
-            usuario.setSenha(passwordEncoder.encode(usuarioDto.getSenha()));
+            usuario.setSenha(usuarioDto.getSenha()); //usuario.setSenha(passwordEncoder.encode(usuarioDto.getSenha()));
         }
 
         Optional<Cargo> cargoOpt = cargoRepository.findById(usuarioDto.getCargoId());
