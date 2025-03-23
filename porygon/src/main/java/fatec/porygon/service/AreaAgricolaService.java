@@ -99,7 +99,7 @@ public class AreaAgricolaService {
         if (dto.getStatus() != null) {
             areaAgricola.setStatus(dto.getStatus());
         } else {
-            areaAgricola.setStatus(StatusArea.PENDENTE);
+            areaAgricola.setStatus(StatusArea.pendente);
         }
         
         return areaAgricola;
