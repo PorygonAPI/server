@@ -25,27 +25,15 @@ public class SecurityConfig {
                 .authorizeHttpRequests(authorizeRequests ->
                         authorizeRequests
                                 .requestMatchers("/auth/login").permitAll()
+                                .requestMatchers("/cargos").hasAnyRole( "ADMIN")
                                 .anyRequest().authenticated() // Exige autenticação para qualquer requisição
                 )
                 .csrf(csrf -> csrf.disable()) // Desabilita CSRF para facilitar testes no Postman
-
-                .addFilterBefore(jwtConfig(), UsernamePasswordAuthenticationFilter.class) // Adiciona o filtro JWT
-                .httpBasic(Customizer.withDefaults()); // Habilita autenticação básica
+                .addFilterBefore(jwtConfig(), UsernamePasswordAuthenticationFilter.class); // Adiciona o filtro JWT
 
         return http.build();
     }
 
-
-
-    @Bean
-    public UserDetailsService userDetailsService(PasswordEncoder passwordEncoder) {
-        UserDetails user = User.builder()
-                .username("admin")
-                .password(passwordEncoder.encode("12345")) // Agora usando BCrypt
-                .roles("USER")
-                .build();
-        return new InMemoryUserDetailsManager(user);
-    }
 
     @Bean
     public PasswordEncoder passwordEncoder() {
