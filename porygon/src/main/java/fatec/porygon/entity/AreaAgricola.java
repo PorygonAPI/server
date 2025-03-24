@@ -56,7 +56,7 @@ public class AreaAgricola {
 
     @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false)
-    private StatusArea status = StatusArea.PENDENTE;
+    private StatusArea status = StatusArea.pendente;
 
     // Getters
     public Long getId() {
