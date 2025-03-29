@@ -27,48 +27,51 @@ public class JwtConfig extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
             throws ServletException, IOException {
         String token = request.getHeader("Authorization");
-        if (token != null && token.startsWith("Bearer ")) {
-            token = token.replace("Bearer ", "");
-            try{
-                DecodedJWT decodedJWT = JWT.require(Algorithm.HMAC256(SECRET))
-                        .acceptExpiresAt(5) // Garantindo que o token não esteja expirado
-                        .build()
-                        .verify(token);
 
-                String username = decodedJWT.getSubject();
-                List<String> roles = decodedJWT.getClaim("roles").asList(String.class); // Extrai as roles
+       if(!request.getRequestURI().startsWith("/auth/login")) {
+           if (token == null || !token.startsWith("Bearer ")) {
+               response.setStatus(HttpServletResponse.SC_UNAUTHORIZED); // Código 401
+               response.setContentType("application/json");
+               response.getWriter().write("{\"error\": \"Token não encontrado ou mal formado\"}");
+               return;
+           }
 
+           token = token.replace("Bearer ", "");
 
-                if (username != null) {
-                        List<GrantedAuthority> authorities = roles.stream()
-                                .map(SimpleGrantedAuthority::new) // Mapeia as roles para GrantedAuthority
-                                .collect(Collectors.toList());
+           try {
+               DecodedJWT decodedJWT = JWT.require(Algorithm.HMAC256(SECRET))
+                       .build()
+                       .verify(token);
 
-                        UsernamePasswordAuthenticationToken authentication =
-                                new UsernamePasswordAuthenticationToken(
-                                        new User(username, "", authorities),
-                                        null, authorities
-                                );
-                    authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-                    SecurityContextHolder.getContext().setAuthentication(authentication);
-                }else{
-                    response.setStatus(HttpServletResponse.SC_UNAUTHORIZED); // Código 401
-                    response.setContentType("application/json");
-                    response.getWriter().write("{\"error\": \"Token inválido ou ausente\"}");
-                    return;
-                }
-            } catch (JWTVerificationException e) {
-                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED); // Código 401
-                response.setContentType("application/json");
-                response.getWriter().write("{\"error\": \"Token inválido ou ausente\"}");
-                return;
-            }
-        }else{
-            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED); // Código 401
-            response.setContentType("application/json");
-            response.getWriter().write("{\"error\": \"Token inválido ou ausente\"}");
-            return;
-        }
-        chain.doFilter(request, response);
+               String username = decodedJWT.getSubject();
+               List<String> roles = decodedJWT.getClaim("roles").asList(String.class);
+
+               if (username != null) {
+                   List<GrantedAuthority> authorities = roles.stream()
+                           .map(SimpleGrantedAuthority::new)
+                           .collect(Collectors.toList());
+
+                   UsernamePasswordAuthenticationToken authentication =
+                           new UsernamePasswordAuthenticationToken(
+                                   new User(username, "", authorities),
+                                   null, authorities
+                           );
+                   authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+                   SecurityContextHolder.getContext().setAuthentication(authentication);
+               } else {
+                   response.setStatus(HttpServletResponse.SC_UNAUTHORIZED); // Código 401
+                   response.setContentType("application/json");
+                   response.getWriter().write("{\"error\": \"Token inválido ou ausente\"}");
+                   return;
+               }
+           } catch (JWTVerificationException e) {
+               response.setStatus(HttpServletResponse.SC_UNAUTHORIZED); // Código 401
+               response.setContentType("application/json");
+               response.getWriter().write("{\"error\": \"Token inválido ou expirado\"}");
+               return;
+           }
+       }
+
+        chain.doFilter(request, response); // Continua com a requisição
     }
 }
