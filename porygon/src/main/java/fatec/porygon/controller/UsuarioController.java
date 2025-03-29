@@ -3,8 +3,11 @@ package fatec.porygon.controller;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import fatec.porygon.dto.UsuarioDto;
+import fatec.porygon.repository.UsuarioRepository;
 import org.springframework.http.ResponseEntity;
 import java.util.List;
+import java.util.stream.Collectors;
+
 import fatec.porygon.service.UsuarioService;
 
 @RestController
@@ -12,13 +15,19 @@ import fatec.porygon.service.UsuarioService;
 public class UsuarioController {
 
     private final UsuarioService usuarioService;
+    private final UsuarioRepository usuarioRepository;
 
-    public UsuarioController(UsuarioService usuarioService) {
-        this.usuarioService = usuarioService;}
+    public UsuarioController(UsuarioService usuarioService, UsuarioRepository usuarioRepository) {
+        this.usuarioService = usuarioService;
+        this.usuarioRepository = usuarioRepository;
+    }
 
     @PostMapping
     public ResponseEntity<UsuarioDto> criarUsuario(@RequestBody UsuarioDto usuarioDto) {
-        return ResponseEntity.ok(usuarioService.criarUsuario(usuarioDto));}
+        // Adicione validações aqui, se necessário
+        return ResponseEntity.ok(usuarioService.criarUsuario(usuarioDto));
+    }
+
     @GetMapping
     @PreAuthorize("isAuthenticated()")
     public List<UsuarioDto> listarUsuarios() {
@@ -31,11 +40,10 @@ public class UsuarioController {
                 dto.setCargoNome(usuario.getCargo().getNome());
                 return dto;
             }).collect(Collectors.toList());
-        } catch (Exception e) {
-            // Handle the exception (e.g., log it, rethrow it, return a default value, etc.)
-            throw new RuntimeException("Error listing users", e);
+        } catch (RuntimeException e) {
+            // Registre o erro antes de lançar a exceção
+            throw new RuntimeException("Erro ao listar usuários", e);
         }
-
     }
 
     @GetMapping("/{id}")
