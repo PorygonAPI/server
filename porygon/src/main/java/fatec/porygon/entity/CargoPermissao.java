@@ -7,18 +7,32 @@ import jakarta.persistence.*;
 public class CargoPermissao {
 
     @EmbeddedId
+    private CargoPermissaoId id;
+
     @ManyToOne
+    @MapsId("cargoId") // Associa a chave composta ao Cargo
     @JoinColumn(name = "cargo_id", nullable = false)
-    private Cargo cargo_id;
+    private Cargo cargo;
 
-    @EmbeddedId
     @ManyToOne
+    @MapsId("permissaoId") // Associa a chave composta à Permissao
     @JoinColumn(name = "permissao_id", nullable = false)
-    private Permissao permissao_id;
+    private Permissao permissao;
 
-    public Cargo getCargo_id() {return cargo_id;}
-    public void setCargo_id(Cargo cargo_id) {this.cargo_id = cargo_id;}
-    public Permissao getPermissao_id() {return permissao_id;}
-    public void setPermissao_id(Permissao permissao_id) {this.permissao_id = permissao_id;}
+    public CargoPermissao() {}
+
+    public CargoPermissao(Cargo cargo, Permissao permissao) {
+        this.id = new CargoPermissaoId(cargo.getId(), permissao.getId());
+        this.cargo = cargo;
+        this.permissao = permissao;
+    }
+
+    public CargoPermissaoId getId() { return id; }
+    public void setId(CargoPermissaoId id) { this.id = id; }
+
+    public Cargo getCargo() { return cargo; }
+    public void setCargo(Cargo cargo) { this.cargo = cargo; }
+
+    public Permissao getPermissao() { return permissao; }
+    public void setPermissao(Permissao permissao) { this.permissao = permissao; }
 }
-
