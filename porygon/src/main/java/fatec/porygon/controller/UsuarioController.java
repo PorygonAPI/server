@@ -41,7 +41,6 @@ public class UsuarioController {
                 return dto;
             }).collect(Collectors.toList());
         } catch (RuntimeException e) {
-            // Registre o erro antes de lançar a exceção
             throw new RuntimeException("Erro ao listar usuários", e);
         }
     }
