@@ -8,8 +8,7 @@ import fatec.porygon.repository.UsuarioRepository;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.Date;
-import java.util.Optional;
+import java.util.*;
 
 @Service
 public class AutenticacaoService {
@@ -22,22 +21,31 @@ public class AutenticacaoService {
         this.passwordEncoder = new BCryptPasswordEncoder();
     }
 
-    public String autenticar(UsuarioDto usuarioDto) {
+    public Map<String, Object> autenticar(UsuarioDto usuarioDto) {
         Optional<Usuario> usuarioOpt = usuarioRepository.findByEmail(usuarioDto.getEmail());
         if (usuarioOpt.isPresent()) {
             Usuario usuario = usuarioOpt.get();
-//            if (passwordEncoder.matches(usuarioDto.getSenha(), usuario.getSenha())) {
-            return gerarToken(usuario);
-//            }
+            if (Objects.equals(usuarioDto.getSenha(), usuario.getSenha())) {
+                return gerarDadosUsuario(usuario);
+            }
         }
         throw new RuntimeException("Usuário ou senha inválidos");
     }
 
-    private String gerarToken(Usuario usuario) {
-        return JWT.create()
+    private Map<String, Object> gerarDadosUsuario(Usuario usuario) {
+        Map<String, Object> response = new HashMap<>();
+
+        String role = usuario.getCargo().getNome();
+
+        String token = JWT.create()
                 .withSubject(usuario.getNome())
                 .withIssuedAt(new Date())
                 .withExpiresAt(new Date(System.currentTimeMillis() + 86400000))
+                .withClaim("roles", Collections.singletonList(role)) // Adiciona a role como uma claim
                 .sign(Algorithm.HMAC256(SECRET));
+        response.put("token", token);
+        response.put("role", role);
+        response.put("nome", usuario.getNome());
+        return response;
     }
 }

@@ -16,8 +16,7 @@ public class CorsConfig {
                         .allowedOrigins("http://localhost:5173") // Frontend Vue URL
                         .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
                         .allowedHeaders("*")
-                        .allowCredentials(true)
-                        .maxAge(3600); // Cache CORS por 1 hora
+                        .allowCredentials(true);
             }
         };
     }

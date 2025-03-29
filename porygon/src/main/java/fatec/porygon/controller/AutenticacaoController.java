@@ -5,6 +5,8 @@ import fatec.porygon.service.AutenticacaoService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Map;
+
 @RestController
 @RequestMapping("/auth")
 public class AutenticacaoController {
@@ -15,8 +17,9 @@ public class AutenticacaoController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<String> login(@RequestBody UsuarioDto UsuarioDto) {
-        String token = authService.autenticar(UsuarioDto);
-        return ResponseEntity.ok(token);
+    public ResponseEntity<Map<String, Object>> login(@RequestBody UsuarioDto UsuarioDto) {
+        Map<String, Object> response = authService.autenticar(UsuarioDto);
+
+        return ResponseEntity.ok(response);
     }
 }
