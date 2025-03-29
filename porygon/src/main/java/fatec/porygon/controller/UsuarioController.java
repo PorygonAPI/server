@@ -3,20 +3,22 @@ package fatec.porygon.controller;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import fatec.porygon.dto.UsuarioDto;
-import fatec.porygon.repository.UsuarioRepository;
+import org.springframework.http.ResponseEntity;
 import java.util.List;
-import java.util.stream.Collectors;
+import fatec.porygon.service.UsuarioService;
 
 @RestController
 @RequestMapping("/usuarios")
 public class UsuarioController {
 
-    private final UsuarioRepository usuarioRepository;
+    private final UsuarioService usuarioService;
 
-    public UsuarioController(UsuarioRepository usuarioRepository) {
-        this.usuarioRepository = usuarioRepository;
-    }
+    public UsuarioController(UsuarioService usuarioService) {
+        this.usuarioService = usuarioService;}
 
+    @PostMapping
+    public ResponseEntity<UsuarioDto> criarUsuario(@RequestBody UsuarioDto usuarioDto) {
+        return ResponseEntity.ok(usuarioService.criarUsuario(usuarioDto));}
     @GetMapping
     @PreAuthorize("isAuthenticated()")
     public List<UsuarioDto> listarUsuarios() {
@@ -36,6 +38,17 @@ public class UsuarioController {
 
     }
 
-}
+    @GetMapping("/{id}")
+    public ResponseEntity<UsuarioDto> buscarUsuario(@PathVariable Long id) {
+        return usuarioService.buscarUsuario(id);}
 
+    @PutMapping("/{id}")
+    public ResponseEntity<UsuarioDto> atualizarUsuario(@PathVariable Long id, @RequestBody UsuarioDto usuarioDto) {
+        return usuarioService.atualizarUsuario(id, usuarioDto);}
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> removerUsuario(@PathVariable Long id) {
+        return usuarioService.removerUsuario(id);
+    }
+}
 
