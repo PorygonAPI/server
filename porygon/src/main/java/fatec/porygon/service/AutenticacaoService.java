@@ -38,7 +38,7 @@ public class AutenticacaoService {
         String role = usuario.getCargo().getNome();
 
         String token = JWT.create()
-                .withSubject(usuario.getNome())
+                .withSubject(String.valueOf(usuario.getId()))
                 .withIssuedAt(new Date())
                 .withExpiresAt(new Date(System.currentTimeMillis() + 86400000))
                 .withClaim("roles", Collections.singletonList(role)) // Adiciona a role como uma claim
