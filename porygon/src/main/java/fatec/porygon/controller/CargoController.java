@@ -16,6 +16,7 @@ public class CargoController {
         this.cargoRepository = cargoRepository;
     }
 
+
     @GetMapping
     public List<CargoDto> listarCargos() {
         return cargoRepository.findAll().stream().map(cargo -> {

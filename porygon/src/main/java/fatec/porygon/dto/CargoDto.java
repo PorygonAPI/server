@@ -1,7 +1,9 @@
 package fatec.porygon.dto;
 
 public class CargoDto {
+
     private Long id;
+
     private String nome;
 
     // Getter e Setter para id

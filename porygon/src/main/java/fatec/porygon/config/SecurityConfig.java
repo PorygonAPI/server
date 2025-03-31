@@ -12,6 +12,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.config.Customizer;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @Configuration
 @EnableWebSecurity
@@ -21,27 +22,19 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
             .authorizeHttpRequests(authorizeRequests ->
-                authorizeRequests
-                    .anyRequest().authenticated() // Exige autenticação para qualquer requisição
+                    authorizeRequests
+                            .requestMatchers("/auth/login").permitAll()
+                            .anyRequest().authenticated()
             )
             .csrf(csrf -> csrf.disable()) // Desabilita CSRF para facilitar testes no Postman
-            .httpBasic(Customizer.withDefaults()); // Habilita autenticação básica
+            .addFilterBefore(jwtConfig(), UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }
 
     @Bean
-    public UserDetailsService userDetailsService(PasswordEncoder passwordEncoder) {
-        UserDetails user = User.builder()
-            .username("admin")
-            .password(passwordEncoder.encode("12345")) // Agora usando BCrypt
-            .roles("USER")
-            .build();
-        return new InMemoryUserDetailsManager(user);
-    }
-
-    @Bean
-    public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder(); // Usa BCrypt para codificar senhas de forma segura
+    public JwtConfig jwtConfig() {
+        return new JwtConfig(); // Registra o filtro JWT
     }
 }
+          
