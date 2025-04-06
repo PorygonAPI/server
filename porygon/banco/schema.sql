@@ -65,7 +65,7 @@ CREATE TABLE cultura (
 );
 
 CREATE TABLE talhao (
-    id INT PRIMARY KEY AUTO_INCREMENT,
+    id INT PRIMARY KEY,
     produtividade_ano FLOAT,
     area DOUBLE PRECISION NOT NULL,
     tipo_solo_id INTEGER REFERENCES tipo_solo(id),
