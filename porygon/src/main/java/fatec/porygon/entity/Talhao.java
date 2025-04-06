@@ -24,13 +24,13 @@ import java.util.List;
 
         @ManyToOne
         @JoinColumn(name = "area_agricola_id")
-        private AreaAgricola area_agricolaId;
+        private AreaAgricola area_agricola_id;
 
         @Column(columnDefinition = "geometry")
-        private String arquivo_Daninha;
+        private String arquivo_daninha;
 
         @Column(columnDefinition = "geometry")
-        private String arquivo_Final_Daninha;
+        private String arquivo_final_daninha;
 
         @OneToMany(mappedBy = "talhao")
         private List<Safra> safras = new ArrayList<>();
@@ -38,14 +38,14 @@ import java.util.List;
     public Double getArea() {return area;}
     public void setArea(Double area) {this.area = area;}
 
-    public AreaAgricola getArea_agricolaId() {return area_agricolaId;}
-    public void setArea_agricolaId(AreaAgricola area_agricolaId) {this.area_agricolaId = area_agricolaId;}
+    public AreaAgricola getArea_agricola_id() {return area_agricola_id;}
+    public void setArea_agricola_id(AreaAgricola area_agricola_id) {this.area_agricola_id = area_agricola_id;}
 
-    public String getArquivo_Daninha() {return arquivo_Daninha;}
-    public void setArquivo_Daninha(String arquivo_Daninha) {this.arquivo_Daninha = arquivo_Daninha;}
+    public String getArquivo_Daninha() {return arquivo_daninha;}
+    public void setArquivo_Daninha(String arquivo_daninha) {this.arquivo_daninha = arquivo_daninha;}
 
-    public String getArquivo_Final_Daninha() {return arquivo_Final_Daninha;}
-    public void setArquivo_Final_Daninha(String arquivo_Final_Daninha) {this.arquivo_Final_Daninha = arquivo_Final_Daninha;}
+    public String getArquivo_Final_Daninha() {return arquivo_final_daninha;}
+    public void setArquivo_Final_Daninha(String arquivo_final_daninha) {this.arquivo_final_daninha = arquivo_final_daninha;}
 
     public Long getId() {return id;}
     public void setId(Long id) {this.id = id;}

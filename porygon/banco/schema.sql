@@ -66,7 +66,7 @@ CREATE TABLE cultura (
 
 CREATE TABLE talhao (
     id INT PRIMARY KEY AUTO_INCREMENT,
-    produtividade_ano DOUBLE,
+    produtividade_ano FLOAT,
     area DOUBLE PRECISION NOT NULL,
     tipo_solo_id INTEGER REFERENCES tipo_solo(id),
     area_agricola_id INTEGER REFERENCES area_agricola(id),

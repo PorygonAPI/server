@@ -8,7 +8,6 @@ public class Safra {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
     private Integer ano;
 
     @ManyToOne
