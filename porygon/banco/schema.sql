@@ -53,3 +53,35 @@ CREATE TABLE area_agricola (
     FOREIGN KEY (usuario_upgrade_id) REFERENCES usuario(id) ON DELETE SET NULL,
     FOREIGN KEY (usuario_aprovador_id) REFERENCES usuario(id) ON DELETE SET NULL
 );
+
+CREATE TABLE tipo_solo (
+    id SERIAL PRIMARY KEY,
+    tipo_solo VARCHAR(100) UNIQUE NOT NULL
+);
+
+CREATE TABLE cultura (
+    id SERIAL PRIMARY KEY,
+    nome VARCHAR(100) UNIQUE NOT NULL
+);
+
+CREATE TABLE talhao (
+    id SERIAL PRIMARY KEY,
+    produtividade_ano JSON,
+    area DOUBLE PRECISION NOT NULL,
+    tipo_solo_id INTEGER REFERENCES tipo_solo(id),
+    area_agricola_id INTEGER REFERENCES area_agricola(id),
+    arquivo_daninha GEOMETRY,
+    arquivo_final_daninha GEOMETRY,
+    arquivodaninha JSON,
+    arquivofinaldaninha JSON
+);
+
+CREATE TABLE safra (
+   id SERIAL PRIMARY KEY,
+   ano INTEGER NOT NULL,
+   cultura_id INTEGER REFERENCES cultura(id),
+   talhao_id INTEGER REFERENCES talhao(id),
+   status VARCHAR(30) CHECK (status IN ('PENDENTE', 'EM_ANALISE', 'AGUARDANDO_REVISAO', 'APROVADO'))
+);
+
+
