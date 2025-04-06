@@ -6,15 +6,15 @@ import java.util.Map;
 public class TalhaoDto {
     private Integer ano;
     private StatusSafra status;
-    private Long culturaId;
-    private String culturaNome;
-    private Long talhaoId;
+    private Long cultura_id;
+    private String cultura_nome;
+    private Long talhao_id;
     private Double area;
-    private Map<String, Float> produtividadeAno;
-    private Long tipoSoloId;
-    private Long areaAgricolaId;
-    private String arquivoDaninha;
-    private String arquivoFinalDaninha;
+    private Double produtividade_ano;
+    private Long tipoSolo_id;
+    private Long areaAgricola_id;
+    private String arquivo_daninha;
+    private String arquivoFinal_daninha;
 
     public Integer getAno() {return ano;}
     public void setAno(Integer ano) {this.ano = ano;}
@@ -22,30 +22,31 @@ public class TalhaoDto {
     public Double getArea() {return area;}
     public void setArea(Double area) {this.area = area;}
 
-    public Long getAreaAgricolaId() {return areaAgricolaId;}
-    public void setAreaAgricolaId(Long areaAgricolaId) {this.areaAgricolaId = areaAgricolaId;}
+    public Long getAreaAgricola_id() {return areaAgricola_id;}
+    public void setAreaAgricola_id(Long areaAgricola_id) {this.areaAgricola_id = areaAgricola_id;}
 
-    public String getArquivoDaninha() {return arquivoDaninha;}
-    public void setArquivoDaninha(String arquivoDaninha) {this.arquivoDaninha = arquivoDaninha;}
+    public String getArquivo_daninha() {return arquivo_daninha;}
+    public void setArquivo_daninha(String arquivo_daninha) {this.arquivo_daninha = arquivo_daninha;}
 
-    public String getArquivoFinalDaninha() {return arquivoFinalDaninha;}
-    public void setArquivoFinalDaninha(String arquivoFinalDaninha) {this.arquivoFinalDaninha = arquivoFinalDaninha;}
+    public String getArquivoFinal_daninha() {return arquivoFinal_daninha;}
+    public void setArquivoFinal_daninha(String arquivoFinal_daninha) {this.arquivoFinal_daninha = arquivoFinal_daninha;}
 
-    public Long getCulturaId() {return culturaId;}
-    public void setCulturaId(Long culturaId) {this.culturaId = culturaId;}
+    public Long getCultura_id() {return cultura_id;}
+    public void setCultura_id(Long cultura_id) {this.cultura_id = cultura_id;}
 
-    public String getCulturaNome() {return culturaNome;}
-    public void setCulturaNome(String culturaNome) {this.culturaNome = culturaNome;}
+    public String getCultura_nome() {return cultura_nome;}
+    public void setCultura_nome(String cultura_nome) {this.cultura_nome = cultura_nome;}
 
-    public Map<String, Float> getProdutividadeAno() {return produtividadeAno;}
-    public void setProdutividadeAno(Map<String, Float> produtividadeAno) {this.produtividadeAno = produtividadeAno;}
+    public Double getProdutividade_ano() {return produtividade_ano;}
+    public void setProdutividade_ano(Double produtividade_ano) {this.produtividade_ano = produtividade_ano;}
 
     public StatusSafra getStatus() {return status;}
     public void setStatus(StatusSafra status) {this.status = status;}
 
-    public Long getTalhaoId() {return talhaoId;}
-    public void setTalhaoId(Long talhaoId) {this.talhaoId = talhaoId;}
+    public Long getTalhao_id() {return talhao_id;}
+    public void setTalhao_id(Long talhao_id) {this.talhao_id = talhao_id;}
 
-    public Long getTipoSoloId() {return tipoSoloId;}
-    public void setTipoSoloId(Long tipoSoloId) {this.tipoSoloId = tipoSoloId;}
+    public Long getTipoSolo_id() {return tipoSolo_id;}
+    public void setTipoSolo_id(Long tipoSolo_id) {this.tipoSolo_id = tipoSolo_id;}
+
 }

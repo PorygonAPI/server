@@ -55,33 +55,31 @@ CREATE TABLE area_agricola (
 );
 
 CREATE TABLE tipo_solo (
-    id SERIAL PRIMARY KEY,
+    id INT PRIMARY KEY AUTO_INCREMENT,
     tipo_solo VARCHAR(100) UNIQUE NOT NULL
 );
 
 CREATE TABLE cultura (
-    id SERIAL PRIMARY KEY,
+    id INT PRIMARY KEY AUTO_INCREMENT,
     nome VARCHAR(100) UNIQUE NOT NULL
 );
 
 CREATE TABLE talhao (
-    id SERIAL PRIMARY KEY,
-    produtividade_ano JSON,
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    produtividade_ano DOUBLE,
     area DOUBLE PRECISION NOT NULL,
     tipo_solo_id INTEGER REFERENCES tipo_solo(id),
     area_agricola_id INTEGER REFERENCES area_agricola(id),
     arquivo_daninha GEOMETRY,
-    arquivo_final_daninha GEOMETRY,
-    arquivodaninha JSON,
-    arquivofinaldaninha JSON
+    arquivo_final_daninha GEOMETRY
 );
 
 CREATE TABLE safra (
-   id SERIAL PRIMARY KEY,
+   id INT PRIMARY KEY AUTO_INCREMENT,
    ano INTEGER NOT NULL,
    cultura_id INTEGER REFERENCES cultura(id),
    talhao_id INTEGER REFERENCES talhao(id),
-   status VARCHAR(30) CHECK (status IN ('PENDENTE', 'EM_ANALISE', 'AGUARDANDO_REVISAO', 'APROVADO'))
+   status ENUM('pendente', 'em_analise', 'aprovado') DEFAULT 'pendente'
 );
 
 
