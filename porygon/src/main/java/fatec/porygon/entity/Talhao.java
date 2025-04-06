@@ -2,8 +2,11 @@ package fatec.porygon.entity;
 
 import jakarta.persistence.*;
 
-    @Entity
-    @Table(name = "talhao")
+import java.util.ArrayList;
+import java.util.List;
+
+@Entity
+@Table(name = "talhao")
     public class Talhao {
         @Id
         @GeneratedValue(strategy = GenerationType.IDENTITY)

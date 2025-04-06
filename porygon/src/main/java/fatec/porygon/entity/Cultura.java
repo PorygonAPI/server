@@ -2,18 +2,21 @@ package fatec.porygon.entity;
 
 import jakarta.persistence.*;
 
-    @Entity
-    @Table(name = "cultura")
-    public class Cultura {
-        @Id
-        @GeneratedValue(strategy = GenerationType.IDENTITY)
-        private Long id;
+import java.util.ArrayList;
+import java.util.List;
 
-        @Column(unique = true, nullable = false)
-        private String nome;
+@Entity
+@Table(name = "cultura")
+public class Cultura {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
-        @OneToMany(mappedBy = "cultura")
-        private List<Safra> safras = new ArrayList<>();
+    @Column(unique = true, nullable = false)
+    private String nome;
+
+    @OneToMany(mappedBy = "cultura")
+    private List<Safra> safras = new ArrayList<>();
     }
 
-}
+
