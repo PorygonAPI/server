@@ -2,6 +2,7 @@ package fatec.porygon.entity;
 
 import fatec.porygon.enums.StatusArea;
 import jakarta.persistence.*;
+import org.locationtech.jts.geom.Geometry;
 
 @Entity
 @Table(name = "area_agricola")
@@ -27,7 +28,7 @@ public class AreaAgricola {
     private Cidade cidadeId;
 
     @Column(name = "arquivo_fazenda", nullable = false, columnDefinition = "GEOMETRY")
-    private String arquivoFazenda;
+    private Geometry arquivoFazenda;
 
     // Getters
     public Long getId() {return id;}
@@ -40,7 +41,7 @@ public class AreaAgricola {
 
     public Cidade getCidadeId() {return cidadeId;}
 
-    public String getArquivoFazenda() {return arquivoFazenda;}
+    public Geometry getArquivoFazenda() {return arquivoFazenda;}
 
     // Setters
     public void setId(Long id) {this.id = id;}
@@ -53,5 +54,5 @@ public class AreaAgricola {
 
     public void setCidadeId(Cidade cidadeId) {this.cidadeId = cidadeId;}
 
-    public void setArquivoFazenda(String arquivoFazenda) {this.arquivoFazenda = arquivoFazenda;}
+    public void setArquivoFazenda(Geometry arquivoFazenda) {this.arquivoFazenda = arquivoFazenda;}
 }
