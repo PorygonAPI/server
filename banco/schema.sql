@@ -91,3 +91,6 @@ CREATE TABLE safra (
     FOREIGN KEY (cultura_id) REFERENCES cultura(id),
     FOREIGN KEY (talhao_id) REFERENCES talhao(id)
 );
+
+ALTER TABLE talhao ADD COLUMN usuario_analista_id BIGINT;
+ALTER TABLE talhao ADD CONSTRAINT fk_usuario_analista FOREIGN KEY (usuario_analista_id) REFERENCES usuario(id);
