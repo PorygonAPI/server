@@ -26,8 +26,7 @@ public class AreaAgricolaController {
     @PostMapping
     public ResponseEntity<AreaAgricolaDto> criarAreaAgricola(@RequestBody AreaAgricolaDto areaAgricolaDto) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        areaAgricolaDto.setusuario_id(Long.valueOf(authentication.getName()));
-        areaAgricolaDto.setStatus(StatusArea.pendente);
+        areaAgricolaDto.setStatus(StatusArea.Pendente);
         AreaAgricolaDto novaAreaAgricola = areaAgricolaService.criarAreaAgricola(areaAgricolaDto);
         return new ResponseEntity<>(novaAreaAgricola, HttpStatus.CREATED);
     }

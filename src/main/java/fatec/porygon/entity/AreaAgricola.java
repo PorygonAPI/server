@@ -23,7 +23,7 @@ public class AreaAgricola {
     @Column(name = "status", nullable = false)
     private StatusArea status = StatusArea.Pendente;
 
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.PERSIST)
     @JoinColumn(name = "cidade_id", nullable = false)
     private Cidade cidade_id;
 

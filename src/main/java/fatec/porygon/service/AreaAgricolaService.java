@@ -2,12 +2,14 @@ package fatec.porygon.service;
 
 import fatec.porygon.dto.AreaAgricolaDto;
 import fatec.porygon.entity.AreaAgricola;
-import fatec.porygon.entity.Usuario;
+import fatec.porygon.entity.Cidade;
 import fatec.porygon.enums.StatusArea;
 import fatec.porygon.repository.AreaAgricolaRepository;
-import fatec.porygon.repository.UsuarioRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.io.WKTReader;
+import org.locationtech.jts.io.WKTWriter;
 
 import java.util.List;
 import java.util.Optional;
@@ -17,12 +19,10 @@ import java.util.stream.Collectors;
 public class AreaAgricolaService {
 
     private final AreaAgricolaRepository areaAgricolaRepository;
-    private final UsuarioRepository usuarioRepository;
 
     @Autowired
-    public AreaAgricolaService(AreaAgricolaRepository areaAgricolaRepository, UsuarioRepository usuarioRepository) {
+    public AreaAgricolaService(AreaAgricolaRepository areaAgricolaRepository) {
         this.areaAgricolaRepository = areaAgricolaRepository;
-        this.usuarioRepository = usuarioRepository;
     }
 
     public AreaAgricolaDto criarAreaAgricola(AreaAgricolaDto areaAgricolaDto) {
@@ -66,73 +66,64 @@ public class AreaAgricolaService {
     private AreaAgricola convertToEntity(AreaAgricolaDto dto) {
         AreaAgricola areaAgricola = new AreaAgricola();
         areaAgricola.setId(dto.getId());
-        
-        if (dto.getusuario_id() != null) {
-            Usuario usuario = usuarioRepository.findById(dto.getusuario_id())
-                    .orElseThrow(() -> new RuntimeException("Usuário não encontrado com ID: " + dto.getusuario_id()));
-            areaAgricola.setUsuario(usuario);
-        }
-        
-        if (dto.getusuario_upgrade_id() != null) {
-            Usuario usuarioUpgrade = usuarioRepository.findById(dto.getusuario_upgrade_id())
-                    .orElseThrow(() -> new RuntimeException("Usuário de upgrade não encontrado com ID: " + dto.getusuario_upgrade_id()));
-            areaAgricola.setUsuarioUpgrade(usuarioUpgrade);
-        }
-        
-        if (dto.getusuario_aprovador_id() != null) {
-            Usuario usuarioAprovador = usuarioRepository.findById(dto.getusuario_aprovador_id())
-                    .orElseThrow(() -> new RuntimeException("Usuário aprovador não encontrado com ID: " + dto.getusuario_aprovador_id()));
-            areaAgricola.setUsuarioAprovador(usuarioAprovador);
-        }
-        
-        areaAgricola.setnome_fazenda(dto.getnome_fazenda());
-        areaAgricola.setCultura(dto.getCultura());
-        areaAgricola.setprodutividade_ano(dto.getprodutividade_ano());
-        areaAgricola.setArea(dto.getArea());
-        areaAgricola.settipo_solo(dto.gettipo_solo());
-        areaAgricola.setCidade(dto.getCidade());
+        areaAgricola.setNomeFazenda(dto.getNomeFazenda());
         areaAgricola.setEstado(dto.getEstado());
-        areaAgricola.setvetor_raiz(dto.getvetor_raiz());
-        areaAgricola.setvetor_atualizado(dto.getvetor_atualizado());
-        areaAgricola.setvetor_aprovado(dto.getvetor_aprovado());
-        
+
         if (dto.getStatus() != null) {
             areaAgricola.setStatus(dto.getStatus());
         } else {
-            areaAgricola.setStatus(StatusArea.pendente);
+            areaAgricola.setStatus(StatusArea.Pendente);
         }
-        
+
+        if (dto.getCidadeNome() != null) {
+            Cidade cidade = new Cidade(dto.getCidadeNome());
+            areaAgricola.setCidadeId(cidade);
+        } else {
+            throw new RuntimeException("O nome da cidade é obrigatório.");
+        }
+
+        if (dto.getArquivoFazenda() != null) {
+            areaAgricola.setArquivoFazenda(convertStringToGeometry(dto.getArquivoFazenda()));
+        }
+
         return areaAgricola;
     }
 
     private AreaAgricolaDto convertToDto(AreaAgricola areaAgricola) {
         AreaAgricolaDto dto = new AreaAgricolaDto();
         dto.setId(areaAgricola.getId());
-        
-        if (areaAgricola.getusuario_id() != null) {
-            dto.setusuario_id(areaAgricola.getusuario_id().getId());
-        }
-        
-        if (areaAgricola.getUsuarioUpgrade() != null) {
-            dto.setusuario_upgrade_id(areaAgricola.getUsuarioUpgrade().getId());
-        }
-        
-        if (areaAgricola.getusuario_aprovador_id() != null) {
-            dto.setusuario_aprovador_id(areaAgricola.getusuario_aprovador_id().getId());
-        }
-        
-        dto.setnome_fazenda(areaAgricola.getnome_fazenda());
-        dto.setCultura(areaAgricola.getCultura());
-        dto.setprodutividade_ano(areaAgricola.getprodutividade_ano());
-        dto.setArea(areaAgricola.getArea());
-        dto.settipo_solo(areaAgricola.gettipo_solo());
-        dto.setCidade(areaAgricola.getCidade());
+        dto.setNomeFazenda(areaAgricola.getNomeFazenda());
         dto.setEstado(areaAgricola.getEstado());
-        dto.setvetor_raiz(areaAgricola.getvetor_raiz());
-        dto.setvetor_atualizado(areaAgricola.getvetor_atualizado());
-        dto.setvetor_aprovado(areaAgricola.getvetor_aprovado());
         dto.setStatus(areaAgricola.getStatus());
-        
+
+        if (areaAgricola.getCidadeId() != null) {
+            dto.setCidadeNome(areaAgricola.getCidadeId().getNome());
+        }
+
+        if (areaAgricola.getArquivoFazenda() != null) {
+            dto.setArquivoFazenda(convertGeometryToString(areaAgricola.getArquivoFazenda()));
+        }
+
         return dto;
+    }
+
+    private Geometry convertStringToGeometry(String geoJson) {
+        try {
+            System.out.println("Convertendo String para Geometry: " + geoJson);
+            WKTReader reader = new WKTReader();
+            return reader.read(geoJson);
+        } catch (Exception e) {
+            throw new RuntimeException("Erro ao converter GeoJSON para Geometry: " + e.getMessage());
+        }
+    }
+    
+    private String convertGeometryToString(Geometry geometry) {
+        try {
+            System.out.println("Convertendo Geometry para String: " + geometry);
+            WKTWriter writer = new WKTWriter();
+            return writer.write(geometry);
+        } catch (Exception e) {
+            throw new RuntimeException("Erro ao converter Geometry para GeoJSON: " + e.getMessage());
+        }
     }
 }
