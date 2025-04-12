@@ -7,8 +7,6 @@ import fatec.porygon.entity.Usuario;
 import fatec.porygon.enums.StatusArea;
 import fatec.porygon.repository.AreaAgricolaRepository;
 import fatec.porygon.repository.UsuarioRepository;
-import fatec.porygon.utils.GeoJsonUtils;
-import org.locationtech.jts.geom.Geometry;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -81,11 +79,6 @@ public class AreaAgricolaService {
         Cidade cidade = cidadeService.buscarOuCriar(dto.getCidade());
         areaAgricola.setCidadeId(cidade);
         
-        if (dto.getArquivoFazenda() != null && !dto.getArquivoFazenda().isEmpty()) {
-            Geometry geometria = GeoJsonUtils.fromGeoJson(dto.getArquivoFazenda());
-            areaAgricola.setArquivoFazenda(geometria);
-        }
-        
         if (dto.getusuario_id() != null) {
             Usuario usuario = usuarioRepository.findById(dto.getusuario_id())
                     .orElseThrow(() -> new RuntimeException("Usuário não encontrado com ID: " + dto.getusuario_id()));
@@ -126,10 +119,6 @@ public class AreaAgricolaService {
         
         if (areaAgricola.getCidadeId() != null) {
             dto.setCidade(areaAgricola.getCidadeId().getNome());
-        }
-        
-        if (areaAgricola.getArquivoFazenda() != null) {
-            dto.setArquivoFazenda(GeoJsonUtils.toGeoJson(areaAgricola.getArquivoFazenda()));
         }
         
         if (areaAgricola.getusuario_id() != null) {
