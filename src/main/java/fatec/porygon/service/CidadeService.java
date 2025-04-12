@@ -40,28 +40,4 @@ public class CidadeService {
     public List<Cidade> listarTodas() {
         return cidadeRepository.findAll();
     }
-    
-    public Optional<Cidade> buscarPorId(Long id) {
-        return cidadeRepository.findById(id);
-    }
-    
-    @Transactional
-    public Cidade atualizar(Long id, String novoNome) {
-        Optional<Cidade> cidadeOpt = cidadeRepository.findById(id);
-        if (cidadeOpt.isPresent()) {
-            Cidade cidade = cidadeOpt.get();
-            cidade.setNome(novoNome);
-            return cidadeRepository.save(cidade);
-        } else {
-            throw new RuntimeException("Cidade não encontrada com ID: " + id);
-        }
-    }
-    
-    @Transactional
-    public void excluir(Long id) {
-        if (!cidadeRepository.existsById(id)) {
-            throw new RuntimeException("Cidade não encontrada com ID: " + id);
-        }
-        cidadeRepository.deleteById(id);
-    }
 }
