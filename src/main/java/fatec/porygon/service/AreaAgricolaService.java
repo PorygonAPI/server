@@ -79,29 +79,7 @@ public class AreaAgricolaService {
         Cidade cidade = cidadeService.buscarOuCriar(dto.getCidade());
         areaAgricola.setCidadeId(cidade);
         
-        if (dto.getusuario_id() != null) {
-            Usuario usuario = usuarioRepository.findById(dto.getusuario_id())
-                    .orElseThrow(() -> new RuntimeException("Usuário não encontrado com ID: " + dto.getusuario_id()));
-            areaAgricola.setUsuario(usuario);
-        }
-        
-        if (dto.getusuario_upgrade_id() != null) {
-            Usuario usuarioUpgrade = usuarioRepository.findById(dto.getusuario_upgrade_id())
-                    .orElseThrow(() -> new RuntimeException("Usuário de upgrade não encontrado com ID: " + dto.getusuario_upgrade_id()));
-            areaAgricola.setUsuarioUpgrade(usuarioUpgrade);
-        }
-        
-        if (dto.getusuario_aprovador_id() != null) {
-            Usuario usuarioAprovador = usuarioRepository.findById(dto.getusuario_aprovador_id())
-                    .orElseThrow(() -> new RuntimeException("Usuário aprovador não encontrado com ID: " + dto.getusuario_aprovador_id()));
-            areaAgricola.setUsuarioAprovador(usuarioAprovador);
-        }
-        
-        areaAgricola.setNomeFazenda(dto.getnome_fazenda());
-        areaAgricola.setCultura(dto.getCultura());
-        areaAgricola.setprodutividade_ano(dto.getprodutividade_ano());
-        areaAgricola.setArea(dto.getArea());
-        areaAgricola.settipo_solo(dto.gettipo_solo());
+        areaAgricola.setNomeFazenda(dto.getNomeFazenda());
         areaAgricola.setEstado(dto.getEstado());
         
         if (dto.getStatus() != null) {
@@ -118,28 +96,18 @@ public class AreaAgricolaService {
         dto.setId(areaAgricola.getId());
         
         if (areaAgricola.getCidadeId() != null) {
+            dto.setCidadeNome(areaAgricola.getCidadeId().getNome());
             dto.setCidade(areaAgricola.getCidadeId().getNome());
         }
         
-        if (areaAgricola.getusuario_id() != null) {
-            dto.setusuario_id(areaAgricola.getusuario_id().getId());
-        }
-        
-        if (areaAgricola.getUsuarioUpgrade() != null) {
-            dto.setusuario_upgrade_id(areaAgricola.getUsuarioUpgrade().getId());
-        }
-        
-        if (areaAgricola.getusuario_aprovador_id() != null) {
-            dto.setusuario_aprovador_id(areaAgricola.getusuario_aprovador_id().getId());
-        }
-        
+        dto.setNomeFazenda(areaAgricola.getNomeFazenda());
         dto.setnome_fazenda(areaAgricola.getNomeFazenda());
-        dto.setCultura(areaAgricola.getCultura());
-        dto.setprodutividade_ano(areaAgricola.getprodutividade_ano());
-        dto.setArea(areaAgricola.getArea());
-        dto.settipo_solo(areaAgricola.gettipo_solo());
         dto.setEstado(areaAgricola.getEstado());
         dto.setStatus(areaAgricola.getStatus());
+        
+        if (areaAgricola.getArquivoFazenda() != null) {
+            dto.setArquivoFazenda(areaAgricola.getArquivoFazenda().toString());
+        }
         
         return dto;
     }
