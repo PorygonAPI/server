@@ -1,5 +1,14 @@
 package main.java.fatec.porygon.service;
 
+import main.java.fatec.porygon.entity.*;
+import main.java.fatec.porygon.dto.TalhaoDto;
+import main.java.fatec.porygon.repository.TalhaoRepository;
+import main.java.fatec.porygon.repository.AreaAgricolaRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
+
 @Service
 public class TalhaoService {
 
@@ -56,6 +65,7 @@ public class TalhaoService {
 
     public Talhao atualizarTalhao(Long id, TalhaoDto dto) {
         Talhao talhao = buscarPorId(id);
+
         talhao.setArea(dto.getArea());
         talhao.setProdutividadeAno(dto.getProdutividade_ano());
         talhao.setArquivoDaninha(dto.getArquivo_daninha());
@@ -63,6 +73,22 @@ public class TalhaoService {
 
         TipoSolo tipoSolo = tipoSoloService.buscarOuCriarById(dto.getTipo_solo_id());
         talhao.setTipoSolo(tipoSolo);
+
+        AreaAgricola areaAgricola = areaAgricolaRepository.findById(dto.getArea_agricola_id())
+                .orElseThrow(() -> new RuntimeException("Área agrícola não encontrada."));
+        talhao.setAreaAgricola(areaAgricola);
+
+        Safra safra = safraService.buscarPorTalhao(talhao.getId())
+                .orElse(new Safra()); 
+
+        safra.setAno(dto.getAno());
+        safra.setStatus(dto.getStatus());
+
+        Cultura cultura = culturaService.buscarOuCriar(dto.getCultura_nome());
+        safra.setCultura(cultura);
+        safra.setTalhao(talhao);
+
+        safraService.criarSafra(safra); 
 
         return talhaoRepository.save(talhao);
     }
@@ -72,4 +98,3 @@ public class TalhaoService {
         talhaoRepository.delete(talhao);
     }
 }
-
