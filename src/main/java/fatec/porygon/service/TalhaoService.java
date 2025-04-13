@@ -1,9 +1,9 @@
-package main.java.fatec.porygon.service;
+package fatec.porygon.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import fatec.porygon.model.Talhao;
-import fatec.porygon.model.Usuario;
+import fatec.porygon.entity.Talhao;
+import fatec.porygon.entity.Usuario;
 import fatec.porygon.repository.TalhaoRepository;
 import fatec.porygon.repository.UsuarioRepository;
 

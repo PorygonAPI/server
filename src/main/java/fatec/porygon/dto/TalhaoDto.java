@@ -1,7 +1,6 @@
 package fatec.porygon.dto;
 
 import fatec.porygon.enums.StatusSafra;
-import java.util.Map;
 import org.locationtech.jts.geom.Geometry;
 
 public class TalhaoDto {
