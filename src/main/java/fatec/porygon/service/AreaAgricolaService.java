@@ -7,6 +7,8 @@ import fatec.porygon.entity.Usuario;
 import fatec.porygon.enums.StatusArea;
 import fatec.porygon.repository.AreaAgricolaRepository;
 import fatec.porygon.repository.UsuarioRepository;
+import main.java.fatec.porygon.utils.ConvertGeoJsonUtils;
+
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.io.geojson.GeoJsonReader;
 import org.locationtech.jts.io.geojson.GeoJsonWriter;
@@ -23,6 +25,7 @@ public class AreaAgricolaService {
 
     private final AreaAgricolaRepository areaAgricolaRepository;
     private final CidadeService cidadeService;
+    private final ConvertGeoJsonUtils conversorGeoJson = new ConvertGeoJsonUtils();
 
     @Autowired
     public AreaAgricolaService(AreaAgricolaRepository areaAgricolaRepository,
@@ -102,8 +105,7 @@ public class AreaAgricolaService {
         // Conversão de GeoJSON para Geometry
         if (dto.getArquivoFazenda() != null && !dto.getArquivoFazenda().isEmpty()) {
             try {
-                GeoJsonReader reader = new GeoJsonReader();
-                Geometry geometry = reader.read(dto.getArquivoFazenda());
+                Geometry geometry = conversorGeoJson.convertGeoJsonToGeometry(dto.getArquivoFazenda());
                 areaAgricola.setArquivoFazenda(geometry);
             } catch (Exception e) {
                 throw new RuntimeException("Erro ao processar o arquivo GeoJSON", e);
@@ -140,8 +142,7 @@ public class AreaAgricolaService {
         
         // Conversão de Geometry para GeoJSON
         if (areaAgricola.getArquivoFazenda() != null) {
-            GeoJsonWriter writer = new GeoJsonWriter();
-            String geoJson = writer.write(areaAgricola.getArquivoFazenda());
+            String geoJson = conversorGeoJson.convertGeometryToGeoJson(areaAgricola.getArquivoFazenda());
             dto.setArquivoFazenda(geoJson);
         }
         
