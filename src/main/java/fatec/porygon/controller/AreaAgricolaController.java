@@ -26,10 +26,9 @@ public class AreaAgricolaController {
     @PostMapping
     public ResponseEntity<AreaAgricolaDto> criarAreaAgricola(@RequestBody AreaAgricolaDto areaAgricolaDto) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        areaAgricolaDto.setusuario_id(Long.valueOf(authentication.getName()));
         areaAgricolaDto.setStatus(StatusArea.Pendente);
         
-        if (areaAgricolaDto.getCidade() == null || areaAgricolaDto.getCidade().trim().isEmpty()) {
+        if (areaAgricolaDto.getCidadeNome() == null || areaAgricolaDto.getCidadeNome().trim().isEmpty()) {
             return ResponseEntity.badRequest().build();
         }
         
@@ -57,7 +56,7 @@ public class AreaAgricolaController {
     public ResponseEntity<AreaAgricolaDto> atualizarAreaAgricola(@PathVariable Long id, 
                                                                @RequestBody AreaAgricolaDto areaAgricolaDto) {
         try {
-            if (areaAgricolaDto.getCidade() == null || areaAgricolaDto.getCidade().trim().isEmpty()) {
+            if (areaAgricolaDto.getCidadeNome() == null || areaAgricolaDto.getCidadeNome().trim().isEmpty()) {
                 return ResponseEntity.badRequest().build();
             }
             
