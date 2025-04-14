@@ -1,6 +1,6 @@
 package fatec.porygon.controller;
 
-import fatec.porygon.dto.TalhaoPendenteDTO;
+import fatec.porygon.dto.TalhaoPendenteDto;
 import fatec.porygon.service.TalhaoPendenteService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -20,4 +20,4 @@ public class TalhaoPendenteController {
         List<TalhaoPendenteDto> talhoes = talhaoPendenteService.listarTalhoesPendentes();
         return ResponseEntity.ok(talhoes);
     }
-}
+}                   

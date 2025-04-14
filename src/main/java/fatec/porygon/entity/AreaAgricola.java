@@ -25,7 +25,7 @@ public class AreaAgricola {
 
     @ManyToOne
     @JoinColumn(name = "cidade_id", nullable = false)
-    private Cidade cidade_id;
+    private Cidade cidade;
 
     @Column(name = "arquivo_fazenda", nullable = false, columnDefinition = "GEOMETRY")
     private Geometry arquivo_fazenda;
@@ -39,7 +39,7 @@ public class AreaAgricola {
 
     public StatusArea getStatus() {return status;}
 
-    public Cidade getCidadeId() {return cidade_id;}
+    public Cidade getCidade() {return cidade;}
 
     public Geometry getArquivoFazenda() {return arquivo_fazenda;}
 
@@ -52,7 +52,7 @@ public class AreaAgricola {
 
     public void setStatus(StatusArea status) {this.status = status;}
 
-    public void setCidadeId(Cidade cidade_id) {this.cidade_id = cidade_id;}
+    public void setCidade(Cidade cidade) {this.cidade = cidade;}
 
     public void setArquivoFazenda(Geometry arquivo_fazenda) {this.arquivo_fazenda = arquivo_fazenda;}
 }

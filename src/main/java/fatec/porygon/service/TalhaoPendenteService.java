@@ -1,9 +1,9 @@
 package fatec.porygon.service;
 
-import fatec.porygon.dto.TalhaoPendenteDTO;
+import fatec.porygon.dto.TalhaoPendenteDto;
 import fatec.porygon.entity.Safra;
 import fatec.porygon.entity.Talhao;
-import fatec.porygon.repository.TalhaoRepository;
+import fatec.porygon.repository.TalhaoPendenteRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -18,7 +18,7 @@ public class TalhaoPendenteService {
     private TalhaoPendenteRepository talhaoPendenteRepository;
 
     public List<TalhaoPendenteDto> listarTalhoesPendentes() {
-        List<Talhao> talhoes = talhaoPendenteRepository.buscarTalhoesPendentes();
+        List<TalhaoPendenteDto> talhoes = talhaoPendenteRepository.buscarTalhoesPendentes();
 
         return talhoes.stream().map(t -> {
             Optional<Safra> safraMaisRecente = t.getSafras().stream()
@@ -30,12 +30,12 @@ public class TalhaoPendenteService {
 
             return new TalhaoPendenteDto(
                 t.getId(),
-                t.getArea_agricola_id().getNome_fazenda(),
+                t.getArea_agricola_id().getNomeFazenda(),
                 cultura,
                 t.getProdutividade_ano(),
                 t.getArea(),
-                t.getTipo_solo().getNome(),
-                t.getArea_agricola_id().getCidade_id().getNome(),
+                t.getTipo_solo().getTipoSolo(),
+                t.getArea_agricola_id().getCidade().getNome(),
                 t.getArea_agricola_id().getEstado()
             );
         }).toList();

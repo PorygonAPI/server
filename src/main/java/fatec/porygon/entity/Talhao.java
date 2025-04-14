@@ -2,7 +2,6 @@ package fatec.porygon.entity;
 
 import jakarta.persistence.*;
 
-import java.awt.geom.Area;
 import java.util.ArrayList;
 import java.util.List;
 
