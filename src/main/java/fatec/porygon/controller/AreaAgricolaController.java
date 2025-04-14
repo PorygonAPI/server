@@ -6,8 +6,6 @@ import fatec.porygon.service.AreaAgricolaService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -25,14 +23,15 @@ public class AreaAgricolaController {
 
     @PostMapping
     public ResponseEntity<AreaAgricolaDto> criarAreaAgricola(@RequestBody AreaAgricolaDto areaAgricolaDto) {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        areaAgricolaDto.setusuario_id(Long.valueOf(authentication.getName()));
-        areaAgricolaDto.setStatus(StatusArea.Pendente);
-        
-        if (areaAgricolaDto.getCidade() == null || areaAgricolaDto.getCidade().trim().isEmpty()) {
-            return ResponseEntity.badRequest().build();
+        if (areaAgricolaDto.getCidadeNome() == null || areaAgricolaDto.getCidadeNome().trim().isEmpty()) {
+            System.out.println("Erro: Nome da cidade está vazio ou nulo.");
+            return ResponseEntity.badRequest().body(null);
         }
-        
+        if (areaAgricolaDto.getArquivoFazenda() == null || areaAgricolaDto.getArquivoFazenda().trim().isEmpty()) {
+            System.out.println("Erro: Arquivo Fazenda está vazio ou nulo.");
+            return ResponseEntity.badRequest().body(null);
+        }
+        areaAgricolaDto.setStatus(StatusArea.Pendente);
         AreaAgricolaDto novaAreaAgricola = areaAgricolaService.criarAreaAgricola(areaAgricolaDto);
         return new ResponseEntity<>(novaAreaAgricola, HttpStatus.CREATED);
     }
@@ -57,7 +56,7 @@ public class AreaAgricolaController {
     public ResponseEntity<AreaAgricolaDto> atualizarAreaAgricola(@PathVariable Long id, 
                                                                @RequestBody AreaAgricolaDto areaAgricolaDto) {
         try {
-            if (areaAgricolaDto.getCidade() == null || areaAgricolaDto.getCidade().trim().isEmpty()) {
+            if (areaAgricolaDto.getCidadeNome() == null || areaAgricolaDto.getCidadeNome().trim().isEmpty()) {
                 return ResponseEntity.badRequest().build();
             }
             

@@ -3,10 +3,12 @@ package fatec.porygon.service;
 import fatec.porygon.dto.AreaAgricolaDto;
 import fatec.porygon.entity.AreaAgricola;
 import fatec.porygon.entity.Cidade;
-import fatec.porygon.entity.Usuario;
 import fatec.porygon.enums.StatusArea;
 import fatec.porygon.repository.AreaAgricolaRepository;
-import fatec.porygon.repository.UsuarioRepository;
+
+import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.io.geojson.GeoJsonReader;
+import org.locationtech.jts.io.geojson.GeoJsonWriter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -19,22 +21,22 @@ import java.util.stream.Collectors;
 public class AreaAgricolaService {
 
     private final AreaAgricolaRepository areaAgricolaRepository;
-    private final UsuarioRepository usuarioRepository;
     private final CidadeService cidadeService;
 
     @Autowired
-    public AreaAgricolaService(AreaAgricolaRepository areaAgricolaRepository, 
-                              UsuarioRepository usuarioRepository,
+    public AreaAgricolaService(AreaAgricolaRepository areaAgricolaRepository,
                               CidadeService cidadeService) {
         this.areaAgricolaRepository = areaAgricolaRepository;
-        this.usuarioRepository = usuarioRepository;
         this.cidadeService = cidadeService;
     }
 
     @Transactional
     public AreaAgricolaDto criarAreaAgricola(AreaAgricolaDto areaAgricolaDto) {
+        System.out.println("Recebido DTO: " + areaAgricolaDto);
         AreaAgricola areaAgricola = convertToEntity(areaAgricolaDto);
+        System.out.println("Entidade convertida: " + areaAgricola);
         AreaAgricola savedAreaAgricola = areaAgricolaRepository.save(areaAgricola);
+        System.out.println("Entidade salva no banco: " + savedAreaAgricola);
         return convertToDto(savedAreaAgricola);
     }
 
@@ -76,8 +78,8 @@ public class AreaAgricolaService {
         AreaAgricola areaAgricola = new AreaAgricola();
         areaAgricola.setId(dto.getId());
         
-        Cidade cidade = cidadeService.buscarOuCriar(dto.getCidade());
-        areaAgricola.setCidadeId(cidade);
+        Cidade cidade = cidadeService.buscarOuCriar(dto.getCidadeNome());
+        areaAgricola.setCidade(cidade);
         
         areaAgricola.setNomeFazenda(dto.getNomeFazenda());
         areaAgricola.setEstado(dto.getEstado());
@@ -87,6 +89,17 @@ public class AreaAgricolaService {
         } else {
             areaAgricola.setStatus(StatusArea.Pendente);
         }
+
+        // Conversão de GeoJSON para Geometry
+        if (dto.getArquivoFazenda() != null && !dto.getArquivoFazenda().isEmpty()) {
+            try {
+                GeoJsonReader reader = new GeoJsonReader();
+                Geometry geometry = reader.read(dto.getArquivoFazenda());
+                areaAgricola.setArquivoFazenda(geometry);
+            } catch (Exception e) {
+                throw new RuntimeException("Erro ao processar o arquivo GeoJSON", e);
+            }
+        }
         
         return areaAgricola;
     }
@@ -95,18 +108,19 @@ public class AreaAgricolaService {
         AreaAgricolaDto dto = new AreaAgricolaDto();
         dto.setId(areaAgricola.getId());
         
-        if (areaAgricola.getCidadeId() != null) {
-            dto.setCidadeNome(areaAgricola.getCidadeId().getNome());
-            dto.setCidade(areaAgricola.getCidadeId().getNome());
+        if (areaAgricola.getCidade() != null) {
+            dto.setCidadeNome(areaAgricola.getCidade().getNome());
         }
         
         dto.setNomeFazenda(areaAgricola.getNomeFazenda());
-        dto.setnome_fazenda(areaAgricola.getNomeFazenda());
         dto.setEstado(areaAgricola.getEstado());
         dto.setStatus(areaAgricola.getStatus());
         
+        // Conversão de Geometry para GeoJSON
         if (areaAgricola.getArquivoFazenda() != null) {
-            dto.setArquivoFazenda(areaAgricola.getArquivoFazenda().toString());
+            GeoJsonWriter writer = new GeoJsonWriter();
+            String geoJson = writer.write(areaAgricola.getArquivoFazenda());
+            dto.setArquivoFazenda(geoJson);
         }
         
         return dto;

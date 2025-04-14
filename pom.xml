@@ -97,9 +97,12 @@
 			<artifactId>jts-io-common</artifactId>
 			<version>1.19.0</version>
 		</dependency>
+		<dependency>
+			<groupId>org.hibernate</groupId>
+			<artifactId>hibernate-spatial</artifactId>
+			<version>6.6.8.Final</version>
+		</dependency>
 	</dependencies>
-
-
 	<repositories>
 		<repository>
 			<id>central</id>
