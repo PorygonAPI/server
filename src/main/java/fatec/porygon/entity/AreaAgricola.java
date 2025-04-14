@@ -25,7 +25,7 @@ public class AreaAgricola {
 
     @ManyToOne
     @JoinColumn(name = "cidade_id", nullable = false)
-    private Cidade cidade; //Renomeei para não dar erro no JPA do AreaAgricolaService
+    private Cidade cidade;
 
     @Column(name = "arquivo_fazenda", nullable = false, columnDefinition = "GEOMETRY")
     private Geometry arquivo_fazenda;

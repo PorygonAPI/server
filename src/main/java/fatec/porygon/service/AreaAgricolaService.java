@@ -3,9 +3,10 @@ package fatec.porygon.service;
 import fatec.porygon.dto.AreaAgricolaDto;
 import fatec.porygon.entity.AreaAgricola;
 import fatec.porygon.entity.Cidade;
+import fatec.porygon.entity.Usuario;
 import fatec.porygon.enums.StatusArea;
 import fatec.porygon.repository.AreaAgricolaRepository;
-
+import fatec.porygon.repository.UsuarioRepository;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.io.geojson.GeoJsonReader;
 import org.locationtech.jts.io.geojson.GeoJsonWriter;
@@ -32,11 +33,8 @@ public class AreaAgricolaService {
 
     @Transactional
     public AreaAgricolaDto criarAreaAgricola(AreaAgricolaDto areaAgricolaDto) {
-        System.out.println("Recebido DTO: " + areaAgricolaDto);
         AreaAgricola areaAgricola = convertToEntity(areaAgricolaDto);
-        System.out.println("Entidade convertida: " + areaAgricola);
         AreaAgricola savedAreaAgricola = areaAgricolaRepository.save(areaAgricola);
-        System.out.println("Entidade salva no banco: " + savedAreaAgricola);
         return convertToDto(savedAreaAgricola);
     }
 
