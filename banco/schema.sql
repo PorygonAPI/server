@@ -71,11 +71,9 @@ CREATE TABLE area_agricola (
 CREATE TABLE talhao (
     id INT AUTO_INCREMENT PRIMARY KEY,
     produtividade_ano FLOAT,
-    area DOUBLE PRECISION NOT NULL,
+    area FLOAT NOT NULL,
     tipo_solo_id INT,
     area_agricola_id INT,
-    arquivo_daninha GEOMETRY,
-    arquivo_final_daninha GEOMETRY,
     FOREIGN KEY (tipo_solo_id) REFERENCES tipo_solo(id),
     FOREIGN KEY (area_agricola_id) REFERENCES area_agricola(id)
 );
@@ -85,6 +83,8 @@ CREATE TABLE talhao (
 CREATE TABLE safra (
     id INT AUTO_INCREMENT PRIMARY KEY,
     ano INT NOT NULL,
+    arquivo_daninha GEOMETRY,
+    arquivo_final_daninha GEOMETRY,
     cultura_id INT,
     talhao_id INT,
     status ENUM('Pendente', 'Atribuido', 'Aprovado') DEFAULT 'Pendente',
