@@ -1,4 +1,4 @@
-package main.java.fatec.porygon.utils;
+package fatec.porygon.utils;
 
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.io.ParseException;

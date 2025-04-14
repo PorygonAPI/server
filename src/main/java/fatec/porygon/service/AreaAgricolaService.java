@@ -3,15 +3,11 @@ package fatec.porygon.service;
 import fatec.porygon.dto.AreaAgricolaDto;
 import fatec.porygon.entity.AreaAgricola;
 import fatec.porygon.entity.Cidade;
-import fatec.porygon.entity.Usuario;
 import fatec.porygon.enums.StatusArea;
 import fatec.porygon.repository.AreaAgricolaRepository;
-import fatec.porygon.repository.UsuarioRepository;
-import main.java.fatec.porygon.utils.ConvertGeoJsonUtils;
+import fatec.porygon.utils.ConvertGeoJsonUtils;
 
 import org.locationtech.jts.geom.Geometry;
-import org.locationtech.jts.io.geojson.GeoJsonReader;
-import org.locationtech.jts.io.geojson.GeoJsonWriter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
