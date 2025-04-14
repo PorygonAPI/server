@@ -25,9 +25,15 @@ public class AreaAgricolaController {
 
     @PostMapping
     public ResponseEntity<AreaAgricolaDto> criarAreaAgricola(@RequestBody AreaAgricolaDto areaAgricolaDto) {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        areaAgricolaDto.setusuario_id(Long.valueOf(authentication.getName()));
-        areaAgricolaDto.setStatus(StatusArea.pendente);
+        if (areaAgricolaDto.getCidadeNome() == null || areaAgricolaDto.getCidadeNome().trim().isEmpty()) {
+            System.out.println("Erro: Nome da cidade está vazio ou nulo.");
+            return ResponseEntity.badRequest().body(null);
+        }
+        if (areaAgricolaDto.getArquivoFazenda() == null || areaAgricolaDto.getArquivoFazenda().trim().isEmpty()) {
+            System.out.println("Erro: Arquivo Fazenda está vazio ou nulo.");
+            return ResponseEntity.badRequest().body(null);
+        }
+        areaAgricolaDto.setStatus(StatusArea.Pendente);
         AreaAgricolaDto novaAreaAgricola = areaAgricolaService.criarAreaAgricola(areaAgricolaDto);
         return new ResponseEntity<>(novaAreaAgricola, HttpStatus.CREATED);
     }
@@ -40,20 +46,36 @@ public class AreaAgricolaController {
 
     @GetMapping("/{id}")
     public ResponseEntity<AreaAgricolaDto> buscarAreaAgricolaPorId(@PathVariable Long id) {
-        AreaAgricolaDto areaAgricola = areaAgricolaService.buscarAreaAgricolaPorId(id);
-        return ResponseEntity.ok(areaAgricola);
+        try {
+            AreaAgricolaDto areaAgricola = areaAgricolaService.buscarAreaAgricolaPorId(id);
+            return ResponseEntity.ok(areaAgricola);
+        } catch (RuntimeException e) {
+            return ResponseEntity.notFound().build();
+        }
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<AreaAgricolaDto> atualizarAreaAgricola(@PathVariable Long id, 
                                                                @RequestBody AreaAgricolaDto areaAgricolaDto) {
-        AreaAgricolaDto areaAgricolaAtualizada = areaAgricolaService.atualizarAreaAgricola(id, areaAgricolaDto);
-        return ResponseEntity.ok(areaAgricolaAtualizada);
+        try {
+            if (areaAgricolaDto.getCidadeNome() == null || areaAgricolaDto.getCidadeNome().trim().isEmpty()) {
+                return ResponseEntity.badRequest().build();
+            }
+            
+            AreaAgricolaDto areaAgricolaAtualizada = areaAgricolaService.atualizarAreaAgricola(id, areaAgricolaDto);
+            return ResponseEntity.ok(areaAgricolaAtualizada);
+        } catch (RuntimeException e) {
+            return ResponseEntity.notFound().build();
+        }
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> removerAreaAgricola(@PathVariable Long id) {
-        areaAgricolaService.removerAreaAgricola(id);
-        return ResponseEntity.noContent().build();
+        try {
+            areaAgricolaService.removerAreaAgricola(id);
+            return ResponseEntity.noContent().build();
+        } catch (RuntimeException e) {
+            return ResponseEntity.notFound().build();
+        }
     }
 }
