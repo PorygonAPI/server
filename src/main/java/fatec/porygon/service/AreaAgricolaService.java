@@ -89,7 +89,7 @@ public class AreaAgricolaService {
         
         if (cidadeNome != null && !cidadeNome.isEmpty()) {
             Cidade cidade = cidadeService.buscarOuCriar(cidadeNome);
-            areaAgricola.setCidadeId(cidade);
+            areaAgricola.setCidade(cidade);
         }
         
         areaAgricola.setNomeFazenda(dto.getNomeFazenda());
@@ -119,11 +119,11 @@ public class AreaAgricolaService {
         AreaAgricolaDto dto = new AreaAgricolaDto();
         dto.setId(areaAgricola.getId());
         
-        if (areaAgricola.getCidadeId() != null) {
-            dto.setCidadeNome(areaAgricola.getCidadeId().getNome());
+        if (areaAgricola.getCidade() != null) {
+            dto.setCidadeNome(areaAgricola.getCidade().getNome());
             try {
                 java.lang.reflect.Method setCidadeMethod = dto.getClass().getMethod("setCidade", String.class);
-                setCidadeMethod.invoke(dto, areaAgricola.getCidadeId().getNome());
+                setCidadeMethod.invoke(dto, areaAgricola.getCidade().getNome());
             } catch (Exception e) {
             }
         }
@@ -132,7 +132,7 @@ public class AreaAgricolaService {
         
         try {
             java.lang.reflect.Method setNomeFazendaMethod = 
-                dto.getClass().getMethod("setnome_fazenda", String.class);
+                dto.getClass().getMethod("setNomeFazenda", String.class);
             setNomeFazendaMethod.invoke(dto, areaAgricola.getNomeFazenda());
         } catch (Exception e) {
         }
