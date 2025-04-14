@@ -1,4 +1,4 @@
-package main.java.fatec.porygon.repository;
+package fatec.porygon.repository;
 
 import fatec.porygon.entity.Talhao;
 import org.springframework.data.jpa.repository.JpaRepository;

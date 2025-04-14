@@ -1,4 +1,10 @@
-package main.java.fatec.porygon.service;
+package fatec.porygon.service;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import fatec.porygon.entity.Cultura;
+import fatec.porygon.repository.CulturaRepository;
 
 @Service
 public class CulturaService {

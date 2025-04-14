@@ -1,9 +1,13 @@
-package main.java.fatec.porygon.service;
+package fatec.porygon.service;
 
-import main.java.fatec.porygon.entity.*;
-import main.java.fatec.porygon.dto.TalhaoDto;
-import main.java.fatec.porygon.repository.TalhaoRepository;
-import main.java.fatec.porygon.repository.AreaAgricolaRepository;
+import fatec.porygon.entity.Cultura;
+import fatec.porygon.entity.Talhao;
+import fatec.porygon.entity.AreaAgricola;
+import fatec.porygon.entity.TipoSolo;
+import fatec.porygon.entity.Safra;
+import fatec.porygon.dto.TalhaoDto;
+import fatec.porygon.repository.TalhaoRepository;
+import fatec.porygon.repository.AreaAgricolaRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

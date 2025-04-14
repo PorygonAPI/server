@@ -1,12 +1,12 @@
-package main.java.fatec.porygon.controller;
+package fatec.porygon.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import main.java.fatec.porygon.service.TalhaoService;
-import main.java.fatec.porygon.entity.Talhao;
-import main.java.fatec.porygon.dto.TalhaoDto;
+import fatec.porygon.service.TalhaoService;
+import fatec.porygon.entity.Talhao;
+import fatec.porygon.dto.TalhaoDto;
 
 import java.util.List;
 
