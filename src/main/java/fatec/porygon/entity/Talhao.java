@@ -35,6 +35,10 @@ import java.util.List;
         @OneToMany(mappedBy = "talhao")
         private List<Safra> safras = new ArrayList<>();
 
+        @ManyToOne
+        @JoinColumn(name = "usuario_analista_id")
+        private Usuario usuarioAnalista;
+
     public Double getArea() {return area;}
     public void setArea(Double area) {this.area = area;}
 
@@ -58,5 +62,7 @@ import java.util.List;
 
     public TipoSolo getTipo_solo() {return tipo_solo;}
     public void setTipo_solo(TipoSolo tipo_solo) {this.tipo_solo = tipo_solo;}
-}
 
+    public Usuario getUsuarioAnalista() { return usuarioAnalista; }
+    public void setUsuarioAnalista(Usuario usuarioAnalista) { this.usuarioAnalista = usuarioAnalista; }
+}

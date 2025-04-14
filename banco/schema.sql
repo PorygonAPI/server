@@ -74,10 +74,12 @@ CREATE TABLE talhao (
     area DOUBLE PRECISION NOT NULL,
     tipo_solo_id INT,
     area_agricola_id INT,
+    usuario_analista_id INT,
     arquivo_daninha GEOMETRY,
     arquivo_final_daninha GEOMETRY,
     FOREIGN KEY (tipo_solo_id) REFERENCES tipo_solo(id),
-    FOREIGN KEY (area_agricola_id) REFERENCES area_agricola(id)
+    FOREIGN KEY (area_agricola_id) REFERENCES area_agricola(id),
+    FOREIGN KEY (usuario_analista_id) REFERENCES usuario(id)
 );
 
 -- Tabela safra (depende de cultura e talhao)
