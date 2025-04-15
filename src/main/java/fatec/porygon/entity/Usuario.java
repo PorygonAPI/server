@@ -1,6 +1,7 @@
 package fatec.porygon.entity;
 
 import jakarta.persistence.*;
+import java.util.List;
 
 @Entity
 @Table(name = "usuario")
@@ -22,21 +23,24 @@ public class Usuario {
     @JoinColumn(name = "cargo_id", nullable = false)
     private Cargo cargo;
 
-    public Long getId() {return id;}
-    public void setId(Long id) {this.id = id;}
+    @OneToMany(mappedBy = "usuarioAnalista")
+    private List<Safra> safras;
 
-    public String getNome() {return nome;}
-    public void setNome(String nome) {this.nome = nome;}
+    public Long getId() { return id; }
+    public void setId(Long id) { this.id = id; }
 
-    public String getSenha() {return senha;}
-    public void setSenha(String senha) {this.senha = senha;}
+    public String getNome() { return nome; }
+    public void setNome(String nome) { this.nome = nome; }
 
-    public String getEmail() {return email;}
-    public void setEmail(String email) {this.email = email;}
+    public String getSenha() { return senha; }
+    public void setSenha(String senha) { this.senha = senha; }
 
-    public Cargo getCargo() {return cargo;}
-    public void setCargo(Cargo cargo) {this.cargo = cargo;}
+    public String getEmail() { return email; }
+    public void setEmail(String email) { this.email = email; }
+
+    public Cargo getCargo() { return cargo; }
+    public void setCargo(Cargo cargo) { this.cargo = cargo; }
+
+    public List<Safra> getSafras() { return safras; }
+    public void setSafras(List<Safra> safras) { this.safras = safras; }
 }
-
-
-
