@@ -1,17 +1,23 @@
 package fatec.porygon.service;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import fatec.porygon.dto.AreaAgricolaDto;
 import fatec.porygon.entity.AreaAgricola;
 import fatec.porygon.entity.Cidade;
+import fatec.porygon.entity.Talhao;
 import fatec.porygon.enums.StatusArea;
 import fatec.porygon.repository.AreaAgricolaRepository;
+import fatec.porygon.repository.TalhaoRepository;
 import fatec.porygon.utils.ConvertGeoJsonUtils;
 
 import org.locationtech.jts.geom.Geometry;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -20,13 +26,17 @@ import java.util.stream.Collectors;
 public class AreaAgricolaService {
 
     private final AreaAgricolaRepository areaAgricolaRepository;
+    private final TalhaoRepository talhaoRepository;
     private final CidadeService cidadeService;
     private final ConvertGeoJsonUtils conversorGeoJson = new ConvertGeoJsonUtils();
+    private final ObjectMapper objectMapper = new ObjectMapper();
 
     @Autowired
     public AreaAgricolaService(AreaAgricolaRepository areaAgricolaRepository,
+                              TalhaoRepository talhaoRepository,
                               CidadeService cidadeService) {
         this.areaAgricolaRepository = areaAgricolaRepository;
+        this.talhaoRepository = talhaoRepository;
         this.cidadeService = cidadeService;
     }
 
@@ -69,6 +79,61 @@ public class AreaAgricolaService {
             throw new RuntimeException("Área agrícola não encontrada com ID: " + id);
         }
         areaAgricolaRepository.deleteById(id);
+    }
+
+    @Transactional
+    public void processarTalhoesGeoJson(MultipartFile geoJsonFile, AreaAgricola areaAgricola) {
+        try {
+            String geoJsonContent = new String(geoJsonFile.getBytes());
+            JsonNode rootNode = objectMapper.readTree(geoJsonContent);
+            
+            if (!rootNode.has("features")) {
+                throw new RuntimeException("Arquivo GeoJSON inválido: não contém features");
+            }
+
+            JsonNode features = rootNode.get("features");
+            for (JsonNode feature : features) {
+                processarFeature(feature, areaAgricola);
+            }
+        } catch (IOException e) {
+            throw new RuntimeException("Erro ao processar arquivo GeoJSON", e);
+        }
+    }
+
+    private void processarFeature(JsonNode feature, AreaAgricola areaAgricola) {
+        if (!feature.has("properties") || !feature.has("geometry")) {
+            throw new RuntimeException("Feature inválida: faltam propriedades ou geometria");
+        }
+
+        JsonNode properties = feature.get("properties");
+        if (!properties.has("MN_TL")) {
+            throw new RuntimeException("Feature inválida: falta propriedade MN_TL");
+        }
+
+        String mnTl = properties.get("MN_TL").asText();
+        
+        // Verifica se já existe um talhão com esse MN_TL
+        if (talhaoRepository.findByMnTlAndAreaAgricola(mnTl, areaAgricola).isEmpty()) {
+            Talhao novoTalhao = new Talhao();
+            novoTalhao.setMnTl(mnTl);
+            novoTalhao.setAreaAgricola(areaAgricola);
+
+            try {
+                // Converte a geometria da feature para o formato adequado
+                Geometry geometry = conversorGeoJson.convertGeoJsonToGeometry(
+                    objectMapper.writeValueAsString(feature.get("geometry"))
+                );
+                novoTalhao.setGeometria(geometry);
+                
+                // Calcula a área em hectares (assumindo que a geometria está em metros quadrados)
+                double areaHectares = geometry.getArea() / 10000.0;
+                novoTalhao.setArea(areaHectares);
+                
+                talhaoRepository.save(novoTalhao);
+            } catch (Exception e) {
+                throw new RuntimeException("Erro ao processar geometria do talhão: " + mnTl, e);
+            }
+        }
     }
 
     private AreaAgricola convertToEntity(AreaAgricolaDto dto) {

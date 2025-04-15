@@ -1,6 +1,7 @@
 package fatec.porygon.entity;
 
 import jakarta.persistence.*;
+import org.locationtech.jts.geom.Geometry;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -25,6 +26,12 @@ public class Talhao {
     @OneToMany(mappedBy = "talhao")
     private List<Safra> safras = new ArrayList<>();
 
+    @Column(name = "mn_tl", unique = true)
+    private String mnTl;
+
+    @Column(name = "geometria", columnDefinition = "geometry")
+    private Geometry geometria;
+
     public Long getId() {return id;}
     public void setId(Long id) {this.id = id;}
 
@@ -39,5 +46,21 @@ public class Talhao {
 
     public List<Safra> getSafras() {return safras;}
     public void setSafras(List<Safra> safras) {this.safras = safras;}
+
+    public String getMnTl() {
+        return mnTl;
+    }
+
+    public void setMnTl(String mnTl) {
+        this.mnTl = mnTl;
+    }
+
+    public Geometry getGeometria() {
+        return geometria;
+    }
+
+    public void setGeometria(Geometry geometria) {
+        this.geometria = geometria;
+    }
 }
 

@@ -7,6 +7,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+import fatec.porygon.entity.AreaAgricola;
+import fatec.porygon.dto.TalhaoProcessamentoDto;
+import org.springframework.util.StreamUtils;
+
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 
 import java.util.List;
 
@@ -76,4 +83,24 @@ public class AreaAgricolaController {
             return ResponseEntity.notFound().build();
         }
     }
+
+    @PostMapping("/{id}/talhoes/processar")
+    public ResponseEntity<String> processarTalhoes(
+            @PathVariable Long id,
+            @RequestParam("arquivo") MultipartFile arquivo) {
+        try {
+            String geoJsonContent = new String(arquivo.getBytes(), StandardCharsets.UTF_8);
+            AreaAgricolaDto areaAgricolaDto = areaAgricolaService.buscarAreaAgricolaPorId(id);
+            areaAgricolaService.processarTalhoesGeoJson(arquivo, areaAgricolaDto.toAreaAgricola());
+
+            return ResponseEntity.ok("Talhões processados com sucesso");
+        } catch (IOException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Erro na leitura do arquivo: " + e.getMessage());
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body("Erro ao processar talhões: " + e.getMessage());
+        }
+    }
+
 }
