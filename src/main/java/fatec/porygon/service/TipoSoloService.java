@@ -12,29 +12,29 @@ public class TipoSoloService {
     @Autowired
     private TipoSoloRepository tipoSoloRepository;
 
-    // public TipoSolo buscarOuCriar(String tipo) {
-    //     return tipoSoloRepository.findByTipo(tipo)
+    // public TipoSolo buscarOuCriar(String tipoSolo) {
+    //     return tipoSoloRepository.findByTipo(tipoSolo)
     //             .orElseGet(() -> {
     //                 TipoSolo novo = new TipoSolo();
-    //                 novo.setTipo(tipo);
+    //                 novo.setTipo(tipoSolo);
     //                 return tipoSoloRepository.save(novo);
     //             });
     // }
 
     @Transactional
-    public TipoSolo buscarOuCriar(String tipo) {
-        if (tipo == null || tipo.trim().isEmpty()) {
-            throw new IllegalArgumentException("O tipo do solo não pode ser nulo ou vazio");
+    public TipoSolo buscarOuCriar(String tipoSolo) {
+        if (tipoSolo == null || tipoSolo.trim().isEmpty()) {
+            throw new IllegalArgumentException("O tipoSolo do solo não pode ser nulo ou vazio");
         }
         
-        String tipoTrimmed = tipo.trim();
-        Optional<TipoSolo> tipoSoloOpt = tipoSoloRepository.findByTipo(tipoTrimmed);
+        String tipoSoloTrimmed = tipoSolo.trim();
+        Optional<TipoSolo> tipoSoloOpt = tipoSoloRepository.findByTipo(tipoSoloTrimmed);
         
         if (tipoSoloOpt.isPresent()) {
             return tipoSoloOpt.get();
         } else {
             TipoSolo novoTipoSolo = new TipoSolo();
-            novoTipoSolo.setTipo(tipoTrimmed);
+            novoTipoSolo.setTipo(tipoSoloTrimmed);
             return tipoSoloRepository.save(novoTipoSolo);
         }
     }
