@@ -4,5 +4,5 @@ public enum StatusSafra {
     Pendente,
     Em_Analise,
     Aprovado,
-
+    Atribuido,
 }
