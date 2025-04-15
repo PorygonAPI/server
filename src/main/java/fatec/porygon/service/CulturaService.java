@@ -20,5 +20,23 @@ public class CulturaService {
                     return culturaRepository.save(nova);
                 });
     }
+
+    // @Transactional
+    // public Cultura buscarOuCriar(String nome) {
+    //     if (nome == null || nome.trim().isEmpty()) {
+    //         throw new IllegalArgumentException("Nome da cultura não pode ser nulo ou vazio");
+    //     }
+        
+    //     String nomeTrimmed = nome.trim();
+    //     Optional<Cultura> culturaOpt = culturaRepository.findByNome(nomeTrimmed);
+        
+    //     if (culturaOpt.isPresent()) {
+    //         return culturaOpt.get();
+    //     } else {
+    //         Cultura novaCultura = new Cultura();
+    //         novaCultura.setNome(nomeTrimmed);
+    //         return culturaRepository.save(novaCultura);
+    //     }
 }
+
 

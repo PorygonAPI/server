@@ -9,5 +9,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface TipoSoloRepository extends JpaRepository<TipoSolo, Long> {
-    Optional<TipoSolo> findByTipoSolo(String tipoSolo);
+    Optional<TipoSolo> findByTipo(String tipo);
 }
