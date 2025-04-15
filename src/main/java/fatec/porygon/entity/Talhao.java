@@ -7,74 +7,37 @@ import java.util.List;
 @Entity
 @Table(name = "talhao")
 public class Talhao {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(columnDefinition = "json", name = "produtividade_ano")
-    private Double produtividade_ano;
-
-    @Column(name = "area", nullable = false)
+    @Column(name = "area")
     private Double area;
 
     @ManyToOne
     @JoinColumn(name = "tipo_solo_id")
-    private TipoSolo tipo_solo;
+    private TipoSolo tipoSolo;
 
     @ManyToOne
     @JoinColumn(name = "area_agricola_id")
-    private AreaAgricola area_agricola_id;
+    private AreaAgricola areaAgricola;
 
     @OneToMany(mappedBy = "talhao")
     private List<Safra> safras = new ArrayList<>();
 
-    public Long getId() {
-        return id;
-    }
+    public Long getId() {return id;}
+    public void setId(Long id) {this.id = id;}
 
-    public void setId(Long id) {
-        this.id = id;
-    }
+    public Double getArea() {return area;}
+    public void setArea(Double area) {this.area = area;}
 
-    public Double getProdutividade_ano() {
-        return produtividade_ano;
-    }
+    public TipoSolo getTipoSolo() {return tipoSolo;}
+    public void setTipoSolo(TipoSolo tipoSolo) {this.tipoSolo = tipoSolo;}
 
-    public void setProdutividade_ano(Double produtividade_ano) {
-        this.produtividade_ano = produtividade_ano;
-    }
+    public AreaAgricola getAreaAgricola() {return areaAgricola;}
+    public void setAreaAgricola(AreaAgricola areaAgricola) {this.areaAgricola = areaAgricola;}
 
-    public Double getArea() {
-        return area;
-    }
-
-    public void setArea(Double area) {
-        this.area = area;
-    }
-
-    public TipoSolo getTipo_solo() {
-        return tipo_solo;
-    }
-
-    public void setTipo_solo(TipoSolo tipo_solo) {
-        this.tipo_solo = tipo_solo;
-    }
-
-    public AreaAgricola getArea_agricola_id() {
-        return area_agricola_id;
-    }
-
-    public void setArea_agricola_id(AreaAgricola area_agricola_id) {
-        this.area_agricola_id = area_agricola_id;
-    }
-
-    public List<Safra> getSafras() {
-        return safras;
-    }
-
-    public void setSafras(List<Safra> safras) {
-        this.safras = safras;
-    }
+    public List<Safra> getSafras() {return safras;}
+    public void setSafras(List<Safra> safras) {this.safras = safras;}
 }
 

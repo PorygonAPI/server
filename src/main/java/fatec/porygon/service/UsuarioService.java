@@ -23,7 +23,7 @@ public class UsuarioService {
     }
 
     public UsuarioDto criarUsuario(UsuarioDto usuarioDto) {
-        Optional<Cargo> cargoOpt = cargoRepository.findById(usuarioDto.getCargoId());
+        Optional<Cargo> cargoOpt = cargoRepository.findById(usuarioDto.getCargo());
         if (cargoOpt.isEmpty()) {
             throw new RuntimeException("Cargo não encontrado");
         }
@@ -61,7 +61,7 @@ public class UsuarioService {
             usuario.setSenha(usuarioDto.getSenha()); //usuario.setSenha(passwordEncoder.encode(usuarioDto.getSenha()));
         }
 
-        Optional<Cargo> cargoOpt = cargoRepository.findById(usuarioDto.getCargoId());
+        Optional<Cargo> cargoOpt = cargoRepository.findById(usuarioDto.getCargo());
         if (cargoOpt.isPresent()) {
             usuario.setCargo(cargoOpt.get());
         }
@@ -82,7 +82,7 @@ public class UsuarioService {
         dto.setId(usuario.getId());
         dto.setNome(usuario.getNome());
         dto.setEmail(usuario.getEmail());
-        dto.setCargoId(usuario.getCargo().getId());
+        dto.setCargo(usuario.getCargo().getId());
         dto.setCargoNome(usuario.getCargo().getNome());
         return dto;
     }

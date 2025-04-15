@@ -7,10 +7,8 @@ import org.locationtech.jts.geom.Geometry;
 @Entity
 @Table(name = "area_agricola")
 public class AreaAgricola {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id")
     private Long id;
 
     @Column(name = "nome_fazenda", nullable = false)

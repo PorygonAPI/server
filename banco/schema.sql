@@ -85,10 +85,10 @@ CREATE TABLE safra (
     produtividade_ano FLOAT,
     arquivo_daninha GEOMETRY,
     arquivo_final_daninha GEOMETRY,
+    status ENUM('Pendente', 'Atribuido', 'Aprovado') DEFAULT 'Pendente',
     usuario_analista_id INT,
     cultura_id INT,
     talhao_id INT,
-    status ENUM('Pendente', 'Atribuido', 'Aprovado') DEFAULT 'Pendente',
     FOREIGN KEY (cultura_id) REFERENCES cultura(id),
     FOREIGN KEY (talhao_id) REFERENCES talhao(id),
     FOREIGN KEY (usuario_analista_id) REFERENCES usuario(id)
