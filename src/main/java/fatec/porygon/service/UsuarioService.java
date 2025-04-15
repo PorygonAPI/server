@@ -6,7 +6,6 @@ import fatec.porygon.entity.Cargo;
 import fatec.porygon.repository.UsuarioRepository;
 import fatec.porygon.repository.CargoRepository;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Optional;
@@ -17,12 +16,10 @@ public class UsuarioService {
 
     private final UsuarioRepository usuarioRepository;
     private final CargoRepository cargoRepository;
-    private final BCryptPasswordEncoder passwordEncoder;
 
     public UsuarioService(UsuarioRepository usuarioRepository, CargoRepository cargoRepository) {
         this.usuarioRepository = usuarioRepository;
         this.cargoRepository = cargoRepository;
-        this.passwordEncoder = new BCryptPasswordEncoder();
     }
 
     public UsuarioDto criarUsuario(UsuarioDto usuarioDto) {
