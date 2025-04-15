@@ -1,53 +1,51 @@
 package fatec.porygon.dto;
 
 import fatec.porygon.enums.StatusSafra;
-import java.util.Map;
 import org.locationtech.jts.geom.Geometry;
 
 public class TalhaoDto {
-    private Integer ano;
-    private StatusSafra status;
-    private Long cultura_id;
-    private String cultura_nome;
-    private Long talhao_id;
+    private Long id;
     private Double area;
-    private Float produtividade_ano;
-    private Long tipo_solo_id;
-    private Long area_agricola_id;
-    private Geometry arquivo_daninha;
-    private Geometry arquivo_final_daninha;
+    private Long areaAgricola;
+    private Long tipoSolo;
+    private Integer ano;
+    private Float produtividadeAno;
+    private Geometry arquivoDaninha;
+    private Geometry arquivoFinalDaninha;
+    private StatusSafra status;
+    private Long cultura;
+    private String culturaNome;
 
-    public Geometry getArquivo_daninha() {return arquivo_daninha;}
-    public void setArquivo_daninha(Geometry arquivo_daninha) {this.arquivo_daninha = arquivo_daninha;}
-
-    public Geometry getArquivo_final_daninha() {return arquivo_final_daninha;}
-    public void setArquivo_final_daninha(Geometry arquivo_final_daninha) {this.arquivo_final_daninha = arquivo_final_daninha;}
-
-    public Integer getAno() {return ano;}
-    public void setAno(Integer ano) {this.ano = ano;}
+    public Long getId() {return id;}
+    public void setId(Long id) {this.id = id;}
 
     public Double getArea() {return area;}
     public void setArea(Double area) {this.area = area;}
 
-    public Long getArea_agricola_id() {return area_agricola_id;}
-    public void setArea_agricola_id(Long area_agricola_id) {this.area_agricola_id = area_agricola_id;}
+    public Long getAreaAgricola() {return areaAgricola;}
+    public void setAreaAgricola(Long areaAgricola) {this.areaAgricola = areaAgricola;}
 
-    public Long getCultura_id() {return cultura_id;}
-    public void setCultura_id(Long cultura_id) {this.cultura_id = cultura_id;}
+    public Long getTipoSolo() {return tipoSolo;}
+    public void setTipoSolo(Long tipoSolo) {this.tipoSolo = tipoSolo;}
 
-    public String getCultura_nome() {return cultura_nome;}
-    public void setCultura_nome(String cultura_nome) {this.cultura_nome = cultura_nome;}
+    public Integer getAno() {return ano;}
+    public void setAno(Integer ano) {this.ano = ano;}
 
-    public Float getProdutividade_ano() {return produtividade_ano;}
-    public void setProdutividade_ano(Float produtividade_ano) {this.produtividade_ano = produtividade_ano;}
+    public Float getProdutividadeAno() {return produtividadeAno;}
+    public void setProdutividadeAno(Float produtividadeAno) {this.produtividadeAno = produtividadeAno;}
+
+    public Geometry getArquivoDaninha() {return arquivoDaninha;}
+    public void setArquivoDaninha(Geometry arquivoDaninha) {this.arquivoDaninha = arquivoDaninha;}
+
+    public Geometry getArquivoFinalDaninha() {return arquivoFinalDaninha;}
+    public void setArquivoFinalDaninha(Geometry arquivoFinalDaninha) {this.arquivoFinalDaninha = arquivoFinalDaninha;}
 
     public StatusSafra getStatus() {return status;}
     public void setStatus(StatusSafra status) {this.status = status;}
 
-    public Long getTalhao_id() {return talhao_id;}
-    public void setTalhao_id(Long talhao_id) {this.talhao_id = talhao_id;}
+    public Long getCultura() {return cultura;}
+    public void setCultura (Long cultura) {this.cultura = cultura;}
 
-    public Long getTipo_solo_id() {return tipo_solo_id;}
-    public void setTipo_solo_id(Long tipo_solo_id) {this.tipo_solo_id = tipo_solo_id;}
-
+    public String getCulturaNome() {return culturaNome;}
+    public void setCulturaNome(String culturaNome) {this.culturaNome = culturaNome;}
 }

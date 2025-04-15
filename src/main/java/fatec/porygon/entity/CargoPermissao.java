@@ -10,12 +10,12 @@ public class CargoPermissao {
     private CargoPermissaoId id;
 
     @ManyToOne
-    @MapsId("cargoId") // Associa a chave composta ao Cargo
+    @MapsId("cargoId")
     @JoinColumn(name = "cargo_id", nullable = false)
     private Cargo cargo;
 
     @ManyToOne
-    @MapsId("permissaoId") // Associa a chave composta à Permissao
+    @MapsId("permissaoId")
     @JoinColumn(name = "permissao_id", nullable = false)
     private Permissao permissao;
 
@@ -27,12 +27,27 @@ public class CargoPermissao {
         this.permissao = permissao;
     }
 
-    public CargoPermissaoId getId() { return id; }
-    public void setId(CargoPermissaoId id) { this.id = id; }
+    public CargoPermissaoId getId() {
+        return id;
+    }
 
-    public Cargo getCargo() { return cargo; }
-    public void setCargo(Cargo cargo) { this.cargo = cargo; }
+    public void setId(CargoPermissaoId id) {
+        this.id = id;
+    }
 
-    public Permissao getPermissao() { return permissao; }
-    public void setPermissao(Permissao permissao) { this.permissao = permissao; }
+    public Cargo getCargo() {
+        return cargo;
+    }
+
+    public void setCargo(Cargo cargo) {
+        this.cargo = cargo;
+    }
+
+    public Permissao getPermissao() {
+        return permissao;
+    }
+
+    public void setPermissao(Permissao permissao) {
+        this.permissao = permissao;
+    }
 }

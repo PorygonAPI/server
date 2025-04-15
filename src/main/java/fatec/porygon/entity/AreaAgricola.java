@@ -7,33 +7,31 @@ import org.locationtech.jts.geom.Geometry;
 @Entity
 @Table(name = "area_agricola")
 public class AreaAgricola {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id")
     private Long id;
 
     @Column(name = "nome_fazenda", nullable = false)
-    private String nome_fazenda;
+    private String nomeFazenda;
 
-    @Column(name = "estado", nullable = false, length = 2)
+    @Column(name = "estado", nullable = false)
     private String estado;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false)
     private StatusArea status = StatusArea.Pendente;
 
+    @Column(name = "arquivo_fazenda", nullable = false, columnDefinition = "GEOMETRY")
+    private Geometry arquivoFazenda;
+
     @ManyToOne
     @JoinColumn(name = "cidade_id", nullable = false)
     private Cidade cidade;
 
-    @Column(name = "arquivo_fazenda", nullable = false, columnDefinition = "GEOMETRY")
-    private Geometry arquivo_fazenda;
-
     // Getters
     public Long getId() {return id;}
 
-    public String getNomeFazenda() {return nome_fazenda;}
+    public String getNomeFazenda() {return nomeFazenda;}
 
     public String getEstado() {return estado;}
 
@@ -41,12 +39,12 @@ public class AreaAgricola {
 
     public Cidade getCidade() {return cidade;}
 
-    public Geometry getArquivoFazenda() {return arquivo_fazenda;}
+    public Geometry getArquivoFazenda() {return arquivoFazenda;}
 
     // Setters
     public void setId(Long id) {this.id = id;}
 
-    public void setNomeFazenda(String nome_fazenda) {this.nome_fazenda = nome_fazenda;}
+    public void setNomeFazenda(String nomeFazenda) {this.nomeFazenda = nomeFazenda;}
 
     public void setEstado(String estado) {this.estado = estado;}
 
@@ -54,5 +52,5 @@ public class AreaAgricola {
 
     public void setCidade(Cidade cidade) {this.cidade = cidade;}
 
-    public void setArquivoFazenda(Geometry arquivo_fazenda) {this.arquivo_fazenda = arquivo_fazenda;}
+    public void setArquivoFazenda(Geometry arquivoFazenda) {this.arquivoFazenda = arquivoFazenda;}
 }
