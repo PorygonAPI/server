@@ -32,6 +32,13 @@ public class Safra {
     @JoinColumn(name = "cultura_id")
     private Cultura cultura;
 
+    @ManyToOne
+    @JoinColumn(name = "usuario_analista_id")
+    private Usuario usuarioAnalista;
+
+    public Usuario getUsuarioAnalista() {return usuarioAnalista;}
+    public void setUsuarioAnalista(Usuario usuarioAnalista) {this.usuarioAnalista = usuarioAnalista;}
+
     public Long getId() {return id;}
     public void setId(Long id) {this.id = id;}
 
