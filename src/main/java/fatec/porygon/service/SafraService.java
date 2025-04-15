@@ -49,7 +49,7 @@ public class SafraService {
         safraRepository.deleteById(id);
     }
 
-    public Safra associarUsuarioConsultor(Long safraId, Long usuarioId) {
+    public Safra associarAnalista(Long safraId, Long usuarioId) {
         Safra safra = buscarPorId(safraId);
         Usuario usuario = usuarioRepository.findById(usuarioId)
                 .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));

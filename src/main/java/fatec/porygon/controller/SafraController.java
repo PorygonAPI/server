@@ -47,14 +47,12 @@ public class SafraController {
         return ResponseEntity.noContent().build();
     }
 
-    @PutMapping("/{safraId}/associar-consultor/{usuarioId}")
-    public ResponseEntity<Safra> associarConsultor(
+    @PutMapping("/{safraId}/associar-analista/{usuarioId}")
+    public ResponseEntity<Safra> associarAnalista(
             @PathVariable Long safraId,
             @PathVariable Long usuarioId
     ) {
-        Safra atualizada = safraService.associarUsuarioConsultor(safraId, usuarioId);
+        Safra atualizada = safraService.associarAnalista(safraId, usuarioId);
         return ResponseEntity.ok(atualizada);
     }
 }
-
-
