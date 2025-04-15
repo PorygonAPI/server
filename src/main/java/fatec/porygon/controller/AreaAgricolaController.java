@@ -3,18 +3,16 @@ package fatec.porygon.controller;
 import fatec.porygon.dto.AreaAgricolaDto;
 import fatec.porygon.enums.StatusArea;
 import fatec.porygon.service.AreaAgricolaService;
+import fatec.porygon.entity.AreaAgricola;
+import fatec.porygon.entity.Talhao;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import fatec.porygon.entity.AreaAgricola;
-import fatec.porygon.dto.TalhaoProcessamentoDto;
-import org.springframework.util.StreamUtils;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-
 import java.util.List;
 
 @RestController
@@ -89,14 +87,24 @@ public class AreaAgricolaController {
             @PathVariable Long id,
             @RequestParam("arquivo") MultipartFile arquivo) {
         try {
-            String geoJsonContent = new String(arquivo.getBytes(), StandardCharsets.UTF_8);
+            // Buscar área agrícola existente
             AreaAgricolaDto areaAgricolaDto = areaAgricolaService.buscarAreaAgricolaPorId(id);
-            areaAgricolaService.processarTalhoesGeoJson(arquivo, areaAgricolaDto.toAreaAgricola());
-
+            
+            // Converter DTO para entidade
+            AreaAgricola areaAgricola = new AreaAgricola();
+            areaAgricola.setId(areaAgricolaDto.getId());
+            areaAgricola.setNomeFazenda(areaAgricolaDto.getNomeFazenda());
+            areaAgricola.setEstado(areaAgricolaDto.getEstado());
+            areaAgricola.setStatus(areaAgricolaDto.getStatus());
+            
+            // Criar novo talhão
+            Talhao talhao = new Talhao();
+            talhao.setArea(0.0); // Será calculado pelo service
+            talhao.setAreaAgricola(areaAgricola);
+            
+            // Processar o arquivo GeoJSON
+            areaAgricolaService.processarTalhoesGeoJson(arquivo, areaAgricola);
             return ResponseEntity.ok("Talhões processados com sucesso");
-        } catch (IOException e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("Erro na leitura do arquivo: " + e.getMessage());
         } catch (RuntimeException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                     .body("Erro ao processar talhões: " + e.getMessage());
