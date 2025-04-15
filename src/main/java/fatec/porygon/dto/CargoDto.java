@@ -3,10 +3,8 @@ package fatec.porygon.dto;
 public class CargoDto {
 
     private Long id;
-
     private String nome;
 
-    // Getter e Setter para id
     public Long getId() {
         return id;
     }
@@ -15,7 +13,6 @@ public class CargoDto {
         this.id = id;
     }
 
-    // Getter e Setter para nome
     public String getNome() {
         return nome;
     }
