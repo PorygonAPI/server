@@ -15,12 +15,12 @@ CREATE TABLE permissao (
 
 CREATE TABLE tipo_solo (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    tipo_solo VARCHAR(100) UNIQUE NOT NULL
+    tipo VARCHAR(100) NOT NULL UNIQUE
 );
 
 CREATE TABLE cultura (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    nome VARCHAR(100) UNIQUE NOT NULL
+    nome VARCHAR(100) NOT NULL UNIQUE
 );
 
 -- Tabela usuario (depende de cargo)
@@ -69,13 +69,10 @@ CREATE TABLE area_agricola (
 -- Tabela talhao (depende de tipo_solo e area_agricola)
 
 CREATE TABLE talhao (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    produtividade_ano FLOAT,
-    area DOUBLE PRECISION NOT NULL,
+    id INT AUTO_INCREMENT PRIMARY KEY, -- RETIRAR AUTO_INCREMENT NA TASK #50
+    area FLOAT,
     tipo_solo_id INT,
     area_agricola_id INT,
-    arquivo_daninha GEOMETRY,
-    arquivo_final_daninha GEOMETRY,
     FOREIGN KEY (tipo_solo_id) REFERENCES tipo_solo(id),
     FOREIGN KEY (area_agricola_id) REFERENCES area_agricola(id)
 );
@@ -84,10 +81,15 @@ CREATE TABLE talhao (
 
 CREATE TABLE safra (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    ano INT NOT NULL,
+    ano INT,
+    produtividade_ano FLOAT,
+    arquivo_daninha GEOMETRY,
+    arquivo_final_daninha GEOMETRY,
+    status ENUM('Pendente', 'Atribuido', 'Aprovado') DEFAULT 'Pendente',
+    usuario_analista_id INT,
     cultura_id INT,
     talhao_id INT,
-    status ENUM('Pendente', 'Atribuido', 'Aprovado') DEFAULT 'Pendente',
     FOREIGN KEY (cultura_id) REFERENCES cultura(id),
-    FOREIGN KEY (talhao_id) REFERENCES talhao(id)
+    FOREIGN KEY (talhao_id) REFERENCES talhao(id),
+    FOREIGN KEY (usuario_analista_id) REFERENCES usuario(id)
 );
