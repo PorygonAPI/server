@@ -16,7 +16,7 @@ public class TipoSoloService {
         return tipoSoloRepository.findByTipoSolo(nome)
                 .orElseGet(() -> {
                     TipoSolo novo = new TipoSolo();
-                    novo.setTipoSolo(nome);
+                    novo.setTipo(nome);
                     return tipoSoloRepository.save(novo);
                 });
     }

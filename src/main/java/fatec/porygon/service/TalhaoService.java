@@ -32,18 +32,15 @@ public class TalhaoService {
     private SafraService safraService;
 
     public Talhao criarTalhao(TalhaoDto dto) {
-        Cultura cultura = culturaService.buscarOuCriar(dto.getCultura_nome());
-        TipoSolo tipoSolo = tipoSoloService.buscarOuCriarById(dto.getTipo_solo_id());
-        AreaAgricola area = areaAgricolaRepository.findById(dto.getArea_agricola_id())
+        Cultura cultura = culturaService.buscarOuCriar(dto.getCulturaNome());
+        TipoSolo tipoSolo = tipoSoloService.buscarOuCriarById(dto.getTipoSoloId());
+        AreaAgricola areaAgricola = areaAgricolaRepository.findById(dto.getAreaAgricolaId())
                 .orElseThrow(() -> new RuntimeException("Área agrícola não encontrada."));
 
         Talhao talhao = new Talhao();
         talhao.setArea(dto.getArea());
-        talhao.setProdutividadeAno(dto.getProdutividade_ano());
         talhao.setTipoSolo(tipoSolo);
-        talhao.setAreaAgricola(area);
-        talhao.setArquivoDaninha(dto.getArquivo_daninha());
-        talhao.setArquivoFinalDaninha(dto.getArquivo_final_daninha());
+        talhao.setAreaAgricola(areaAgricola);
 
         talhao = talhaoRepository.save(talhao);
 
@@ -71,28 +68,25 @@ public class TalhaoService {
         Talhao talhao = buscarPorId(id);
 
         talhao.setArea(dto.getArea());
-        talhao.setProdutividadeAno(dto.getProdutividade_ano());
-        talhao.setArquivoDaninha(dto.getArquivo_daninha());
-        talhao.setArquivoFinalDaninha(dto.getArquivo_final_daninha());
 
-        TipoSolo tipoSolo = tipoSoloService.buscarOuCriarById(dto.getTipo_solo_id());
+        TipoSolo tipoSolo = tipoSoloService.buscarOuCriarById(dto.getTipoSoloId());
         talhao.setTipoSolo(tipoSolo);
 
-        AreaAgricola areaAgricola = areaAgricolaRepository.findById(dto.getArea_agricola_id())
+        AreaAgricola areaAgricola = areaAgricolaRepository.findById(dto.getAreaAgricolaId())
                 .orElseThrow(() -> new RuntimeException("Área agrícola não encontrada."));
         talhao.setAreaAgricola(areaAgricola);
 
         Safra safra = safraService.buscarPorTalhao(talhao.getId())
-                .orElse(new Safra()); 
+                .orElse(new Safra());
 
         safra.setAno(dto.getAno());
         safra.setStatus(dto.getStatus());
 
-        Cultura cultura = culturaService.buscarOuCriar(dto.getCultura_nome());
+        Cultura cultura = culturaService.buscarOuCriar(dto.getCulturaNome());
         safra.setCultura(cultura);
         safra.setTalhao(talhao);
 
-        safraService.criarSafra(safra); 
+        safraService.criarSafra(safra);
 
         return talhaoRepository.save(talhao);
     }

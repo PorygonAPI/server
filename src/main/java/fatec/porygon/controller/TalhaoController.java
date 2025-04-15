@@ -30,9 +30,12 @@ public class TalhaoController {
 
     @GetMapping("/{id}")
     public ResponseEntity<Talhao> buscarPorId(@PathVariable Long id) {
-        return talhaoService.buscarPorId(id)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+        try {
+            Talhao talhao = talhaoService.buscarPorId(id);
+            return ResponseEntity.ok(talhao);
+        } catch (RuntimeException e) {
+            return ResponseEntity.notFound().build();
+        }
     }
 
     @PutMapping("/{id}")
@@ -43,7 +46,7 @@ public class TalhaoController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deletar(@PathVariable Long id) {
-        talhaoService.deletarTalhao(id);
+        talhaoService.deletar(id);
         return ResponseEntity.noContent().build();
     }
 }
