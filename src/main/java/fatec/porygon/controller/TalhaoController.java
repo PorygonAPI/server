@@ -26,11 +26,11 @@ public class TalhaoController {
             System.out.println("Erro: Área do talhão é inválida.");
             return ResponseEntity.badRequest().body(null);
         }
-        if (talhaoDto.getTipoSoloId() == null) {
+        if (talhaoDto.getTipoSolo() == null) {
             System.out.println("Erro: Tipo de solo não informado.");
             return ResponseEntity.badRequest().body(null);
         }
-        if (talhaoDto.getAreaAgricolaId() == null) {
+        if (talhaoDto.getAreaAgricola() == null) {
             System.out.println("Erro: Área agrícola não informada.");
             return ResponseEntity.badRequest().body(null);
         }
@@ -66,11 +66,11 @@ public class TalhaoController {
                 System.out.println("Erro: Área do talhão é inválida.");
                 return ResponseEntity.badRequest().build();
             }
-            if (talhaoDto.getTipoSoloId() == null) {
+            if (talhaoDto.getTipoSolo() == null) {
                 System.out.println("Erro: Tipo de solo não informado.");
                 return ResponseEntity.badRequest().build();
             }
-            if (talhaoDto.getAreaAgricolaId() == null) {
+            if (talhaoDto.getAreaAgricola() == null) {
                 System.out.println("Erro: Área agrícola não informada.");
                 return ResponseEntity.badRequest().build();
             }

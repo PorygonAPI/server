@@ -2,12 +2,17 @@ package fatec.porygon.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import java.util.Optional;
 
 import fatec.porygon.entity.Cultura;
+import fatec.porygon.repository.CidadeRepository;
 import fatec.porygon.repository.CulturaRepository;
 
 @Service
 public class CulturaService {
+
+    private final CulturaRepository culturaRepository;
 
     // @Autowired
     // private CulturaRepository culturaRepository;

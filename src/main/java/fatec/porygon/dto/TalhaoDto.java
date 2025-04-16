@@ -1,7 +1,6 @@
 package fatec.porygon.dto;
 
 import fatec.porygon.enums.StatusSafra;
-import org.locationtech.jts.geom.Geometry;
 
 public class TalhaoDto {
     private Long id;
@@ -10,8 +9,8 @@ public class TalhaoDto {
     private Long tipoSolo;
     private Integer ano;
     private Float produtividadeAno;
-    private Geometry arquivoDaninha;
-    private Geometry arquivoFinalDaninha;
+    private String arquivoDaninha;
+    private String arquivoFinalDaninha;
     private StatusSafra status;
     private Long cultura;
     private String culturaNome;
@@ -34,11 +33,11 @@ public class TalhaoDto {
     public Float getProdutividadeAno() {return produtividadeAno;}
     public void setProdutividadeAno(Float produtividadeAno) {this.produtividadeAno = produtividadeAno;}
 
-    public Geometry getArquivoDaninha() {return arquivoDaninha;}
-    public void setArquivoDaninha(Geometry arquivoDaninha) {this.arquivoDaninha = arquivoDaninha;}
+    public String getArquivoDaninha() {return arquivoDaninha;}
+    public void setArquivoDaninha(String arquivoDaninha) {this.arquivoDaninha = arquivoDaninha;}
 
-    public Geometry getArquivoFinalDaninha() {return arquivoFinalDaninha;}
-    public void setArquivoFinalDaninha(Geometry arquivoFinalDaninha) {this.arquivoFinalDaninha = arquivoFinalDaninha;}
+    public String getArquivoFinalDaninha() {return arquivoFinalDaninha;}
+    public void setArquivoFinalDaninha(String arquivoFinalDaninha) {this.arquivoFinalDaninha = arquivoFinalDaninha;}
 
     public StatusSafra getStatus() {return status;}
     public void setStatus(StatusSafra status) {this.status = status;}

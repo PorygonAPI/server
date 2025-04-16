@@ -2,6 +2,8 @@ package fatec.porygon.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import java.util.Optional;
 
 import fatec.porygon.entity.TipoSolo;
 import fatec.porygon.repository.TipoSoloRepository;
@@ -13,7 +15,7 @@ public class TipoSoloService {
     private TipoSoloRepository tipoSoloRepository;
 
     // public TipoSolo buscarOuCriar(String tipoSolo) {
-    //     return tipoSoloRepository.findByTipo(tipoSolo)
+    //     return tipoSoloRepository.findByTipoSolo(tipoSolo)
     //             .orElseGet(() -> {
     //                 TipoSolo novo = new TipoSolo();
     //                 novo.setTipo(tipoSolo);
@@ -28,13 +30,13 @@ public class TipoSoloService {
         }
         
         String tipoSoloTrimmed = tipoSolo.trim();
-        Optional<TipoSolo> tipoSoloOpt = tipoSoloRepository.findByTipo(tipoSoloTrimmed);
+        Optional<TipoSolo> tipoSoloOpt = tipoSoloRepository.findByTipoSolo(tipoSoloTrimmed);
         
         if (tipoSoloOpt.isPresent()) {
             return tipoSoloOpt.get();
         } else {
             TipoSolo novoTipoSolo = new TipoSolo();
-            novoTipoSolo.setTipo(tipoSoloTrimmed);
+            novoTipoSolo.setTipoSolo(tipoSoloTrimmed);
             return tipoSoloRepository.save(novoTipoSolo);
         }
     }

@@ -8,7 +8,6 @@ import fatec.porygon.entity.Talhao;
 import fatec.porygon.entity.TipoSolo;
 import fatec.porygon.repository.TalhaoRepository;
 import fatec.porygon.utils.ConvertGeoJsonUtils;
-import org.locationtech.jts.geom.Geometry;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -55,7 +54,7 @@ public class TalhaoService {
         }
         if (talhaoDto.getArquivoFinalDaninha() != null && !talhaoDto.getArquivoFinalDaninha().isEmpty()) {
             safra.setArquivoFinalDaninha(conversorGeoJson.convertGeoJsonToGeometry(talhaoDto.getArquivoFinalDaninha()));
-        }
+        }        
 
         safraService.criarSafra(safra);
 
@@ -115,16 +114,13 @@ public class TalhaoService {
         talhao.setId(dto.getId());
         talhao.setArea(dto.getArea());
 
-        TipoSolo tipoSolo = tipoSoloService.buscarOuCriarById(dto.getTipoSoloId());
+        TipoSolo tipoSolo = tipoSoloService.buscarOuCriar(dto.getTipoSolo());
         talhao.setTipoSolo(tipoSolo);
 
-        AreaAgricola areaAgricola = areaAgricolaService.buscarAreaAgricolaPorId(dto.getAreaAgricolaId())
-                .map(areaAgricolaDto -> {
-                    AreaAgricola area = new AreaAgricola();
-                    area.setId(areaAgricolaDto.getId());
-                    return area;
-                })
-                .orElseThrow(() -> new RuntimeException("Área agrícola não encontrada com ID: " + dto.getAreaAgricolaId()));
+        AreaAgricola areaAgricola = areaAgricolaService.buscarAreaAgricolaPorId(dto.getAreaAgricola());
+        if (areaAgricola == null) {
+            throw new RuntimeException("Área agrícola não encontrada com ID: " + dto.getAreaAgricola());
+        }
         talhao.setAreaAgricola(areaAgricola);
 
         return talhao;
@@ -136,11 +132,11 @@ public class TalhaoService {
         dto.setArea(talhao.getArea());
 
         if (talhao.getTipoSolo() != null) {
-            dto.setTipoSoloId(talhao.getTipoSolo().getId());
+            dto.setTipoSolo(talhao.getTipoSolo().getId());
         }
 
         if (talhao.getAreaAgricola() != null) {
-            dto.setAreaAgricolaId(talhao.getAreaAgricola().getId());
+            dto.setAreaAgricola(talhao.getAreaAgricola().getId());
         }
 
         Safra safra = safraService.buscarPorTalhao(talhao.getId()).orElse(null);
