@@ -4,6 +4,7 @@ import fatec.porygon.dto.TalhaoPendenteDto;
 import fatec.porygon.entity.Safra;
 import fatec.porygon.repository.TalhaoRepository;
 import org.springframework.stereotype.Service;
+import fatec.porygon.enums.StatusSafra;
 
 import java.util.List;
 import java.util.Objects;
