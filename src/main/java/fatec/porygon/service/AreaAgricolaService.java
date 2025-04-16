@@ -142,4 +142,11 @@ public class AreaAgricolaService {
         
         return dto;
     }
+
+    public AreaAgricola buscarAreaAgricolaEntityPorId(Long id) {
+        return areaAgricolaRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Área agrícola não encontrada com ID: " + id));
+    }
+    
 }
+

@@ -2,7 +2,6 @@ package fatec.porygon.service;
 
 import fatec.porygon.dto.TalhaoDto;
 import fatec.porygon.entity.AreaAgricola;
-import fatec.porygon.entity.Cultura;
 import fatec.porygon.entity.Safra;
 import fatec.porygon.entity.Talhao;
 import fatec.porygon.entity.TipoSolo;
@@ -27,10 +26,10 @@ public class TalhaoService {
 
     @Autowired
     public TalhaoService(TalhaoRepository talhaoRepository,
-                         CulturaService culturaService,
-                         TipoSoloService tipoSoloService,
-                         AreaAgricolaService areaAgricolaService,
-                         SafraService safraService) {
+            CulturaService culturaService,
+            TipoSoloService tipoSoloService,
+            AreaAgricolaService areaAgricolaService,
+            SafraService safraService) {
         this.talhaoRepository = talhaoRepository;
         this.culturaService = culturaService;
         this.tipoSoloService = tipoSoloService;
@@ -54,7 +53,7 @@ public class TalhaoService {
         }
         if (talhaoDto.getArquivoFinalDaninha() != null && !talhaoDto.getArquivoFinalDaninha().isEmpty()) {
             safra.setArquivoFinalDaninha(conversorGeoJson.convertGeoJsonToGeometry(talhaoDto.getArquivoFinalDaninha()));
-        }        
+        }
 
         safraService.criarSafra(safra);
 
@@ -117,7 +116,8 @@ public class TalhaoService {
         TipoSolo tipoSolo = tipoSoloService.buscarOuCriar(dto.getTipoSolo().toString());
         talhao.setTipoSolo(tipoSolo);
 
-        AreaAgricola areaAgricola = areaAgricolaService.buscarAreaAgricolaPorId(dto.getAreaAgricola());
+        AreaAgricola areaAgricola = areaAgricolaService.buscarAreaAgricolaEntityPorId(dto.getAreaAgricola());
+        talhao.setAreaAgricola(areaAgricola);
         if (areaAgricola == null) {
             throw new RuntimeException("Área agrícola não encontrada com ID: " + dto.getAreaAgricola());
         }
