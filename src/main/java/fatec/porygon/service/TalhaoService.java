@@ -18,7 +18,7 @@ public class TalhaoService {
     }
 
     public List<TalhaoPendenteDto> listarTalhoesPendentes() {
-        return talhaoRepository.findDistinctBySafrasUsuarioAnalistaIsNull().stream()
+        return talhaoRepository.findDistinctBySafrasStatusAndSafrasUsuarioAnalistaIsNull(StatusSafra.Pendente).stream()
                 .map(t -> {
                     Safra safra = t.getSafras().stream()
                             .filter(s -> s.getUsuarioAnalista() == null)
