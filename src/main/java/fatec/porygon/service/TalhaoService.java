@@ -114,7 +114,7 @@ public class TalhaoService {
         talhao.setId(dto.getId());
         talhao.setArea(dto.getArea());
 
-        TipoSolo tipoSolo = tipoSoloService.buscarOuCriar(dto.getTipoSolo());
+        TipoSolo tipoSolo = tipoSoloService.buscarOuCriar(dto.getTipoSolo().toString());
         talhao.setTipoSolo(tipoSolo);
 
         AreaAgricola areaAgricola = areaAgricolaService.buscarAreaAgricolaPorId(dto.getAreaAgricola());

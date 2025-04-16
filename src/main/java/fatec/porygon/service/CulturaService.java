@@ -6,25 +6,18 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.Optional;
 
 import fatec.porygon.entity.Cultura;
-import fatec.porygon.repository.CidadeRepository;
 import fatec.porygon.repository.CulturaRepository;
 
 @Service
 public class CulturaService {
 
+    @Autowired
     private final CulturaRepository culturaRepository;
 
-    // @Autowired
-    // private CulturaRepository culturaRepository;
-
-    // public Cultura buscarOuCriar(String nome) {
-    //     return culturaRepository.findByNome(nome)
-    //             .orElseGet(() -> {
-    //                 Cultura nova = new Cultura();
-    //                 nova.setNome(nome);
-    //                 return culturaRepository.save(nova);
-    //             });
-    // }
+    @Autowired
+    public CulturaService(CulturaRepository culturaRepository) {
+        this.culturaRepository = culturaRepository;
+    }
 
     @Transactional
     public Cultura buscarOuCriar(String nome) {
