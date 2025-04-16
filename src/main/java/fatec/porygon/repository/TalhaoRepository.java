@@ -8,6 +8,6 @@ import java.util.List;
 
 @Repository
 public interface TalhaoRepository extends JpaRepository<Talhao, Long> {
-    List<Talhao> findDistinctBySafrasUsuarioAnalistaIsNull();
+    List<Talhao> findDistinctBySafrasStatusAndSafrasUsuarioAnalistaIsNull(StatusSafra status);
 }
 
