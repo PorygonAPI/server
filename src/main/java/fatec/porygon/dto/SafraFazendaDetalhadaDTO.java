@@ -1,5 +1,6 @@
 package fatec.porygon.dto;
 
+import fatec.porygon.entity.Cultura;
 import fatec.porygon.entity.Safra;
 import fatec.porygon.enums.StatusSafra;
 import jakarta.persistence.*;
@@ -10,9 +11,10 @@ public class SafraFazendaDetalhadaDTO {
     private Long id;
     private Integer ano;
     private Double produtividadeAno;
+    private StatusSafra status;
+    private String cultura;
     private String arquivoDaninha;
     private String arquivoFinalDaninha;
-    private StatusSafra status;
 
     public Long getId() {
         return id;
@@ -60,5 +62,13 @@ public class SafraFazendaDetalhadaDTO {
 
     public void setStatus(StatusSafra status) {
         this.status = status;
+    }
+
+    public String getCultura() {
+        return cultura;
+    }
+
+    public void setCultura(String cultura) {
+        this.cultura = cultura;
     }
 }

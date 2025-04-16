@@ -51,6 +51,7 @@ public class FazendaDetalhadaService {
                 .map(talhao -> {
                     TalhaoFazendaDetalhadaDTO dto = new TalhaoFazendaDetalhadaDTO();
                     dto.setId(talhao.getId());
+                    dto.setTipoSolo(talhao.getTipoSolo().getTipo());
                     dto.setArea(talhao.getArea());
                     List<SafraFazendaDetalhadaDTO> safraDtos = talhao.getSafras().stream()
                             .map(safra -> {
@@ -58,9 +59,10 @@ public class FazendaDetalhadaService {
                                 safraDto.setId(safra.getId());
                                 safraDto.setAno(safra.getAno());
                                 safraDto.setProdutividadeAno(safra.getProdutividadeAno());
-                                safraDto.setArquivoDaninha(safra.getArquivoDaninha());
-                                safraDto.setArquivoFinalDaninha(safra.getArquivoFinalDaninha());
                                 safraDto.setStatus(safra.getStatus());
+                                safraDto.setCultura(safra.getCultura().getNome());
+                                safraDto.setArquivoDaninha(conversorGeoJson.convertGeometryToGeoJson(safra.getArquivoDaninha()));
+                                safraDto.setArquivoFinalDaninha(conversorGeoJson.convertGeometryToGeoJson(safra.getArquivoFinalDaninha()));
                                 return safraDto;
                             })
                             .collect(Collectors.toList());
