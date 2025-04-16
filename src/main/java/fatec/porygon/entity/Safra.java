@@ -36,30 +36,30 @@ public class Safra {
     @JoinColumn(name = "usuario_analista_id")
     private Usuario usuarioAnalista;
 
-    public Usuario getUsuarioAnalista() {return usuarioAnalista;}
-    public void setUsuarioAnalista(Usuario usuarioAnalista) {this.usuarioAnalista = usuarioAnalista;}
+    public Long getId() { return id; }
+    public void setId(Long id) { this.id = id; }
 
-    public Long getId() {return id;}
-    public void setId(Long id) {this.id = id;}
+    public Integer getAno() { return ano; }
+    public void setAno(Integer ano) { this.ano = ano; }
 
-    public Integer getAno() {return ano;}
-    public void setAno(Integer ano) {this.ano = ano;}
+    public Double getProdutividadeAno() { return produtividadeAno; }
+    public void setProdutividadeAno(Double produtividadeAno) { this.produtividadeAno = produtividadeAno; }
 
-    public Double getProdutividadeAno() {return produtividadeAno;}
-    public void setProdutividadeAno(Double produtividadeAno) {this.produtividadeAno = produtividadeAno;}
+    public String getArquivoDaninha() { return arquivoDaninha; }
+    public void setArquivoDaninha(String arquivoDaninha) { this.arquivoDaninha = arquivoDaninha; }
 
-    public String getArquivoDaninha() {return arquivoDaninha;}
-    public void setArquivoDaninha(String arquivoDaninha) {this.arquivoDaninha = arquivoDaninha;}
+    public String getArquivoFinalDaninha() { return arquivoFinalDaninha; }
+    public void setArquivoFinalDaninha(String arquivoFinalDaninha) { this.arquivoFinalDaninha = arquivoFinalDaninha; }
 
-    public String getArquivoFinalDaninha() {return arquivoFinalDaninha;}
-    public void setArquivoFinalDaninha(String arquivoFinalDaninha) {this.arquivoFinalDaninha = arquivoFinalDaninha;}
+    public StatusSafra getStatus() { return status; }
+    public void setStatus(StatusSafra status) { this.status = status; }
 
-    public StatusSafra getStatus() {return status;}
-    public void setStatus(StatusSafra status) {this.status = status;}
+    public Talhao getTalhao() { return talhao; }
+    public void setTalhao(Talhao talhao) { this.talhao = talhao; }
 
-    public Talhao getTalhao() {return talhao;}
-    public void setTalhao(Talhao talhao) {this.talhao = talhao;}
+    public Cultura getCultura() { return cultura; }
+    public void setCultura(Cultura cultura) { this.cultura = cultura; }
 
-    public Cultura getCultura() {return cultura;}
-    public void setCultura(Cultura cultura) {this.cultura = cultura;}
+    public Usuario getUsuarioAnalista() { return usuarioAnalista; }
+    public void setUsuarioAnalista(Usuario usuarioAnalista) { this.usuarioAnalista = usuarioAnalista; }
 }
