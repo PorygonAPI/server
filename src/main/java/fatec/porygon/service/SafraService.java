@@ -9,6 +9,8 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.List;
+
 
 @Service
 public class SafraService {
@@ -63,7 +65,11 @@ public class SafraService {
         return safraRepository.save(safra);
     }
 
-    public Optional<Safra> buscarPorTalhao(Long talhaoId) {
-        return safraRepository.findByTalhaoId(talhaoId);
+    public List<Safra> buscarPorTalhao(Long talhaoId) {
+        List<Safra> safras = safraRepository.findByTalhaoId(talhaoId);
+        if (safras.isEmpty()) {
+            throw new RuntimeException("Nenhuma safra encontrada para o talhão ID: " + talhaoId);
+        }
+        return safras;
     }
 }
