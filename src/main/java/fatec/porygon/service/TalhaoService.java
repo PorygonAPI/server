@@ -1,10 +1,12 @@
 package fatec.porygon.service;
 
 import fatec.porygon.dto.TalhaoDto;
+import fatec.porygon.dto.TalhaoPendenteDto;
 import fatec.porygon.entity.AreaAgricola;
 import fatec.porygon.entity.Safra;
 import fatec.porygon.entity.Talhao;
 import fatec.porygon.entity.TipoSolo;
+import fatec.porygon.enums.StatusSafra;
 import fatec.porygon.repository.TalhaoRepository;
 import fatec.porygon.utils.ConvertGeoJsonUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,6 +14,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Service
@@ -146,5 +149,29 @@ public class TalhaoService {
         dto.setSafras(safras);
 
         return dto;
+    }
+    public List<TalhaoPendenteDto> listarTalhoesPendentes() {
+        return talhaoRepository.findDistinctBySafrasStatusAndSafrasUsuarioAnalistaIsNull(StatusSafra.Pendente).stream()
+                .map(t -> {
+                    Safra safra = t.getSafras().stream()
+                            .filter(s -> s.getUsuarioAnalista() == null)
+                            .findFirst()
+                            .orElse(null);
+
+                    if (safra == null) return null;
+
+                    return new TalhaoPendenteDto(
+                            t.getId(),
+                            t.getAreaAgricola().getNomeFazenda(),
+                            safra.getCultura().getNome(),
+                            safra.getProdutividadeAno(),
+                            t.getArea(),
+                            t.getTipoSolo().getTipoSolo(),
+                            t.getAreaAgricola().getCidade().getNome(),
+                            t.getAreaAgricola().getEstado()
+                    );
+                })
+                .filter(Objects::nonNull)
+                .toList();
     }
 }

@@ -1,6 +1,7 @@
 package fatec.porygon.controller;
 
 import fatec.porygon.dto.TalhaoDto;
+import fatec.porygon.dto.TalhaoPendenteDto;
 import fatec.porygon.service.TalhaoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -57,6 +58,11 @@ public class TalhaoController {
         } catch (RuntimeException e) {
             return ResponseEntity.notFound().build();
         }
+    }
+
+    @GetMapping("/pendentes")
+    public List<TalhaoPendenteDto> listarTalhoesPendentes() {
+        return talhaoService.listarTalhoesPendentes();
     }
 
     @PutMapping("/{id}")

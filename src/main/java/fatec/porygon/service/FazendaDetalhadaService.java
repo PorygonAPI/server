@@ -51,7 +51,7 @@ public class FazendaDetalhadaService {
                 .map(talhao -> {
                     TalhaoFazendaDetalhadaDTO dto = new TalhaoFazendaDetalhadaDTO();
                     dto.setId(talhao.getId());
-                    dto.setTipoSolo(talhao.getTipoSolo().getTipo());
+                    dto.setTipoSolo(talhao.getTipoSolo().getTipoSolo());
                     dto.setArea(talhao.getArea());
                     List<SafraFazendaDetalhadaDTO> safraDtos = talhao.getSafras().stream()
                             .map(safra -> {
