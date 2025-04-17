@@ -2,6 +2,7 @@ package fatec.porygon.entity;
 
 import fatec.porygon.enums.StatusSafra;
 import jakarta.persistence.*;
+import org.locationtech.jts.geom.Geometry;
 
 @Entity
 public class Safra {
@@ -16,10 +17,10 @@ public class Safra {
     private Double produtividadeAno;
 
     @Column(name = "arquivo_daninha", columnDefinition = "geometry")
-    private String arquivoDaninha;
+    private Geometry arquivoDaninha;
 
     @Column(name = "arquivo_final_daninha", columnDefinition = "geometry")
-    private String arquivoFinalDaninha;
+    private Geometry arquivoFinalDaninha;
 
     @Enumerated(EnumType.STRING)
     private StatusSafra status;
@@ -45,11 +46,11 @@ public class Safra {
     public Double getProdutividadeAno() { return produtividadeAno; }
     public void setProdutividadeAno(Double produtividadeAno) { this.produtividadeAno = produtividadeAno; }
 
-    public String getArquivoDaninha() { return arquivoDaninha; }
-    public void setArquivoDaninha(String arquivoDaninha) { this.arquivoDaninha = arquivoDaninha; }
+    public Geometry getArquivoDaninha() { return arquivoDaninha; }
+    public void setArquivoDaninha(Geometry arquivoDaninha) { this.arquivoDaninha = arquivoDaninha; }
 
-    public String getArquivoFinalDaninha() { return arquivoFinalDaninha; }
-    public void setArquivoFinalDaninha(String arquivoFinalDaninha) { this.arquivoFinalDaninha = arquivoFinalDaninha; }
+    public Geometry getArquivoFinalDaninha() { return arquivoFinalDaninha; }
+    public void setArquivoFinalDaninha(Geometry arquivoFinalDaninha) { this.arquivoFinalDaninha = arquivoFinalDaninha; }
 
     public StatusSafra getStatus() { return status; }
     public void setStatus(StatusSafra status) { this.status = status; }
