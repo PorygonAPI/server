@@ -51,10 +51,28 @@ VALUES
   (30.75, 2, 1),
   (15.0, 3, 1);
 
--- Safra (inserindo arquivos GEOMETRY, usuário_analista_id e status)
-INSERT INTO safra (ano, cultura_id, talhao_id, status, usuario_analista_id, arquivo_daninha, arquivo_final_daninha) 
-VALUES 
-  (2022, 1, 1, 'Aprovado', 2, ST_GeomFromText('POLYGON((10 10, 20 10, 20 20, 10 20, 10 10))'), ST_GeomFromText('POLYGON((11 11, 21 11, 21 21, 11 21, 11 11))')),
-  (2023, 2, 1, 'Atribuido', 2, ST_GeomFromText('POLYGON((12 12, 22 12, 22 22, 12 22, 12 12))'), ST_GeomFromText('POLYGON((13 13, 23 13, 23 23, 13 23, 13 13))')),
-  (2022, 3, 2, 'Pendente', 2, ST_GeomFromText('POLYGON((14 14, 24 14, 24 24, 14 24, 14 14))'), ST_GeomFromText('POLYGON((15 15, 25 15, 25 25, 15 25, 15 15))')),
-  (2024, 1, 3, 'Aprovado', 2, ST_GeomFromText('POLYGON((16 16, 26 16, 26 26, 16 26, 16 16))'), ST_GeomFromText('POLYGON((17 17, 27 17, 27 27, 17 27, 17 17))'));
+-- Safra (inserindo arquivos GEOMETRY, com e sem usuario_analista_id)
+INSERT INTO safra (
+    ano, produtividade_ano, cultura_id, talhao_id, status, usuario_analista_id, arquivo_daninha, arquivo_final_daninha
+) VALUES
+      (2022, NULL, 1, 1, 'Aprovado', 2,
+       ST_GeomFromText('POLYGON((10 10, 20 10, 20 20, 10 20, 10 10))'),
+       ST_GeomFromText('POLYGON((11 11, 21 11, 21 21, 11 21, 11 11))')
+      ),
+      (2023, NULL, 2, 1, 'Atribuido', 2,
+       ST_GeomFromText('POLYGON((12 12, 22 12, 22 22, 12 22, 12 12))'),
+       ST_GeomFromText('POLYGON((13 13, 23 13, 23 23, 13 23, 13 13))')
+      ),
+      (2022, NULL, 3, 2, 'Pendente', 2,
+       ST_GeomFromText('POLYGON((14 14, 24 14, 24 24, 14 24, 14 14))'),
+       ST_GeomFromText('POLYGON((15 15, 25 15, 25 25, 15 25, 15 15))')
+      ),
+      (2024, NULL, 1, 3, 'Aprovado', 2,
+       ST_GeomFromText('POLYGON((16 16, 26 16, 26 26, 16 26, 16 16))'),
+       ST_GeomFromText('POLYGON((17 17, 27 17, 27 27, 17 27, 17 17))')
+      ),
+      (2025, 70.5, 1, 1, 'Pendente', NULL,
+       ST_GeomFromText('POLYGON((10 10, 20 10, 20 20, 10 20, 10 10))'),
+       ST_GeomFromText('POLYGON((11 11, 21 11, 21 21, 11 21, 11 11))')
+      );
+
