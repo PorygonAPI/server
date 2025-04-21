@@ -91,5 +91,7 @@ CREATE TABLE safra (
     talhao_id INT,
     FOREIGN KEY (cultura_id) REFERENCES cultura(id),
     FOREIGN KEY (talhao_id) REFERENCES talhao(id),
-    FOREIGN KEY (usuario_analista_id) REFERENCES usuario(id)
+    FOREIGN KEY (usuario_analista_id) REFERENCES usuario(id),
+    data_cadastro DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    data_ultima_versao DATETIME NOT NULL ON UPDATE CURRENT_TIMESTAMP
 );
