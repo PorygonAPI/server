@@ -1,7 +1,6 @@
 package fatec.porygon.dto;
 
 import fatec.porygon.enums.StatusArea;
-import org.locationtech.jts.geom.Geometry;
 
 public class AreaAgricolaSimplificadaDto {
     private String nome;

@@ -2,7 +2,6 @@ package fatec.porygon.service;
 
 import fatec.porygon.dto.*;
 import fatec.porygon.entity.AreaAgricola;
-import fatec.porygon.entity.Talhao;
 import fatec.porygon.repository.AreaAgricolaRepository;
 import fatec.porygon.repository.TalhaoRepository;
 import fatec.porygon.utils.ConvertGeoJsonUtils;

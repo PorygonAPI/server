@@ -1,8 +1,5 @@
 package fatec.porygon.dto;
 
-import java.util.List;
-
-import fatec.porygon.entity.Safra;
 import fatec.porygon.enums.StatusSafra;
 
 public class TalhaoDto {
@@ -17,7 +14,7 @@ public class TalhaoDto {
     private StatusSafra status;
     private Long cultura;
     private String culturaNome;
-    private List<Safra> safras;
+
 
     public Long getId() {return id;}
     public void setId(Long id) {this.id = id;}
@@ -52,6 +49,4 @@ public class TalhaoDto {
     public String getCulturaNome() {return culturaNome;}
     public void setCulturaNome(String culturaNome) {this.culturaNome = culturaNome;}
 
-    public List<Safra> getSafras() {return safras;}
-    public void setSafras(List<Safra> safras) {this.safras = safras;}
 }
