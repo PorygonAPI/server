@@ -50,11 +50,10 @@ public class TalhaoService {
                 .orElseThrow(() -> new EntityNotFoundException("Talhão não encontrado"));
 
         var safra = talhao.getSafras().stream()
-                .filter(s -> s.getUsuarioAnalista() == null)
+                .filter(s -> s.getUsuarioAnalista() != null && s.getStatus() == StatusSafra.Atribuido)
                 .findFirst()
                 .orElseThrow(() -> new EntityNotFoundException("Safra pendente não encontrada para esse talhão"));
 
-        safra.setStatus(StatusSafra.Atribuido);
         safra.setDataUltimaVersao(LocalDateTime.now());
         talhaoRepository.save(talhao);
     }
@@ -64,7 +63,7 @@ public class TalhaoService {
                 .orElseThrow(() -> new EntityNotFoundException("Talhão não encontrado"));
 
         var safra = talhao.getSafras().stream()
-                .filter(s -> s.getUsuarioAnalista() == null)
+                .filter(s -> s.getUsuarioAnalista() != null && s.getStatus() == StatusSafra.Atribuido)
                 .findFirst()
                 .orElseThrow(() -> new EntityNotFoundException("Safra pendente não encontrada para esse talhão"));
 
