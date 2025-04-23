@@ -6,7 +6,7 @@ public class TalhaoDto {
     private Long id;
     private Double area;
     private Long areaAgricola;
-    private Long tipoSolo;
+    private String tipoSoloNome;  
     private Integer ano;
     private Float produtividadeAno;
     private String arquivoDaninha;
@@ -25,8 +25,8 @@ public class TalhaoDto {
     public Long getAreaAgricola() {return areaAgricola;}
     public void setAreaAgricola(Long areaAgricola) {this.areaAgricola = areaAgricola;}
 
-    public Long getTipoSolo() {return tipoSolo;}
-    public void setTipoSolo(Long tipoSolo) {this.tipoSolo = tipoSolo;}
+    public String getTipoSoloNome() { return tipoSoloNome; }
+    public void setTipoSoloNome(String tipoSoloNome) { this.tipoSoloNome = tipoSoloNome; }
 
     public Integer getAno() {return ano;}
     public void setAno(Integer ano) {this.ano = ano;}

@@ -119,7 +119,7 @@ public class TalhaoService {
         talhao.setId(dto.getId());
         talhao.setArea(dto.getArea());
 
-        TipoSolo tipoSolo = tipoSoloService.buscarOuCriar(dto.getTipoSolo().toString());
+        TipoSolo tipoSolo = tipoSoloService.buscarOuCriar(dto.getTipoSoloNome().toString());
         talhao.setTipoSolo(tipoSolo);
 
         AreaAgricola areaAgricola = areaAgricolaService.buscarAreaAgricolaEntityPorId(dto.getAreaAgricola());
@@ -142,10 +142,10 @@ public class TalhaoService {
             dto.setAreaAgricola(talhao.getAreaAgricola().getId());
         }
     
-        // Tipo de Solo
-        if (talhao.getTipoSolo() != null) {
-            dto.setTipoSolo(talhao.getTipoSolo().getId());
-        }
+    // Tipo de Solo
+    if (talhao.getTipoSolo() != null) {
+        dto.setTipoSoloNome(talhao.getTipoSolo().getTipoSolo()); // Ajustado para trazer o nome do tipo de solo
+    }
     
         // Ano e Status -> a partir da última Safra, por exemplo
         List<Safra> safras = safraService.buscarPorTalhao(talhao.getId());
