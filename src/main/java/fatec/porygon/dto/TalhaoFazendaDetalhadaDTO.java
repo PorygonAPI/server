@@ -1,10 +1,6 @@
 package fatec.porygon.dto;
 
-import fatec.porygon.entity.Safra;
-import fatec.porygon.enums.StatusSafra;
-
 import java.util.List;
-import java.util.Set;
 
 public class TalhaoFazendaDetalhadaDTO {
     private Long id;

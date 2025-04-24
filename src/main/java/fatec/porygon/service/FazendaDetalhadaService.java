@@ -2,7 +2,6 @@ package fatec.porygon.service;
 
 import fatec.porygon.dto.*;
 import fatec.porygon.entity.AreaAgricola;
-import fatec.porygon.entity.Talhao;
 import fatec.porygon.repository.AreaAgricolaRepository;
 import fatec.porygon.repository.TalhaoRepository;
 import fatec.porygon.utils.ConvertGeoJsonUtils;
@@ -51,7 +50,7 @@ public class FazendaDetalhadaService {
                 .map(talhao -> {
                     TalhaoFazendaDetalhadaDTO dto = new TalhaoFazendaDetalhadaDTO();
                     dto.setId(talhao.getId());
-                    dto.setTipoSolo(talhao.getTipoSolo().getTipo());
+                    dto.setTipoSolo(talhao.getTipoSolo().getTipoSolo());
                     dto.setArea(talhao.getArea());
                     List<SafraFazendaDetalhadaDTO> safraDtos = talhao.getSafras().stream()
                             .map(safra -> {
