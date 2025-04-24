@@ -1,8 +1,8 @@
 package fatec.porygon.entity;
 
 import jakarta.persistence.*;
-import java.util.ArrayList;
 import java.util.List;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 @Entity
 @Table(name = "talhao")
@@ -22,8 +22,9 @@ public class Talhao {
     @JoinColumn(name = "area_agricola_id")
     private AreaAgricola areaAgricola;
 
-    @OneToMany(mappedBy = "talhao")
-    private List<Safra> safras = new ArrayList<>();
+    @OneToMany(mappedBy = "talhao", cascade = CascadeType.ALL)
+    @JsonManagedReference
+    private List<Safra> safras;
 
     public Long getId() {return id;}
     public void setId(Long id) {this.id = id;}
