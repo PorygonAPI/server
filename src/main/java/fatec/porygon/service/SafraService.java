@@ -2,6 +2,7 @@ package fatec.porygon.service;
 
 import fatec.porygon.entity.Safra;
 import fatec.porygon.entity.Usuario;
+import fatec.porygon.enums.StatusSafra;
 import fatec.porygon.repository.SafraRepository;
 import fatec.porygon.repository.UsuarioRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -55,6 +56,7 @@ public class SafraService {
                 .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
 
         safra.setUsuarioAnalista(usuario);
+        safra.setStatus(StatusSafra.Atribuido);
         return safraRepository.save(safra);
     }
 }
