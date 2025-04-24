@@ -3,6 +3,8 @@ package fatec.porygon.entity;
 import fatec.porygon.enums.StatusSafra;
 import jakarta.persistence.*;
 
+import java.time.LocalDateTime;
+
 @Entity
 public class Safra {
     @Id
@@ -32,27 +34,39 @@ public class Safra {
     @JoinColumn(name = "cultura_id")
     private Cultura cultura;
 
-    public Long getId() {return id;}
-    public void setId(Long id) {this.id = id;}
+    @Column(name = "data_cadastro", nullable = false, updatable = false)
+    private LocalDateTime dataCadastro;
 
-    public Integer getAno() {return ano;}
-    public void setAno(Integer ano) {this.ano = ano;}
+    @Column(name = "data_ultima_versao")
+    private LocalDateTime dataUltimaVersao;
 
-    public Double getProdutividadeAno() {return produtividadeAno;}
-    public void setProdutividadeAno(Double produtividadeAno) {this.produtividadeAno = produtividadeAno;}
+    public Long getId() { return id; }
+    public void setId(Long id) { this.id = id; }
 
-    public String getArquivoDaninha() {return arquivoDaninha;}
-    public void setArquivoDaninha(String arquivoDaninha) {this.arquivoDaninha = arquivoDaninha;}
+    public Integer getAno() { return ano; }
+    public void setAno(Integer ano) { this.ano = ano; }
 
-    public String getArquivoFinalDaninha() {return arquivoFinalDaninha;}
-    public void setArquivoFinalDaninha(String arquivoFinalDaninha) {this.arquivoFinalDaninha = arquivoFinalDaninha;}
+    public Double getProdutividadeAno() { return produtividadeAno; }
+    public void setProdutividadeAno(Double produtividadeAno) { this.produtividadeAno = produtividadeAno; }
 
-    public StatusSafra getStatus() {return status;}
-    public void setStatus(StatusSafra status) {this.status = status;}
+    public String getArquivoDaninha() { return arquivoDaninha; }
+    public void setArquivoDaninha(String arquivoDaninha) { this.arquivoDaninha = arquivoDaninha; }
 
-    public Talhao getTalhao() {return talhao;}
-    public void setTalhao(Talhao talhao) {this.talhao = talhao;}
+    public String getArquivoFinalDaninha() { return arquivoFinalDaninha; }
+    public void setArquivoFinalDaninha(String arquivoFinalDaninha) { this.arquivoFinalDaninha = arquivoFinalDaninha; }
 
-    public Cultura getCultura() {return cultura;}
-    public void setCultura(Cultura cultura) {this.cultura = cultura;}
+    public StatusSafra getStatus() { return status; }
+    public void setStatus(StatusSafra status) { this.status = status; }
+
+    public Talhao getTalhao() { return talhao; }
+    public void setTalhao(Talhao talhao) { this.talhao = talhao; }
+
+    public Cultura getCultura() { return cultura; }
+    public void setCultura(Cultura cultura) { this.cultura = cultura; }
+
+    public LocalDateTime getDataCadastro() { return dataCadastro; }
+    public void setDataCadastro(LocalDateTime dataCadastro) { this.dataCadastro = dataCadastro; }
+
+    public LocalDateTime getDataUltimaVersao() { return dataUltimaVersao; }
+    public void setDataUltimaVersao(LocalDateTime dataUltimaVersao) { this.dataUltimaVersao = dataUltimaVersao; }
 }
