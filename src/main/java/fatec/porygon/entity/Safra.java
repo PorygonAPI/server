@@ -5,6 +5,8 @@ import jakarta.persistence.*;
 import org.locationtech.jts.geom.Geometry;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 
+import java.time.LocalDateTime;
+
 @Entity
 public class Safra {
     @Id
@@ -38,6 +40,12 @@ public class Safra {
     @JoinColumn(name = "usuario_analista_id")
     private Usuario usuarioAnalista;
 
+    @Column(name = "data_cadastro", nullable = false, updatable = false)
+    private LocalDateTime dataCadastro;
+
+    @Column(name = "data_ultima_versao")
+    private LocalDateTime dataUltimaVersao;
+
     public String getId() { return id; }
     public void setId(String id) { this.id = id; }
 
@@ -64,4 +72,10 @@ public class Safra {
 
     public Usuario getUsuarioAnalista() { return usuarioAnalista; }
     public void setUsuarioAnalista(Usuario usuarioAnalista) { this.usuarioAnalista = usuarioAnalista; }
+
+    public LocalDateTime getDataCadastro() { return dataCadastro; }
+    public void setDataCadastro(LocalDateTime dataCadastro) { this.dataCadastro = dataCadastro; }
+
+    public LocalDateTime getDataUltimaVersao() { return dataUltimaVersao; }
+    public void setDataUltimaVersao(LocalDateTime dataUltimaVersao) { this.dataUltimaVersao = dataUltimaVersao; }
 }

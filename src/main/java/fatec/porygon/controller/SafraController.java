@@ -8,6 +8,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @RestController
@@ -24,6 +25,7 @@ public class SafraController {
     @PostMapping
     public ResponseEntity<Safra> criar(@RequestBody Safra safra) {
         Safra salva = safraService.salvar(safra);
+        safra.setDataCadastro(LocalDateTime.now());
         return ResponseEntity.status(HttpStatus.CREATED).body(salva);
     }
 

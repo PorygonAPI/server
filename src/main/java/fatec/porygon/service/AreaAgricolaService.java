@@ -12,6 +12,12 @@ import fatec.porygon.entity.*;
 import fatec.porygon.enums.StatusArea;
 import fatec.porygon.enums.StatusSafra;
 import fatec.porygon.repository.*;
+import fatec.porygon.entity.AreaAgricola;
+import fatec.porygon.entity.Cidade;
+import fatec.porygon.entity.Safra;
+import fatec.porygon.enums.StatusArea;
+import fatec.porygon.repository.AreaAgricolaRepository;
+import fatec.porygon.repository.SafraRepository;
 import fatec.porygon.utils.ConvertGeoJsonUtils;
 
 import org.locationtech.jts.geom.Geometry;
@@ -25,10 +31,12 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.HashMap;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
+
 
 @Service
 public class AreaAgricolaService {
@@ -260,6 +268,9 @@ public class AreaAgricolaService {
         novaSafra.setStatus(StatusSafra.Pendente);
         novaSafra.setCultura(cultura.orElseThrow());
         novaSafra.setArquivoDaninha(geometryErvaDaninha);
+        novaSafra.setDataCadastro(LocalDateTime.now());
+        novaSafra.setDataUltimaVersao(LocalDateTime.now());
+
 
         safraRepository.save(novaSafra);
 
@@ -304,4 +315,3 @@ public class AreaAgricolaService {
     }
     
 }
-
