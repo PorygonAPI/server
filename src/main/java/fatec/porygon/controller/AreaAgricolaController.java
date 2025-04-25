@@ -1,24 +1,37 @@
 package fatec.porygon.controller;
 
 import fatec.porygon.dto.AreaAgricolaDto;
+import fatec.porygon.dto.FazendaDetalhadaDto;
 import fatec.porygon.enums.StatusArea;
 import fatec.porygon.service.AreaAgricolaService;
+import fatec.porygon.service.FazendaDetalhadaService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/areas-agricolas")
 public class AreaAgricolaController {
 
     private final AreaAgricolaService areaAgricolaService;
+    private final FazendaDetalhadaService fazendaDetalhadaService;
 
     @Autowired
-    public AreaAgricolaController(AreaAgricolaService areaAgricolaService) {
+    public AreaAgricolaController(AreaAgricolaService areaAgricolaService,
+                                  FazendaDetalhadaService fazendaDetalhadaService) {
+        this.fazendaDetalhadaService = fazendaDetalhadaService;
         this.areaAgricolaService = areaAgricolaService;
+    }
+
+    @GetMapping("/{id}/detalhes-completos")
+    public ResponseEntity<FazendaDetalhadaDto> getFazendaDetalhada(@PathVariable Long id) {
+        Optional<FazendaDetalhadaDto> fazendaDetalhada = fazendaDetalhadaService.getFazendaDetalhadaById(id);
+
+        return fazendaDetalhada.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
     }
 
     @PostMapping
