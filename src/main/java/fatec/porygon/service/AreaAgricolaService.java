@@ -3,8 +3,10 @@ package fatec.porygon.service;
 import fatec.porygon.dto.AreaAgricolaDto;
 import fatec.porygon.entity.AreaAgricola;
 import fatec.porygon.entity.Cidade;
+import fatec.porygon.entity.Safra;
 import fatec.porygon.enums.StatusArea;
 import fatec.porygon.repository.AreaAgricolaRepository;
+import fatec.porygon.repository.SafraRepository;
 import fatec.porygon.utils.ConvertGeoJsonUtils;
 
 import org.locationtech.jts.geom.Geometry;
@@ -12,9 +14,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+
 
 @Service
 public class AreaAgricolaService {
@@ -30,10 +34,19 @@ public class AreaAgricolaService {
         this.cidadeService = cidadeService;
     }
 
+    @Autowired
+    private SafraRepository safraRepository;
+
     @Transactional
     public AreaAgricolaDto criarAreaAgricola(AreaAgricolaDto areaAgricolaDto) {
         AreaAgricola areaAgricola = convertToEntity(areaAgricolaDto);
         AreaAgricola savedAreaAgricola = areaAgricolaRepository.save(areaAgricola);
+
+        Safra safra = new Safra();
+        safra.setDataCadastro(LocalDateTime.now());  
+
+        safraRepository.save(safra);
+
         return convertToDto(savedAreaAgricola);
     }
 
@@ -149,4 +162,3 @@ public class AreaAgricolaService {
     }
     
 }
-
