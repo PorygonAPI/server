@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -112,15 +113,34 @@ public class SafraService {
         return safras;
     }
 
-    public Map<String, List<TalhaoResumoDto>> listarTalhoesPorUsuario(Long idUsuario) {
-        List<TalhaoResumoDto> aprovados = safraRepository.buscarTalhoesPorStatus(idUsuario, StatusSafra.Aprovado);
-        List<TalhaoResumoDto> atribuidos = safraRepository.buscarTalhoesPorStatus(idUsuario, StatusSafra.Atribuido);
+public Map<String, List<TalhaoResumoDto>> listarTalhoesPorUsuario(Long idUsuario) {
+    List<TalhaoResumoDto> aprovados = converterParaDto(
+        safraRepository.buscarTalhoesBrutosPorStatus(idUsuario, StatusSafra.Aprovado)
+    );
 
-        Map<String, List<TalhaoResumoDto>> resultado = new HashMap<>();
-        resultado.put("aprovados", aprovados);
-        resultado.put("atribuidos", atribuidos);
-        return resultado;
+    List<TalhaoResumoDto> atribuidos = converterParaDto(
+        safraRepository.buscarTalhoesBrutosPorStatus(idUsuario, StatusSafra.Atribuido)
+    );
+
+    Map<String, List<TalhaoResumoDto>> resultado = new HashMap<>();
+    resultado.put("aprovados", aprovados);
+    resultado.put("atribuidos", atribuidos);
+    return resultado;
+}
+
+private List<TalhaoResumoDto> converterParaDto(List<Object[]> dadosBrutos) {
+    List<TalhaoResumoDto> resultado = new ArrayList<>();
+    for (Object[] linha : dadosBrutos) {
+        Long talhaoId = (Long) linha[0];
+        String nomeFazenda = (String) linha[1];
+        Long safraId = Long.valueOf(linha[2].toString()); // pode ser String, então converte
+        String cultura = (String) linha[3];
+
+        resultado.add(new TalhaoResumoDto(talhaoId, nomeFazenda, safraId, cultura));
     }
+    return resultado;
+}
+
 
     private void tratarArquivosDaninha(Safra safra) {
         if (safra.getArquivoDaninha() != null && safra.getArquivoDaninha().toString().contains("{")) {

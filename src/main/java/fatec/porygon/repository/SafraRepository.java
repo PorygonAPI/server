@@ -15,9 +15,7 @@ public interface SafraRepository extends JpaRepository<Safra, String> {
     List<Safra> findByTalhaoId(Long talhaoId);
 
     @Query("""
-    SELECT new fatec.porygon.dto.TalhaoResumoDTO(
-        t.id, a.nomeFazenda, s.id, c.nome
-    )
+    SELECT t.id, a.nomeFazenda, s.id, c.nome
     FROM Safra s
     JOIN s.talhao t
     JOIN t.areaAgricola a
@@ -25,6 +23,6 @@ public interface SafraRepository extends JpaRepository<Safra, String> {
     WHERE s.usuarioAnalista.id = :idUsuario
     AND s.status = :status
 """)
-List<TalhaoResumoDto> buscarTalhoesPorStatus(@Param("idUsuario") Long idUsuario, @Param("status") StatusSafra status);
+List<Object[]> buscarTalhoesBrutosPorStatus(@Param("idUsuario") Long idUsuario, @Param("status") StatusSafra status);
 
 }
