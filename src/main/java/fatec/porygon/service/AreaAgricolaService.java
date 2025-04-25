@@ -42,13 +42,10 @@ public class AreaAgricolaService {
         AreaAgricola areaAgricola = convertToEntity(areaAgricolaDto);
         AreaAgricola savedAreaAgricola = areaAgricolaRepository.save(areaAgricola);
 
-        // Agora, registrar a data de cadastro na Safra relacionada
         Safra safra = new Safra();
-        safra.setDataCadastro(LocalDateTime.now());  // Definir a data de cadastro com o horário atual
+        safra.setDataCadastro(LocalDateTime.now());  
 
-        // Salvar a nova Safra no banco
         safraRepository.save(safra);
-
 
         return convertToDto(savedAreaAgricola);
     }
@@ -165,4 +162,3 @@ public class AreaAgricolaService {
     }
     
 }
-
