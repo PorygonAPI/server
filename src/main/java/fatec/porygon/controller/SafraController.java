@@ -1,6 +1,7 @@
 package fatec.porygon.controller;
 
 import fatec.porygon.dto.SafraDto;
+import fatec.porygon.dto.TalhaoResumoDto;
 import fatec.porygon.entity.Safra;
 import fatec.porygon.service.SafraService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -52,7 +53,7 @@ public class SafraController {
     }
 
     @GetMapping("/api/talhoes/usuario/{idUsuario}")
-    public ResponseEntity<Map<String, List<TalhaoResumoDTO>>> listarTalhoesDoUsuario(@PathVariable Long idUsuario) {
+    public ResponseEntity<Map<String, List<TalhaoResumoDto>>> listarTalhoesDoUsuario(@PathVariable Long idUsuario) {
         return ResponseEntity.ok(safraService.listarTalhoesPorUsuario(idUsuario));
     }
 

@@ -1,9 +1,12 @@
 package fatec.porygon.repository;
 
+import fatec.porygon.dto.TalhaoResumoDto;
 import fatec.porygon.entity.Safra;
 import fatec.porygon.enums.StatusSafra;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import java.util.List;
 
@@ -22,6 +25,6 @@ public interface SafraRepository extends JpaRepository<Safra, Long> {
     WHERE s.usuarioAnalista.id = :idUsuario
     AND s.status = :status
 """)
-List<TalhaoResumoDTO> buscarTalhoesPorStatus(@Param("idUsuario") Long idUsuario, @Param("status") StatusSafra status);
+List<TalhaoResumoDto> buscarTalhoesPorStatus(@Param("idUsuario") Long idUsuario, @Param("status") StatusSafra status);
 
 }

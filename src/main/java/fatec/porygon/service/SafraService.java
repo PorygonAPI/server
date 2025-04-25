@@ -7,6 +7,8 @@ import fatec.porygon.repository.SafraRepository;
 import fatec.porygon.repository.UsuarioRepository;
 import fatec.porygon.utils.ConvertGeoJsonUtils;
 import fatec.porygon.dto.SafraDto;
+import fatec.porygon.dto.TalhaoResumoDto;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -54,8 +56,7 @@ public class SafraService {
         dto.setStatus(safra.getStatus());
         dto.setTalhaoId(safra.getTalhao() != null ? safra.getTalhao().getId() : null);
 
-        // >>> AQUI >>> ao invés de usar .toText() (que gera WKT Polygon), convertemos
-        // para GeoJSON:
+
         if (safra.getArquivoDaninha() != null) {
             dto.setArquivoDaninha(conversorGeoJson.convertGeometryToGeoJson(safra.getArquivoDaninha()));
         }
@@ -111,11 +112,11 @@ public class SafraService {
         return safras;
     }
 
-    public Map<String, List<TalhaoResumoDTO>> listarTalhoesPorUsuario(Long idUsuario) {
-        List<TalhaoResumoDTO> aprovados = safraRepository.buscarTalhoesPorStatus(idUsuario, StatusSafra.Aprovado);
-        List<TalhaoResumoDTO> atribuidos = safraRepository.buscarTalhoesPorStatus(idUsuario, StatusSafra.Atribuido);
+    public Map<String, List<TalhaoResumoDto>> listarTalhoesPorUsuario(Long idUsuario) {
+        List<TalhaoResumoDto> aprovados = safraRepository.buscarTalhoesPorStatus(idUsuario, StatusSafra.Aprovado);
+        List<TalhaoResumoDto> atribuidos = safraRepository.buscarTalhoesPorStatus(idUsuario, StatusSafra.Atribuido);
 
-        Map<String, List<TalhaoResumoDTO>> resultado = new HashMap<>();
+        Map<String, List<TalhaoResumoDto>> resultado = new HashMap<>();
         resultado.put("aprovados", aprovados);
         resultado.put("atribuidos", atribuidos);
         return resultado;
