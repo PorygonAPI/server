@@ -4,15 +4,17 @@ import fatec.porygon.dto.TalhaoDto;
 import fatec.porygon.dto.TalhaoPendenteDto;
 import fatec.porygon.entity.AreaAgricola;
 import fatec.porygon.entity.Safra;
+import fatec.porygon.repository.TalhaoRepository;
+import jakarta.persistence.EntityNotFoundException;
+import org.springframework.stereotype.Service;
 import fatec.porygon.entity.Talhao;
 import fatec.porygon.entity.TipoSolo;
 import fatec.porygon.enums.StatusSafra;
-import fatec.porygon.repository.TalhaoRepository;
 import fatec.porygon.utils.ConvertGeoJsonUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -84,7 +86,7 @@ public class TalhaoService {
         talhaoDto.setId(id);
         Talhao talhao = convertToEntity(talhaoDto);
         Talhao updatedTalhao = talhaoRepository.save(talhao);
-    
+
         // Atualiza todas as safras associadas ao talhão
         List<Safra> safras = safraService.buscarPorTalhao(id);
         for (Safra safra : safras) {
@@ -92,17 +94,18 @@ public class TalhaoService {
             safra.setStatus(talhaoDto.getStatus());
             safra.setCultura(culturaService.buscarOuCriar(talhaoDto.getCulturaNome()));
             safra.setTalhao(updatedTalhao);
-    
+
             if (talhaoDto.getArquivoDaninha() != null && !talhaoDto.getArquivoDaninha().isEmpty()) {
                 safra.setArquivoDaninha(conversorGeoJson.convertGeoJsonToGeometry(talhaoDto.getArquivoDaninha()));
             }
             if (talhaoDto.getArquivoFinalDaninha() != null && !talhaoDto.getArquivoFinalDaninha().isEmpty()) {
-                safra.setArquivoFinalDaninha(conversorGeoJson.convertGeoJsonToGeometry(talhaoDto.getArquivoFinalDaninha()));
+                safra.setArquivoFinalDaninha(
+                        conversorGeoJson.convertGeoJsonToGeometry(talhaoDto.getArquivoFinalDaninha()));
             }
-    
+
             safraService.criarSafra(safra);
         }
-    
+
         return convertToDto(updatedTalhao);
     }
 
@@ -136,21 +139,20 @@ public class TalhaoService {
         TalhaoDto dto = new TalhaoDto();
         dto.setId(talhao.getId());
         dto.setArea(talhao.getArea());
-    
+
         // Área Agrícola
         if (talhao.getAreaAgricola() != null) {
             dto.setAreaAgricola(talhao.getAreaAgricola().getId());
         }
-    
-    // Tipo de Solo
-    if (talhao.getTipoSolo() != null) {
-        dto.setTipoSoloNome(talhao.getTipoSolo().getTipoSolo()); // Ajustado para trazer o nome do tipo de solo
-    }
-    
-        // Ano e Status -> a partir da última Safra, por exemplo
+
+        // Tipo de Solo
+        if (talhao.getTipoSolo() != null) {
+            dto.setTipoSoloNome(talhao.getTipoSolo().getTipoSolo());
+        }
+
         List<Safra> safras = safraService.buscarPorTalhao(talhao.getId());
         if (!safras.isEmpty()) {
-            Safra safraAtual = safras.get(0); // Pega a primeira safra (ou a mais recente, você pode ajustar)
+            Safra safraAtual = safras.get(0);
             dto.setAno(safraAtual.getAno());
             dto.setStatus(safraAtual.getStatus());
             if (safraAtual.getCultura() != null) {
@@ -161,12 +163,13 @@ public class TalhaoService {
                 dto.setArquivoDaninha(conversorGeoJson.convertGeometryToGeoJson(safraAtual.getArquivoDaninha()));
             }
             if (safraAtual.getArquivoFinalDaninha() != null) {
-                dto.setArquivoFinalDaninha(conversorGeoJson.convertGeometryToGeoJson(safraAtual.getArquivoFinalDaninha()));
+                dto.setArquivoFinalDaninha(
+                        conversorGeoJson.convertGeometryToGeoJson(safraAtual.getArquivoFinalDaninha()));
             }
         }
-    
+
         return dto;
-    }    
+    }
 
     public List<TalhaoPendenteDto> listarTalhoesPendentes() {
         return talhaoRepository.findDistinctBySafrasStatusAndSafrasUsuarioAnalistaIsNull(StatusSafra.Pendente).stream()
@@ -176,7 +179,8 @@ public class TalhaoService {
                             .findFirst()
                             .orElse(null);
 
-                    if (safra == null) return null;
+                    if (safra == null)
+                        return null;
 
                     return new TalhaoPendenteDto(
                             t.getId(),
@@ -186,10 +190,37 @@ public class TalhaoService {
                             t.getArea(),
                             t.getTipoSolo().getTipoSolo(),
                             t.getAreaAgricola().getCidade().getNome(),
-                            t.getAreaAgricola().getEstado()
-                    );
+                            t.getAreaAgricola().getEstado());
                 })
                 .filter(Objects::nonNull)
                 .toList();
     }
+
+    public void salvarEdicaoTalhao(Long idTalhao) {
+        var talhao = talhaoRepository.findById(idTalhao)
+                .orElseThrow(() -> new EntityNotFoundException("Talhão não encontrado"));
+
+        var safra = talhao.getSafras().stream()
+                .filter(s -> s.getUsuarioAnalista() != null && s.getStatus() == StatusSafra.Atribuido)
+                .findFirst()
+                .orElseThrow(() -> new EntityNotFoundException("Safra pendente não encontrada para esse talhão"));
+
+        safra.setDataUltimaVersao(LocalDateTime.now());
+        talhaoRepository.save(talhao);
+    }
+
+    public void aprovarTalhao(Long idTalhao) {
+        var talhao = talhaoRepository.findById(idTalhao)
+                .orElseThrow(() -> new EntityNotFoundException("Talhão não encontrado"));
+
+        var safra = talhao.getSafras().stream()
+                .filter(s -> s.getUsuarioAnalista() != null && s.getStatus() == StatusSafra.Atribuido)
+                .findFirst()
+                .orElseThrow(() -> new EntityNotFoundException("Safra pendente não encontrada para esse talhão"));
+
+        safra.setStatus(StatusSafra.Aprovado);
+        safra.setDataUltimaVersao(LocalDateTime.now());
+        talhaoRepository.save(talhao);
+    }
+
 }
