@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/safras")
@@ -50,11 +51,15 @@ public class SafraController {
         return ResponseEntity.noContent().build();
     }
 
+    @GetMapping("/api/talhoes/usuario/{idUsuario}")
+    public ResponseEntity<Map<String, List<TalhaoResumoDTO>>> listarTalhoesDoUsuario(@PathVariable Long idUsuario) {
+        return ResponseEntity.ok(safraService.listarTalhoesPorUsuario(idUsuario));
+    }
+
     @PutMapping("/{safraId}/associar-analista/{usuarioId}")
     public ResponseEntity<Safra> associarAnalista(
             @PathVariable Long safraId,
-            @PathVariable Long usuarioId
-    ) {
+            @PathVariable Long usuarioId) {
         Safra atualizada = safraService.associarAnalista(safraId, usuarioId);
         return ResponseEntity.ok(atualizada);
     }
