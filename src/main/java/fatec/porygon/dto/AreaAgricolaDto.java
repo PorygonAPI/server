@@ -2,8 +2,6 @@ package fatec.porygon.dto;
 
 import fatec.porygon.enums.StatusArea;
 
-import java.time.LocalDateTime;
-
 public class AreaAgricolaDto {
     private Long id;
     private String nomeFazenda;
@@ -11,7 +9,6 @@ public class AreaAgricolaDto {
     private StatusArea status;
     private String arquivoFazenda;
     private String cidadeNome;
-    private LocalDateTime dataCadastro;
 
     // Getters
     public Long getId() {return id;}
@@ -20,7 +17,6 @@ public class AreaAgricolaDto {
     public StatusArea getStatus() {return status;}
     public String getArquivoFazenda() {return arquivoFazenda;}
     public String getCidadeNome() {return cidadeNome;}
-    public LocalDateTime getDataCadastro() {return dataCadastro;}
 
     // Setters
     public void setId(Long id) {this.id = id;}
@@ -29,5 +25,4 @@ public class AreaAgricolaDto {
     public void setStatus(StatusArea status) {this.status = status;}
     public void setArquivoFazenda(String arquivoFazenda) {this.arquivoFazenda = arquivoFazenda;}
     public void setCidadeNome(String cidadeNome) {this.cidadeNome = cidadeNome;}
-    public void setDataCadastro(LocalDateTime dataCadastro) {this.dataCadastro = dataCadastro;}
 }

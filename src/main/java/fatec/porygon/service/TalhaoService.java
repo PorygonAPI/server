@@ -87,7 +87,6 @@ public class TalhaoService {
         Talhao talhao = convertToEntity(talhaoDto);
         Talhao updatedTalhao = talhaoRepository.save(talhao);
 
-        // Atualiza todas as safras associadas ao talhão
         List<Safra> safras = safraService.buscarPorTalhao(id);
         for (Safra safra : safras) {
             safra.setAno(talhaoDto.getAno());
@@ -140,12 +139,10 @@ public class TalhaoService {
         dto.setId(talhao.getId());
         dto.setArea(talhao.getArea());
 
-        // Área Agrícola
         if (talhao.getAreaAgricola() != null) {
             dto.setAreaAgricola(talhao.getAreaAgricola().getId());
         }
 
-        // Tipo de Solo
         if (talhao.getTipoSolo() != null) {
             dto.setTipoSoloNome(talhao.getTipoSolo().getTipoSolo());
         }

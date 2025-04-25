@@ -11,7 +11,7 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
-public interface SafraRepository extends JpaRepository<Safra, Long> {
+public interface SafraRepository extends JpaRepository<Safra, String> {
     List<Safra> findByTalhaoId(Long talhaoId);
 
     @Query("""
