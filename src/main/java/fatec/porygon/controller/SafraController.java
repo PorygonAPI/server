@@ -1,5 +1,6 @@
 package fatec.porygon.controller;
 
+import fatec.porygon.dto.SafraDto;
 import fatec.porygon.entity.Safra;
 import fatec.porygon.service.SafraService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,7 +30,7 @@ public class SafraController {
     }
 
     @GetMapping
-    public ResponseEntity<List<Safra>> listar() {
+    public ResponseEntity<List<SafraDto>> listar() {
         return ResponseEntity.ok(safraService.listarTodas());
     }
 

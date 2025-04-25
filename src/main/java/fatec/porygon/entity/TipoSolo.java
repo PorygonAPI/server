@@ -10,12 +10,12 @@ public class TipoSolo {
     private Long id;
 
     @Column(name = "tipo", unique = true, nullable = false)
-    private String tipo;
+    private String tipoSolo;
 
     public Long getId() {return id;}
     public void setId(Long id) {this.id = id;}
 
-    public String getTipo() {return tipo;}
-    public void setTipo(String tipo) {this.tipo = tipo;}
+    public String getTipoSolo() {return tipoSolo;}
+    public void setTipoSolo(String tipoSolo) {this.tipoSolo = tipoSolo;}
 }
 

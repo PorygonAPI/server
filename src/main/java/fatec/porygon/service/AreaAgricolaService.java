@@ -98,7 +98,6 @@ public class AreaAgricolaService {
             areaAgricola.setStatus(StatusArea.Pendente);
         }
 
-        // Conversão de GeoJSON para Geometry
         if (dto.getArquivoFazenda() != null && !dto.getArquivoFazenda().isEmpty()) {
             try {
                 Geometry geometry = conversorGeoJson.convertGeoJsonToGeometry(dto.getArquivoFazenda());
@@ -136,7 +135,6 @@ public class AreaAgricolaService {
         dto.setEstado(areaAgricola.getEstado());
         dto.setStatus(areaAgricola.getStatus());
         
-        // Conversão de Geometry para GeoJSON
         if (areaAgricola.getArquivoFazenda() != null) {
             String geoJson = conversorGeoJson.convertGeometryToGeoJson(areaAgricola.getArquivoFazenda());
             dto.setArquivoFazenda(geoJson);
@@ -144,4 +142,11 @@ public class AreaAgricolaService {
         
         return dto;
     }
+
+    public AreaAgricola buscarAreaAgricolaEntityPorId(Long id) {
+        return areaAgricolaRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Área agrícola não encontrada com ID: " + id));
+    }
+    
 }
+

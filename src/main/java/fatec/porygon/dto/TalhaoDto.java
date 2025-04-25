@@ -1,20 +1,20 @@
 package fatec.porygon.dto;
 
 import fatec.porygon.enums.StatusSafra;
-import org.locationtech.jts.geom.Geometry;
 
 public class TalhaoDto {
     private Long id;
     private Double area;
     private Long areaAgricola;
-    private Long tipoSolo;
+    private String tipoSoloNome;  
     private Integer ano;
     private Float produtividadeAno;
-    private Geometry arquivoDaninha;
-    private Geometry arquivoFinalDaninha;
+    private String arquivoDaninha;
+    private String arquivoFinalDaninha;
     private StatusSafra status;
     private Long cultura;
     private String culturaNome;
+
 
     public Long getId() {return id;}
     public void setId(Long id) {this.id = id;}
@@ -25,8 +25,8 @@ public class TalhaoDto {
     public Long getAreaAgricola() {return areaAgricola;}
     public void setAreaAgricola(Long areaAgricola) {this.areaAgricola = areaAgricola;}
 
-    public Long getTipoSolo() {return tipoSolo;}
-    public void setTipoSolo(Long tipoSolo) {this.tipoSolo = tipoSolo;}
+    public String getTipoSoloNome() { return tipoSoloNome; }
+    public void setTipoSoloNome(String tipoSoloNome) { this.tipoSoloNome = tipoSoloNome; }
 
     public Integer getAno() {return ano;}
     public void setAno(Integer ano) {this.ano = ano;}
@@ -34,11 +34,11 @@ public class TalhaoDto {
     public Float getProdutividadeAno() {return produtividadeAno;}
     public void setProdutividadeAno(Float produtividadeAno) {this.produtividadeAno = produtividadeAno;}
 
-    public Geometry getArquivoDaninha() {return arquivoDaninha;}
-    public void setArquivoDaninha(Geometry arquivoDaninha) {this.arquivoDaninha = arquivoDaninha;}
+    public String getArquivoDaninha() {return arquivoDaninha;}
+    public void setArquivoDaninha(String arquivoDaninha) {this.arquivoDaninha = arquivoDaninha;}
 
-    public Geometry getArquivoFinalDaninha() {return arquivoFinalDaninha;}
-    public void setArquivoFinalDaninha(Geometry arquivoFinalDaninha) {this.arquivoFinalDaninha = arquivoFinalDaninha;}
+    public String getArquivoFinalDaninha() {return arquivoFinalDaninha;}
+    public void setArquivoFinalDaninha(String arquivoFinalDaninha) {this.arquivoFinalDaninha = arquivoFinalDaninha;}
 
     public StatusSafra getStatus() {return status;}
     public void setStatus(StatusSafra status) {this.status = status;}
@@ -48,4 +48,5 @@ public class TalhaoDto {
 
     public String getCulturaNome() {return culturaNome;}
     public void setCulturaNome(String culturaNome) {this.culturaNome = culturaNome;}
+
 }

@@ -1,11 +1,6 @@
 package fatec.porygon.dto;
 
-import fatec.porygon.entity.Cultura;
-import fatec.porygon.entity.Safra;
 import fatec.porygon.enums.StatusSafra;
-import jakarta.persistence.*;
-
-import java.util.List;
 
 public class SafraFazendaDetalhadaDTO {
     private Long id;
