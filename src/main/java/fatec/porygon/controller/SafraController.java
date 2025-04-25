@@ -35,24 +35,24 @@ public class SafraController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Safra> buscar(@PathVariable Long id) {
+    public ResponseEntity<Safra> buscar(@PathVariable String id) {
         return ResponseEntity.ok(safraService.buscarPorId(id));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Safra> atualizar(@PathVariable Long id, @RequestBody Safra safra) {
+    public ResponseEntity<Safra> atualizar(@PathVariable String id, @RequestBody Safra safra) {
         return ResponseEntity.ok(safraService.atualizar(id, safra));
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deletar(@PathVariable Long id) {
+    public ResponseEntity<Void> deletar(@PathVariable String id) {
         safraService.deletar(id);
         return ResponseEntity.noContent().build();
     }
 
     @PutMapping("/{safraId}/associar-analista/{usuarioId}")
     public ResponseEntity<Safra> associarAnalista(
-            @PathVariable Long safraId,
+            @PathVariable String safraId,
             @PathVariable Long usuarioId
     ) {
         Safra atualizada = safraService.associarAnalista(safraId, usuarioId);

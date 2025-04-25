@@ -3,7 +3,7 @@ package fatec.porygon.dto;
 import fatec.porygon.enums.StatusSafra;
 
 public class SafraFazendaDetalhadaDTO {
-    private Long id;
+    private String id;
     private Integer ano;
     private Double produtividadeAno;
     private StatusSafra status;
@@ -11,11 +11,11 @@ public class SafraFazendaDetalhadaDTO {
     private String arquivoDaninha;
     private String arquivoFinalDaninha;
 
-    public Long getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(String id) {
         this.id = id;
     }
 
