@@ -80,7 +80,7 @@ CREATE TABLE talhao (
 -- Tabela safra (depende de cultura e talhao)
 
 CREATE TABLE safra (
-    id INT AUTO_INCREMENT PRIMARY KEY,
+    id VARCHAR(100) PRIMARY KEY,
     ano INT,
     produtividade_ano FLOAT,
     arquivo_daninha GEOMETRY,

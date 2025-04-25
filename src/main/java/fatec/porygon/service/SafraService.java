@@ -32,7 +32,7 @@ public class SafraService {
         return safraRepository.save(safra);
     }
 
-    public Safra buscarPorId(Long id) {
+    public Safra buscarPorId(String id) {
         return safraRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Safra não encontrada"));
     }
@@ -64,7 +64,7 @@ public class SafraService {
     }    
 
     @Transactional
-    public Safra atualizar(Long id, Safra safraAtualizada) {
+    public Safra atualizar(String id, Safra safraAtualizada) {
         Safra existente = buscarPorId(id);
         existente.setAno(safraAtualizada.getAno());
         existente.setCultura(safraAtualizada.getCultura());
@@ -79,12 +79,12 @@ public class SafraService {
         return safraRepository.save(existente);
     }
 
-    public void deletar(Long id) {
+    public void deletar(String id) {
         safraRepository.deleteById(id);
     }
 
     @Transactional
-    public Safra associarAnalista(Long safraId, Long usuarioId) {
+    public Safra associarAnalista(String safraId, Long usuarioId) {
         Safra safra = buscarPorId(safraId);
         Usuario usuario = usuarioRepository.findById(usuarioId)
                 .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));

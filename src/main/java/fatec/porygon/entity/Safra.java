@@ -8,8 +8,7 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 @Entity
 public class Safra {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private String id;
 
     @Column(name = "ano")
     private Integer ano;
@@ -39,8 +38,8 @@ public class Safra {
     @JoinColumn(name = "usuario_analista_id")
     private Usuario usuarioAnalista;
 
-    public Long getId() { return id; }
-    public void setId(Long id) { this.id = id; }
+    public String getId() { return id; }
+    public void setId(String id) { this.id = id; }
 
     public Integer getAno() { return ano; }
     public void setAno(Integer ano) { this.ano = ano; }
