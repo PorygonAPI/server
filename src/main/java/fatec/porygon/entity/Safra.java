@@ -74,9 +74,9 @@ public class Safra {
     public Usuario getUsuarioAnalista() { return usuarioAnalista; }
     public void setUsuarioAnalista(Usuario usuarioAnalista) { this.usuarioAnalista = usuarioAnalista; }
 
-    public LocalDateTime getDataUltimaVersao() {return dataUltimaVersao;}
-    public void setDataUltimaVersao(LocalDateTime dataUltimaVersao) {this.dataUltimaVersao = dataUltimaVersao;}
+    public LocalDateTime getDataCadastro() { return dataCadastro; }
+    public void setDataCadastro(LocalDateTime dataCadastro) { this.dataCadastro = dataCadastro; }
 
-    public LocalDateTime getDataCadastro() {return dataCadastro;}
-    public void setDataCadastro(LocalDateTime dataCadastro) {this.dataCadastro = dataCadastro;}
+    public LocalDateTime getDataUltimaVersao() { return dataUltimaVersao; }
+    public void setDataUltimaVersao(LocalDateTime dataUltimaVersao) { this.dataUltimaVersao = dataUltimaVersao; }
 }
