@@ -42,6 +42,7 @@ public class AutenticacaoService {
                 .sign(Algorithm.HMAC256(SECRET));
         response.put("token", token);
         response.put("role", role);
+        response.put("id", usuario.getId());
         response.put("nome", usuario.getNome());
         return response;
     }
