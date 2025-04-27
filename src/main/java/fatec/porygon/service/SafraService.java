@@ -68,8 +68,8 @@ public class SafraService {
                 .orElseThrow(() -> new RuntimeException("Safra não encontrada com ID: " + idSafra));
 
         if (request.getIdTalhao() != null) {
-            Talhao novoTalhao = talhaoRepository.findById(request.getNovoIdTalhao())
-                    .orElseThrow(() -> new RuntimeException("Talhão não encontrado com ID: " + request.getNovoIdTalhao()));
+            Talhao novoTalhao = talhaoRepository.findById(request.getIdTalhao())
+                    .orElseThrow(() -> new RuntimeException("Talhão não encontrado com ID: " + request.getIdTalhao()));
             safra.setTalhao(novoTalhao);
         }
 
