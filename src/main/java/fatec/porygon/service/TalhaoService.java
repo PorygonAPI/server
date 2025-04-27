@@ -220,4 +220,9 @@ public class TalhaoService {
         talhaoRepository.save(talhao);
     }
 
+    public void editarTalhaoPorAreaAgricola(Long idTalhao, String idSafra, Long idAreaAgricola) {
+        var safra = talhaoRepository.findById(idTalhao);
+
+    }
+
 }

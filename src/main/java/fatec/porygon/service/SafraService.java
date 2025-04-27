@@ -1,9 +1,10 @@
 package fatec.porygon.service;
 
-import fatec.porygon.entity.Safra;
-import fatec.porygon.entity.Usuario;
+import fatec.porygon.dto.AtualizarSafraRequestDto;
+import fatec.porygon.entity.*;
 import fatec.porygon.enums.StatusSafra;
 import fatec.porygon.repository.SafraRepository;
+import fatec.porygon.repository.TalhaoRepository;
 import fatec.porygon.repository.UsuarioRepository;
 import fatec.porygon.utils.ConvertGeoJsonUtils;
 import fatec.porygon.dto.SafraDto;
@@ -24,12 +25,24 @@ public class SafraService {
     private final SafraRepository safraRepository;
     private final UsuarioRepository usuarioRepository;
     private final ConvertGeoJsonUtils conversorGeoJson = new ConvertGeoJsonUtils();
+    private final TalhaoRepository talhaoRepository;
+    private final CulturaService culturaService;
+    private final TipoSoloService tipoSoloService;
 
     @Autowired
-    public SafraService(SafraRepository safraRepository, UsuarioRepository usuarioRepository) {
+    public SafraService(SafraRepository safraRepository,
+                        UsuarioRepository usuarioRepository,
+                        TalhaoRepository talhaoRepository,
+                        CulturaService culturaService,
+                        TipoSoloService tipoSoloService
+                        ) {
         this.safraRepository = safraRepository;
         this.usuarioRepository = usuarioRepository;
+        this.talhaoRepository = talhaoRepository;
+        this.culturaService = culturaService;
+        this.tipoSoloService = tipoSoloService;
     }
+
 
     @Transactional
     public Safra salvar(Safra safra) {
@@ -49,6 +62,41 @@ public class SafraService {
                 .toList();
     }
 
+    @Transactional
+    public void atualizarSafra(String idSafra, AtualizarSafraRequestDto request) {
+        Safra safra = safraRepository.findById(idSafra)
+                .orElseThrow(() -> new RuntimeException("Safra não encontrada com ID: " + idSafra));
+
+        if (request.getIdTalhao() != null) {
+            Talhao novoTalhao = talhaoRepository.findById(request.getNovoIdTalhao())
+                    .orElseThrow(() -> new RuntimeException("Talhão não encontrado com ID: " + request.getNovoIdTalhao()));
+            safra.setTalhao(novoTalhao);
+        }
+
+        if(request.getArea() != null){
+            safra.getTalhao().setArea(request.getArea());
+        }
+
+        if (request.getAnoSafra() != null) {
+            safra.setAno(request.getAnoSafra());
+        }
+
+        if (request.getCulturaNome() != null) {
+            Cultura cultura = culturaService.buscarOuCriar(request.getCulturaNome());
+            safra.setCultura(cultura);
+        }
+
+        if (request.getProdutividadeAno() != null) {
+            safra.setProdutividadeAno(request.getProdutividadeAno());
+        }
+
+        if (request.getTipoSoloNome() != null) {
+            TipoSolo tipoSolo = tipoSoloService.buscarOuCriar(request.getTipoSoloNome());
+            safra.getTalhao().setTipoSolo(tipoSolo);
+        }
+
+        safraRepository.save(safra);
+    }
     private SafraDto convertToDto(Safra safra) {
         SafraDto dto = new SafraDto();
         dto.setId(safra.getId());

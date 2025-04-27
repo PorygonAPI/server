@@ -1,5 +1,6 @@
 package fatec.porygon.controller;
 
+import fatec.porygon.dto.AtualizarSafraRequestDto;
 import fatec.porygon.dto.SafraDto;
 import fatec.porygon.dto.TalhaoResumoDto;
 import fatec.porygon.entity.Safra;
@@ -44,6 +45,14 @@ public class SafraController {
     @PutMapping("/{id}")
     public ResponseEntity<Safra> atualizar(@PathVariable String id, @RequestBody Safra safra) {
         return ResponseEntity.ok(safraService.atualizar(id, safra));
+    }
+
+    @PutMapping("/{idSafra}/atualizar")
+    public ResponseEntity<String> atualizarSafra(
+            @PathVariable Long idSafra,
+            @RequestBody AtualizarSafraRequestDto request) {
+        safraService.atualizarSafra(String.valueOf(idSafra), request);
+        return ResponseEntity.ok("Safra atualizada com sucesso.");
     }
 
     @DeleteMapping("/{id}")
