@@ -70,7 +70,7 @@ public class SafraController {
     public ResponseEntity<Safra> associarAnalista(
             @PathVariable String safraId,
             @PathVariable Long usuarioId) {
-        Safra atualizada = safraService.associarAnalista(safraId, usuarioId);
-        return ResponseEntity.ok(atualizada);
+        List<Safra> atualizadas = safraService.associarAnalista(safraId, usuarioId);
+        return ResponseEntity.ok(atualizadas.isEmpty() ? null : atualizadas.get(0));
     }
 }
