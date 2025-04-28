@@ -169,15 +169,16 @@ public class TalhaoService {
     }
 
     public List<TalhaoPendenteDto> listarTalhoesPendentes() {
-        return talhaoRepository.findDistinctBySafrasStatusAndSafrasUsuarioAnalistaIsNull(StatusSafra.Pendente).stream()
+        return talhaoRepository.findAll().stream()
                 .map(t -> {
                     Safra safra = t.getSafras().stream()
-                            .filter(s -> s.getUsuarioAnalista() == null)
+                            .filter(s -> s.getStatus() == StatusSafra.Pendente && s.getUsuarioAnalista() == null)
                             .findFirst()
                             .orElse(null);
 
-                    if (safra == null)
+                    if (safra == null) {
                         return null;
+                    }
 
                     return new TalhaoPendenteDto(
                             t.getId(),
@@ -187,9 +188,10 @@ public class TalhaoService {
                             t.getArea(),
                             t.getTipoSolo().getTipoSolo(),
                             t.getAreaAgricola().getCidade().getNome(),
-                            t.getAreaAgricola().getEstado());
+                            t.getAreaAgricola().getEstado()
+                    );
                 })
-                .filter(Objects::nonNull)
+                .filter(Objects::nonNull) 
                 .toList();
     }
 
