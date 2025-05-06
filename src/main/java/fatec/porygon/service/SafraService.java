@@ -137,21 +137,17 @@ public class SafraService {
     }
 
     @Transactional
-    public List<Safra> associarAnalista(String talhaoId, Long usuarioId) {
-        List<Safra> safras = safraRepository.findByTalhaoId(Long.valueOf(talhaoId));
-        if (safras.isEmpty()) {
-            throw new RuntimeException("Nenhuma safra encontrada para o talhão ID: " + talhaoId);
-        }
+    public Safra associarAnalista(String safraId, Long usuarioId) {
+        Safra safra = safraRepository.findById(safraId)
+                .orElseThrow(() -> new RuntimeException("Safra não encontrada com ID: " + safraId));
 
         Usuario usuario = usuarioRepository.findById(usuarioId)
-                .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
+                .orElseThrow(() -> new RuntimeException("Usuário não encontrado com ID: " + usuarioId));
 
-        for (Safra safra : safras) {
-            safra.setUsuarioAnalista(usuario);
-            safra.setStatus(StatusSafra.Atribuido);
-        }
+        safra.setUsuarioAnalista(usuario);
+        safra.setStatus(StatusSafra.Atribuido);
 
-        return safraRepository.saveAll(safras);
+        return safraRepository.save(safra);
     }
 
     @Transactional
