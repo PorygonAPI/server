@@ -188,10 +188,11 @@ private List<TalhaoResumoDto> converterParaDto(List<Object[]> dadosBrutos) {
     for (Object[] linha : dadosBrutos) {
         Long talhaoId = (Long) linha[0];
         String nomeFazenda = (String) linha[1];
-        Long safraId = Long.valueOf(linha[2].toString()); // pode ser String, então converte
+        Long safraId = Long.valueOf(linha[2].toString());
         String cultura = (String) linha[3];
+        Integer anoSafra = (Integer) linha[4];
 
-        resultado.add(new TalhaoResumoDto(talhaoId, nomeFazenda, safraId, cultura));
+        resultado.add(new TalhaoResumoDto(talhaoId, nomeFazenda, safraId, cultura, anoSafra));
     }
     return resultado;
 }
