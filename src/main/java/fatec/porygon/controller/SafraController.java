@@ -67,10 +67,15 @@ public class SafraController {
     }
 
     @PutMapping("/{safraId}/associar-analista/{usuarioId}")
-    public ResponseEntity<Safra> associarAnalista(
+    public ResponseEntity<String> associarAnalista(
             @PathVariable String safraId,
             @PathVariable Long usuarioId) {
-        List<Safra> atualizadas = safraService.associarAnalista(safraId, usuarioId);
-        return ResponseEntity.ok(atualizadas.isEmpty() ? null : atualizadas.get(0));
+        try {
+            safraService.associarAnalista(safraId, usuarioId);
+            return ResponseEntity.ok("Analista associado com sucesso.");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Erro ao associar analista: " + e.getMessage());
+        }
     }
 }
