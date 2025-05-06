@@ -1,7 +1,7 @@
 package fatec.porygon.dto;
 
 public class TalhaoPendenteDto {
-    private Long id;
+    private String safraId;
     private String nomeFazenda;
     private String cultura;
     private Double produtividadeAno;
@@ -10,12 +10,12 @@ public class TalhaoPendenteDto {
     private String cidade;
     private String estado;
 
-    public Long getId() {
-        return id;
+    public String getId() {
+        return safraId;
     }
 
-    public void setId(Long id) {
-        this.id = id;
+    public void setId(String safraId) {
+        this.safraId = safraId;
     }
 
     public String getNomeFazenda() {
@@ -74,9 +74,9 @@ public class TalhaoPendenteDto {
         this.estado = estado;
     }
 
-    public TalhaoPendenteDto(Long id, String nomeFazenda, String cultura, Double produtividadeAno,
+    public TalhaoPendenteDto(String safraId, String nomeFazenda, String cultura, Double produtividadeAno,
                              Double area, String tipoSolo, String cidade, String estado) {
-        this.id = id;
+        this.safraId = safraId;
         this.nomeFazenda = nomeFazenda;
         this.cultura = cultura;
         this.produtividadeAno = produtividadeAno;
