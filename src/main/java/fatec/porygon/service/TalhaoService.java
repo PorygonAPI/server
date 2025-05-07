@@ -195,6 +195,13 @@ public class TalhaoService {
                 .toList();
     }
 
+    public Talhao buscarEntidadePorId(Long id) {
+        return talhaoRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Talhão não encontrado com ID: " + id));
+    }
+    
+    
+    @Deprecated
     public void salvarEdicaoTalhao(Long idTalhao) {
         var talhao = talhaoRepository.findById(idTalhao)
                 .orElseThrow(() -> new EntityNotFoundException("Talhão não encontrado"));
@@ -207,7 +214,8 @@ public class TalhaoService {
         safra.setDataUltimaVersao(LocalDateTime.now());
         talhaoRepository.save(talhao);
     }
-
+    
+    @Deprecated
     public void aprovarTalhao(Long idTalhao) {
         var talhao = talhaoRepository.findById(idTalhao)
                 .orElseThrow(() -> new EntityNotFoundException("Talhão não encontrado"));
