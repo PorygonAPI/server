@@ -3,11 +3,16 @@ package fatec.porygon.controller;
 import fatec.porygon.dto.TalhaoDto;
 import fatec.porygon.dto.TalhaoPendenteDto;
 import fatec.porygon.service.TalhaoService;
+import fatec.porygon.service.SafraService;
+import fatec.porygon.entity.Talhao;
+import fatec.porygon.entity.Safra;
+import fatec.porygon.enums.StatusSafra;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -16,10 +21,12 @@ import java.util.List;
 public class TalhaoController {
 
     private final TalhaoService talhaoService;
+    private final SafraService safraService;
 
     @Autowired
-    public TalhaoController(TalhaoService talhaoService) {
+    public TalhaoController(TalhaoService talhaoService, SafraService safraService) {
         this.talhaoService = talhaoService;
+        this.safraService = safraService;
     }
 
     @PostMapping
@@ -104,26 +111,52 @@ public class TalhaoController {
     }
 
     @PutMapping("/{id}/salvar")
-    public ResponseEntity<String> salvarTalhao(@PathVariable Long id) {
+    public ResponseEntity<String> salvarTalhao(
+            @PathVariable Long id,
+            @RequestParam(value = "geoJsonFile", required = false) MultipartFile geoJsonFile) {
         try {
-            talhaoService.salvarEdicaoTalhao(id);
+            Talhao talhao = talhaoService.buscarEntidadePorId(id);
+            
+            Safra safra = talhao.getSafras().stream()
+                    .filter(s -> s.getUsuarioAnalista() != null && s.getStatus() == StatusSafra.Atribuido)
+                    .findFirst()
+                    .orElseThrow(() -> new EntityNotFoundException("Não há safra atribuída para esse talhão"));
+            
+            safraService.salvarEdicaoSafra(safra.getId(), geoJsonFile);
+            
             return ResponseEntity.ok("Talhão salvo com sucesso.");
         } catch (EntityNotFoundException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Talhão não encontrado.");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        } catch (IllegalStateException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erro ao salvar o talhão.");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Erro ao salvar o talhão: " + e.getMessage());
         }
     }
 
     @PutMapping("/{id}/aprovar")
-    public ResponseEntity<String> aprovarTalhao(@PathVariable Long id) {
+    public ResponseEntity<String> aprovarTalhao(
+            @PathVariable Long id,
+            @RequestParam(value = "geoJsonFile", required = false) MultipartFile geoJsonFile) {
         try {
-            talhaoService.aprovarTalhao(id);
+            Talhao talhao = talhaoService.buscarEntidadePorId(id);
+            
+            Safra safra = talhao.getSafras().stream()
+                    .filter(s -> s.getUsuarioAnalista() != null && s.getStatus() == StatusSafra.Atribuido)
+                    .findFirst()
+                    .orElseThrow(() -> new EntityNotFoundException("Não há safra atribuída para esse talhão"));
+            
+            safraService.aprovarSafra(safra.getId(), geoJsonFile);
+            
             return ResponseEntity.ok("Talhão aprovado com sucesso.");
         } catch (EntityNotFoundException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Talhão não encontrado.");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        } catch (IllegalStateException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erro ao aprovar o talhão.");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Erro ao aprovar o talhão: " + e.getMessage());
         }
     }
 }
