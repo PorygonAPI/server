@@ -1,5 +1,6 @@
 package fatec.porygon.service;
 
+import java.time.LocalDate;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
@@ -12,14 +13,39 @@ import fatec.porygon.dto.RankingEstadosDto;
 import fatec.porygon.dto.RelatorioPorAnalistaDto;
 import fatec.porygon.dto.RelatorioProdutividadeDto;
 import fatec.porygon.dto.StatusRelatorioDto;
+import fatec.porygon.entity.Safra;
+import fatec.porygon.enums.StatusSafra;
+import fatec.porygon.repository.SafraRepository;
 
 @Service
 public class RelatorioService {
 
-    public StatusRelatorioDto getContagemPorStatus() {
-        // TODO: Implementar lógica real
-        return new StatusRelatorioDto(5, 10, 7);
+    private final SafraRepository safraRepository;
+
+    public RelatorioService(SafraRepository safraRepository) {
+        this.safraRepository = safraRepository;
     }
+
+    public StatusRelatorioDto getContagemPorStatus(LocalDate dataInicial, LocalDate dataFinal) {
+        List<Safra> safras;
+    
+        if (dataInicial != null && dataFinal != null) {
+            safras = safraRepository.findAll().stream()
+                .filter(s -> {
+                    LocalDate dataCadastro = s.getDataCadastro().toLocalDate();
+                    return ( !dataCadastro.isBefore(dataInicial) && !dataCadastro.isAfter(dataFinal) );
+                })
+                .toList();
+        } else {
+            safras = safraRepository.findAll();
+        }
+    
+        int pendentes = (int) safras.stream().filter(s -> s.getStatus() == StatusSafra.Pendente).count();
+        int atribuidos = (int) safras.stream().filter(s -> s.getStatus() == StatusSafra.Atribuido).count();
+        int aprovados = (int) safras.stream().filter(s -> s.getStatus() == StatusSafra.Aprovado).count();
+    
+        return new StatusRelatorioDto(pendentes, atribuidos, aprovados);
+    }    
 
     public List<RelatorioPorAnalistaDto> getRelatorioPorAnalista() {
         // TODO: Implementar lógica real
