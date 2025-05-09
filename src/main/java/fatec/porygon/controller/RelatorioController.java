@@ -34,9 +34,13 @@ public class RelatorioController {
     }
 
     @GetMapping("/analistas")
-    public List<RelatorioPorAnalistaDto> obterRelatorioPorAnalista() {
-        return relatorioService.getRelatorioPorAnalista();
-    }
+    public ResponseEntity<List<RelatorioPorAnalistaDto>> getRelatorioAnalistas(
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate dataInicial,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate dataFinal
+    ) {
+        List<RelatorioPorAnalistaDto> relatorio = relatorioService.getRelatorioPorAnalista(dataInicial, dataFinal);
+        return ResponseEntity.ok(relatorio);
+    }    
 
     @GetMapping("/produtividade")
     public RelatorioProdutividadeDto gerarRelatorioProdutividade() {
