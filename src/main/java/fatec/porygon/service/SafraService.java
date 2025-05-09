@@ -1,6 +1,7 @@
 package fatec.porygon.service;
 
 import fatec.porygon.dto.AtualizarSafraRequestDto;
+import fatec.porygon.dto.SafraRelatorioDto;
 import fatec.porygon.entity.*;
 import fatec.porygon.enums.StatusSafra;
 import fatec.porygon.repository.SafraRepository;
@@ -14,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -28,6 +30,7 @@ public class SafraService {
     private final TalhaoRepository talhaoRepository;
     private final CulturaService culturaService;
     private final TipoSoloService tipoSoloService;
+    private RelatorioSafraService relatorioSafraService;
 
     @Autowired
     public SafraService(SafraRepository safraRepository,
@@ -148,6 +151,7 @@ public class SafraService {
 
         for (Safra safra : safras) {
             safra.setUsuarioAnalista(usuario);
+            safra.setDataAtribuicao(LocalDateTime.now());
             safra.setStatus(StatusSafra.Atribuido);
         }
 
@@ -205,5 +209,23 @@ private List<TalhaoResumoDto> converterParaDto(List<Object[]> dadosBrutos) {
             safra.setArquivoFinalDaninha(
                     conversorGeoJson.convertGeoJsonToGeometry(safra.getArquivoFinalDaninha().toString()));
         }
+    }
+
+    public List<SafraRelatorioDto> gerarRelatorioSafrasAprovadas() {
+        List<Safra> safrasAprovadas = safraRepository.findByStatus(StatusSafra.Aprovado);
+
+        return safrasAprovadas.stream().map(safra -> {
+            String tempo = relatorioSafraService.calcularDuracao(
+                    safra.getDataAtribuicao(), safra.getDataAprovacao()
+            );
+
+            return new SafraRelatorioDto(
+                    safra.getId(),
+                    safra.getUsuarioAnalista().getNome(),
+                    safra.getDataAtribuicao(),
+                    safra.getDataAprovacao(),
+                    tempo
+            );
+        }).toList();
     }
 }

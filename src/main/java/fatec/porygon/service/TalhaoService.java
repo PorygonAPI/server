@@ -219,6 +219,7 @@ public class TalhaoService {
 
         safra.setStatus(StatusSafra.Aprovado);
         safra.setDataUltimaVersao(LocalDateTime.now());
+        safra.setDataAprovacao(LocalDateTime.now());
         talhaoRepository.save(talhao);
     }
 
