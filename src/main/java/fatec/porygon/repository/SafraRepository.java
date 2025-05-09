@@ -25,4 +25,5 @@ public interface SafraRepository extends JpaRepository<Safra, String> {
 """)
 List<Object[]> buscarTalhoesBrutosPorStatus(@Param("idUsuario") Long idUsuario, @Param("status") StatusSafra status);
 
+    List<Safra> findByStatus(StatusSafra statusSafra);
 }

@@ -1,6 +1,7 @@
 package fatec.porygon.service;
 
 import fatec.porygon.dto.AtualizarSafraRequestDto;
+import fatec.porygon.dto.SafraRelatorioDto;
 import fatec.porygon.entity.*;
 import fatec.porygon.enums.StatusSafra;
 import fatec.porygon.repository.SafraRepository;
@@ -29,6 +30,7 @@ public class SafraService {
     private final TalhaoRepository talhaoRepository;
     private final CulturaService culturaService;
     private final TipoSoloService tipoSoloService;
+    private RelatorioSafraService relatorioSafraService;
 
     @Autowired
     public SafraService(SafraRepository safraRepository,
@@ -207,5 +209,23 @@ private List<TalhaoResumoDto> converterParaDto(List<Object[]> dadosBrutos) {
             safra.setArquivoFinalDaninha(
                     conversorGeoJson.convertGeoJsonToGeometry(safra.getArquivoFinalDaninha().toString()));
         }
+    }
+
+    public List<SafraRelatorioDto> gerarRelatorioSafrasAprovadas() {
+        List<Safra> safrasAprovadas = safraRepository.findByStatus(StatusSafra.Aprovado);
+
+        return safrasAprovadas.stream().map(safra -> {
+            String tempo = relatorioSafraService.calcularDuracao(
+                    safra.getDataAtribuicao(), safra.getDataAprovacao()
+            );
+
+            return new SafraRelatorioDto(
+                    safra.getId(),
+                    safra.getUsuarioAnalista().getNome(),
+                    safra.getDataAtribuicao(),
+                    safra.getDataAprovacao(),
+                    tempo
+            );
+        }).toList();
     }
 }
