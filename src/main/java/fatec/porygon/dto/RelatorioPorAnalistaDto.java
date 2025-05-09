@@ -1,3 +1,5 @@
+package fatec.porygon.dto;
+
 public class RelatorioPorAnalistaDto {
     private String nomeAnalista;
     private int quantidadePendentes;

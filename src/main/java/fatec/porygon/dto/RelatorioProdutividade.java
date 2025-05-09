@@ -1,19 +1,21 @@
+package fatec.porygon.dto;
+
 import java.util.List;
 
 public class RelatorioProdutividade {
 
-    private List<ProdutividadeMediaPorCulturaDTO> produtividadePorCultura;
-    private List<ProdutividadeMediaPorEstadoDTO> produtividadePorEstado;
-    private List<ProdutividadeMediaPorTipoSoloDTO> produtividadePorTipoSolo;
-    private CulturaMaisProdutivaDTO culturaMaisProdutiva;
-    private List<RankingEstadosDTO> rankingTop5Estados;
+    private List<ProdutividadeMediaPorCulturaDto> produtividadePorCultura;
+    private List<ProdutividadeMediaPorEstadoDto> produtividadePorEstado;
+    private List<ProdutividadeMediaPorTipoSoloDto> produtividadePorTipoSolo;
+    private CulturaMaisProdutivaDto culturaMaisProdutiva;
+    private List<RankingEstadosDto> rankingTop5Estados;
 
     public RelatorioProdutividade(
-        List<ProdutividadeMediaPorCulturaDTO> produtividadePorCultura,
-        List<ProdutividadeMediaPorEstadoDTO> produtividadePorEstado,
-        List<ProdutividadeMediaPorTipoSoloDTO> produtividadePorTipoSolo,
-        CulturaMaisProdutivaDTO culturaMaisProdutiva,
-        List<RankingEstadosDTO> rankingTop5Estados
+        List<ProdutividadeMediaPorCulturaDto> produtividadePorCultura,
+        List<ProdutividadeMediaPorEstadoDto> produtividadePorEstado,
+        List<ProdutividadeMediaPorTipoSoloDto> produtividadePorTipoSolo,
+        CulturaMaisProdutivaDto culturaMaisProdutiva,
+        List<RankingEstadosDto> rankingTop5Estados
     ) {
         this.produtividadePorCultura = produtividadePorCultura;
         this.produtividadePorEstado = produtividadePorEstado;
@@ -22,23 +24,23 @@ public class RelatorioProdutividade {
         this.rankingTop5Estados = rankingTop5Estados;
     }
 
-    public List<ProdutividadeMediaPorCulturaDTO> getProdutividadePorCultura() {
+    public List<ProdutividadeMediaPorCulturaDto> getProdutividadePorCultura() {
         return produtividadePorCultura;
     }
 
-    public List<ProdutividadeMediaPorEstadoDTO> getProdutividadePorEstado() {
+    public List<ProdutividadeMediaPorEstadoDto> getProdutividadePorEstado() {
         return produtividadePorEstado;
     }
 
-    public List<ProdutividadeMediaPorTipoSoloDTO> getProdutividadePorTipoSolo() {
+    public List<ProdutividadeMediaPorTipoSoloDto> getProdutividadePorTipoSolo() {
         return produtividadePorTipoSolo;
     }
 
-    public CulturaMaisProdutivaDTO getCulturaMaisProdutiva() {
+    public CulturaMaisProdutivaDto getCulturaMaisProdutiva() {
         return culturaMaisProdutiva;
     }
 
-    public List<RankingEstadosDTO> getRankingTop5Estados() {
+    public List<RankingEstadosDto> getRankingTop5Estados() {
         return rankingTop5Estados;
     }
 }

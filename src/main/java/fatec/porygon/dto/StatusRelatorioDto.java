@@ -1,3 +1,4 @@
+package fatec.porygon.dto;
 
 public class StatusRelatorioDto {
     private int totalPendentes;

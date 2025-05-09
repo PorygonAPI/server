@@ -1,3 +1,5 @@
+package fatec.porygon.dto;
+
 public class CulturaMaisProdutivaDto {
     private String nomeCultura;
     private double produtividadeMedia;

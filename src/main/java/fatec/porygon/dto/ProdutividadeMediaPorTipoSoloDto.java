@@ -1,3 +1,5 @@
+package fatec.porygon.dto;
+
 public class ProdutividadeMediaPorTipoSoloDto {
     private String nomeTipoSolo;
     private double produtividadeMedia;
