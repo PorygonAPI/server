@@ -195,41 +195,6 @@ public class TalhaoService {
                 .toList();
     }
 
-    public Talhao buscarEntidadePorId(Long id) {
-        return talhaoRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Talhão não encontrado com ID: " + id));
-    }
-    
-    
-    @Deprecated
-    public void salvarEdicaoTalhao(Long idTalhao) {
-        var talhao = talhaoRepository.findById(idTalhao)
-                .orElseThrow(() -> new EntityNotFoundException("Talhão não encontrado"));
-
-        var safra = talhao.getSafras().stream()
-                .filter(s -> s.getUsuarioAnalista() != null && s.getStatus() == StatusSafra.Atribuido)
-                .findFirst()
-                .orElseThrow(() -> new EntityNotFoundException("Safra pendente não encontrada para esse talhão"));
-
-        safra.setDataUltimaVersao(LocalDateTime.now());
-        talhaoRepository.save(talhao);
-    }
-    
-    @Deprecated
-    public void aprovarTalhao(Long idTalhao) {
-        var talhao = talhaoRepository.findById(idTalhao)
-                .orElseThrow(() -> new EntityNotFoundException("Talhão não encontrado"));
-
-        var safra = talhao.getSafras().stream()
-                .filter(s -> s.getUsuarioAnalista() != null && s.getStatus() == StatusSafra.Atribuido)
-                .findFirst()
-                .orElseThrow(() -> new EntityNotFoundException("Safra pendente não encontrada para esse talhão"));
-
-        safra.setStatus(StatusSafra.Aprovado);
-        safra.setDataUltimaVersao(LocalDateTime.now());
-        talhaoRepository.save(talhao);
-    }
-
     public void editarTalhaoPorAreaAgricola(Long idTalhao, String idSafra, Long idAreaAgricola) {
         var safra = talhaoRepository.findById(idTalhao);
 
