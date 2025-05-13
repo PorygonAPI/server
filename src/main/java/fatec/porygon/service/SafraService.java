@@ -139,21 +139,17 @@ public class SafraService {
     }
 
     @Transactional
-    public List<Safra> associarAnalista(String talhaoId, Long usuarioId) {
-        List<Safra> safras = safraRepository.findByTalhaoId(Long.valueOf(talhaoId));
-        if (safras.isEmpty()) {
-            throw new RuntimeException("Nenhuma safra encontrada para o talhão ID: " + talhaoId);
-        }
+    public Safra associarAnalista(String safraId, Long usuarioId) {
+        Safra safra = safraRepository.findById(safraId)
+                .orElseThrow(() -> new RuntimeException("Safra não encontrada com ID: " + safraId));
 
         Usuario usuario = usuarioRepository.findById(usuarioId)
-                .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
+                .orElseThrow(() -> new RuntimeException("Usuário não encontrado com ID: " + usuarioId));
 
-        for (Safra safra : safras) {
-            safra.setUsuarioAnalista(usuario);
-            safra.setStatus(StatusSafra.Atribuido);
-        }
+        safra.setUsuarioAnalista(usuario);
+        safra.setStatus(StatusSafra.Atribuido);
 
-        return safraRepository.saveAll(safras);
+        return safraRepository.save(safra);
     }
 
     @Transactional
@@ -190,10 +186,11 @@ private List<TalhaoResumoDto> converterParaDto(List<Object[]> dadosBrutos) {
     for (Object[] linha : dadosBrutos) {
         Long talhaoId = (Long) linha[0];
         String nomeFazenda = (String) linha[1];
-        Long safraId = Long.valueOf(linha[2].toString()); // pode ser String, então converte
+        Long safraId = Long.valueOf(linha[2].toString());
         String cultura = (String) linha[3];
+        Integer anoSafra = (Integer) linha[4];
 
-        resultado.add(new TalhaoResumoDto(talhaoId, nomeFazenda, safraId, cultura));
+        resultado.add(new TalhaoResumoDto(talhaoId, nomeFazenda, safraId, cultura, anoSafra));
     }
     return resultado;
 }
