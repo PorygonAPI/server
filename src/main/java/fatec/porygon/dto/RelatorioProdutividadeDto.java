@@ -2,7 +2,7 @@ package fatec.porygon.dto;
 
 import java.util.List;
 
-public class RelatorioProdutividade {
+public class RelatorioProdutividadeDto {
 
     private List<ProdutividadeMediaPorCulturaDto> produtividadePorCultura;
     private List<ProdutividadeMediaPorEstadoDto> produtividadePorEstado;
@@ -10,7 +10,7 @@ public class RelatorioProdutividade {
     private CulturaMaisProdutivaDto culturaMaisProdutiva;
     private List<RankingEstadosDto> rankingTop5Estados;
 
-    public RelatorioProdutividade(
+    public RelatorioProdutividadeDto(
         List<ProdutividadeMediaPorCulturaDto> produtividadePorCultura,
         List<ProdutividadeMediaPorEstadoDto> produtividadePorEstado,
         List<ProdutividadeMediaPorTipoSoloDto> produtividadePorTipoSolo,
