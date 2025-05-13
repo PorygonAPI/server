@@ -8,6 +8,7 @@ import fatec.porygon.repository.TalhaoRepository;
 import fatec.porygon.repository.UsuarioRepository;
 import fatec.porygon.utils.ConvertGeoJsonUtils;
 import fatec.porygon.dto.SafraDto;
+import fatec.porygon.dto.TalhaoPendenteDto;
 import fatec.porygon.dto.TalhaoResumoDto;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,6 +19,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 public class SafraService {
@@ -137,21 +139,17 @@ public class SafraService {
     }
 
     @Transactional
-    public List<Safra> associarAnalista(String talhaoId, Long usuarioId) {
-        List<Safra> safras = safraRepository.findByTalhaoId(Long.valueOf(talhaoId));
-        if (safras.isEmpty()) {
-            throw new RuntimeException("Nenhuma safra encontrada para o talhão ID: " + talhaoId);
-        }
+    public Safra associarAnalista(String safraId, Long usuarioId) {
+        Safra safra = safraRepository.findById(safraId)
+                .orElseThrow(() -> new RuntimeException("Safra não encontrada com ID: " + safraId));
 
         Usuario usuario = usuarioRepository.findById(usuarioId)
-                .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
+                .orElseThrow(() -> new RuntimeException("Usuário não encontrado com ID: " + usuarioId));
 
-        for (Safra safra : safras) {
-            safra.setUsuarioAnalista(usuario);
-            safra.setStatus(StatusSafra.Atribuido);
-        }
+        safra.setUsuarioAnalista(usuario);
+        safra.setStatus(StatusSafra.Atribuido);
 
-        return safraRepository.saveAll(safras);
+        return safraRepository.save(safra);
     }
 
     @Transactional
@@ -188,10 +186,11 @@ private List<TalhaoResumoDto> converterParaDto(List<Object[]> dadosBrutos) {
     for (Object[] linha : dadosBrutos) {
         Long talhaoId = (Long) linha[0];
         String nomeFazenda = (String) linha[1];
-        Long safraId = Long.valueOf(linha[2].toString()); // pode ser String, então converte
+        Long safraId = Long.valueOf(linha[2].toString());
         String cultura = (String) linha[3];
+        Integer anoSafra = (Integer) linha[4];
 
-        resultado.add(new TalhaoResumoDto(talhaoId, nomeFazenda, safraId, cultura));
+        resultado.add(new TalhaoResumoDto(talhaoId, nomeFazenda, safraId, cultura, anoSafra));
     }
     return resultado;
 }
@@ -205,5 +204,23 @@ private List<TalhaoResumoDto> converterParaDto(List<Object[]> dadosBrutos) {
             safra.setArquivoFinalDaninha(
                     conversorGeoJson.convertGeoJsonToGeometry(safra.getArquivoFinalDaninha().toString()));
         }
+    }
+
+    public List<TalhaoPendenteDto> listarSafrasPendentes() {
+        return talhaoRepository.findAll().stream()
+                .flatMap(t -> t.getSafras().stream()
+                        .filter(s -> s.getStatus() == StatusSafra.Pendente && s.getUsuarioAnalista() == null)
+                        .map(safra -> new TalhaoPendenteDto(
+                                safra.getId(),
+                                t.getAreaAgricola().getNomeFazenda(),
+                                safra.getCultura().getNome(),
+                                safra.getProdutividadeAno(),
+                                t.getArea(),
+                                t.getTipoSolo().getTipoSolo(),
+                                t.getAreaAgricola().getCidade().getNome(),
+                                t.getAreaAgricola().getEstado()
+                        ))
+                )
+                .collect(Collectors.toList());
     }
 }
