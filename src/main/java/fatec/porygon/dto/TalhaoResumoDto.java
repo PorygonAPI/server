@@ -5,13 +5,15 @@ public class TalhaoResumoDto {
     private String nomeFazenda;
     private Long SafraId;
     private String cultura;
+    private Integer ano;
 
     
-    public TalhaoResumoDto(Long talhaoId, String nomeFazenda, Long safraId, String cultura) {
+    public TalhaoResumoDto(Long talhaoId, String nomeFazenda, Long safraId, String cultura, Integer ano) {
         TalhaoId = talhaoId;
         this.nomeFazenda = nomeFazenda;
         SafraId = safraId;
         this.cultura = cultura;
+        this.ano = ano;
     }
     
     public Long getTalhaoId() {
@@ -44,6 +46,14 @@ public class TalhaoResumoDto {
 
     public void setCultura(String cultura) {
         this.cultura = cultura;
+    }
+
+    public Integer getAno() {
+        return ano;
+    }   
+
+    public void setAno(Integer ano) {
+        this.ano = ano;
     }
 
 }
