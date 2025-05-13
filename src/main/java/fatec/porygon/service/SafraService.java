@@ -8,6 +8,7 @@ import fatec.porygon.repository.TalhaoRepository;
 import fatec.porygon.repository.UsuarioRepository;
 import fatec.porygon.utils.ConvertGeoJsonUtils;
 import fatec.porygon.dto.SafraDto;
+import fatec.porygon.dto.TalhaoPendenteDto;
 import fatec.porygon.dto.TalhaoResumoDto;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,6 +19,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 public class SafraService {
@@ -202,5 +204,23 @@ private List<TalhaoResumoDto> converterParaDto(List<Object[]> dadosBrutos) {
             safra.setArquivoFinalDaninha(
                     conversorGeoJson.convertGeoJsonToGeometry(safra.getArquivoFinalDaninha().toString()));
         }
+    }
+
+    public List<TalhaoPendenteDto> listarSafrasPendentes() {
+        return talhaoRepository.findAll().stream()
+                .flatMap(t -> t.getSafras().stream()
+                        .filter(s -> s.getStatus() == StatusSafra.Pendente && s.getUsuarioAnalista() == null)
+                        .map(safra -> new TalhaoPendenteDto(
+                                safra.getId(),
+                                t.getAreaAgricola().getNomeFazenda(),
+                                safra.getCultura().getNome(),
+                                safra.getProdutividadeAno(),
+                                t.getArea(),
+                                t.getTipoSolo().getTipoSolo(),
+                                t.getAreaAgricola().getCidade().getNome(),
+                                t.getAreaAgricola().getEstado()
+                        ))
+                )
+                .collect(Collectors.toList());
     }
 }
