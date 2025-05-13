@@ -27,7 +27,7 @@ public class Safra {
     @Enumerated(EnumType.STRING)
     private StatusSafra status;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "talhao_id")
     @JsonBackReference
     private Talhao talhao;

@@ -11,6 +11,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.http.MediaType;
 
 import java.util.List;
 import java.util.Optional;
@@ -36,17 +37,21 @@ public class AreaAgricolaController {
         return fazendaDetalhada.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
     }
 
-    @PostMapping
-    public ResponseEntity<AreaAgricolaDto> criarAreaAgricola(@RequestBody CadastroAreaAgricolaDto dto) {
-        if (dto.getCidadeNome() == null || dto.getCidadeNome().trim().isEmpty()) {
-            System.out.println("Erro: Nome da cidade está vazio ou nulo.");
-            return ResponseEntity.badRequest().body(null);
-        }
-        if (dto.getArquivoFazenda() == null || dto.getArquivoFazenda().trim().isEmpty()) {
-            System.out.println("Erro: Arquivo Fazenda está vazio ou nulo.");
-            return ResponseEntity.badRequest().body(null);
-        }
+    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<AreaAgricolaDto> criarAreaAgricola(
+            @RequestParam("nomeFazenda") String nomeFazenda,
+            @RequestParam("estado") String estado,
+            @RequestParam("cidadeNome") String cidadeNome,
+            @RequestPart("arquivoFazenda") MultipartFile arquivoFazenda,
+            @RequestPart("arquivoErvaDaninha") MultipartFile arquivoErvaDaninha) {
         
+        CadastroAreaAgricolaDto dto = new CadastroAreaAgricolaDto();
+        dto.setNomeFazenda(nomeFazenda);
+        dto.setEstado(estado);
+        dto.setCidadeNome(cidadeNome);
+        dto.setArquivoFazenda(arquivoFazenda);
+        dto.setArquivoErvaDaninha(arquivoErvaDaninha);
+
         AreaAgricolaDto novaAreaAgricola = areaAgricolaService.criarAreaAgricolaECriarSafra(dto);
         return new ResponseEntity<>(novaAreaAgricola, HttpStatus.CREATED);
     }

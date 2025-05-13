@@ -18,7 +18,7 @@ public class Talhao {
     @JoinColumn(name = "tipo_solo_id")
     private TipoSolo tipoSolo;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "area_agricola_id")
     private AreaAgricola areaAgricola;
 
