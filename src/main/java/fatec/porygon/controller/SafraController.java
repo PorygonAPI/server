@@ -2,6 +2,7 @@ package fatec.porygon.controller;
 
 import fatec.porygon.dto.AtualizarSafraRequestDto;
 import fatec.porygon.dto.SafraDto;
+import fatec.porygon.dto.TalhaoPendenteDto;
 import fatec.porygon.dto.TalhaoResumoDto;
 import fatec.porygon.entity.Safra;
 import fatec.porygon.service.SafraService;
@@ -72,5 +73,10 @@ public class SafraController {
             @PathVariable Long usuarioId) {
         List<Safra> atualizadas = safraService.associarAnalista(safraId, usuarioId);
         return ResponseEntity.ok(atualizadas.isEmpty() ? null : atualizadas.get(0));
+    }
+
+    @GetMapping("/pendentes")
+    public List<TalhaoPendenteDto> listarSafrasPendentes() {
+        return safraService.listarSafrasPendentes();
     }
 }
