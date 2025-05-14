@@ -11,10 +11,16 @@ import fatec.porygon.dto.SafraDto;
 import fatec.porygon.dto.TalhaoPendenteDto;
 import fatec.porygon.dto.TalhaoResumoDto;
 
+import jakarta.persistence.EntityNotFoundException;
+import org.locationtech.jts.geom.Geometry;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -195,7 +201,6 @@ private List<TalhaoResumoDto> converterParaDto(List<Object[]> dadosBrutos) {
     return resultado;
 }
 
-
     private void tratarArquivosDaninha(Safra safra) {
         if (safra.getArquivoDaninha() != null && safra.getArquivoDaninha().toString().contains("{")) {
             safra.setArquivoDaninha(conversorGeoJson.convertGeoJsonToGeometry(safra.getArquivoDaninha().toString()));
@@ -222,5 +227,44 @@ private List<TalhaoResumoDto> converterParaDto(List<Object[]> dadosBrutos) {
                         ))
                 )
                 .collect(Collectors.toList());
+    }
+    
+    @Transactional
+    public void salvarEdicaoSafra(String idSafra, MultipartFile geoJsonFile) throws IOException {
+        Safra safra = safraRepository.findById(idSafra)
+                .orElseThrow(() -> new EntityNotFoundException("Safra não encontrada"));
+
+        if (safra.getUsuarioAnalista() == null || safra.getStatus() != StatusSafra.Atribuido) {
+            throw new IllegalStateException("Safra não atribuída para edição");
+        }
+
+        if (geoJsonFile != null && !geoJsonFile.isEmpty()) {
+            String conteudoGeoJson = new String(geoJsonFile.getBytes(), StandardCharsets.UTF_8);
+            Geometry geometria = conversorGeoJson.convertGeoJsonToGeometry(conteudoGeoJson);
+            safra.setArquivoDaninha(geometria);
+        }
+
+        safra.setDataUltimaVersao(LocalDateTime.now());
+        safraRepository.save(safra);
+    }
+
+    @Transactional
+    public void aprovarSafra(String idSafra, MultipartFile geoJsonFile) throws IOException {
+        Safra safra = safraRepository.findById(idSafra)
+                .orElseThrow(() -> new EntityNotFoundException("Safra não encontrada"));
+
+        if (safra.getUsuarioAnalista() == null || safra.getStatus() != StatusSafra.Atribuido) {
+            throw new IllegalStateException("Safra não atribuída para aprovação");
+        }
+
+        if (geoJsonFile != null && !geoJsonFile.isEmpty()) {
+            String conteudoGeoJson = new String(geoJsonFile.getBytes(), StandardCharsets.UTF_8);
+            Geometry geometria = conversorGeoJson.convertGeoJsonToGeometry(conteudoGeoJson);
+            safra.setArquivoFinalDaninha(geometria);
+        }
+
+        safra.setStatus(StatusSafra.Aprovado);
+        safra.setDataUltimaVersao(LocalDateTime.now());
+        safraRepository.save(safra);
     }
 }

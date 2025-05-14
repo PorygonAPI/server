@@ -167,33 +167,6 @@ public class TalhaoService {
         return dto;
     }
 
-    public void salvarEdicaoTalhao(Long idTalhao) {
-        var talhao = talhaoRepository.findById(idTalhao)
-                .orElseThrow(() -> new EntityNotFoundException("Talhão não encontrado"));
-
-        var safra = talhao.getSafras().stream()
-                .filter(s -> s.getUsuarioAnalista() != null && s.getStatus() == StatusSafra.Atribuido)
-                .findFirst()
-                .orElseThrow(() -> new EntityNotFoundException("Safra pendente não encontrada para esse talhão"));
-
-        safra.setDataUltimaVersao(LocalDateTime.now());
-        talhaoRepository.save(talhao);
-    }
-
-    public void aprovarTalhao(Long idTalhao) {
-        var talhao = talhaoRepository.findById(idTalhao)
-                .orElseThrow(() -> new EntityNotFoundException("Talhão não encontrado"));
-
-        var safra = talhao.getSafras().stream()
-                .filter(s -> s.getUsuarioAnalista() != null && s.getStatus() == StatusSafra.Atribuido)
-                .findFirst()
-                .orElseThrow(() -> new EntityNotFoundException("Safra pendente não encontrada para esse talhão"));
-
-        safra.setStatus(StatusSafra.Aprovado);
-        safra.setDataUltimaVersao(LocalDateTime.now());
-        talhaoRepository.save(talhao);
-    }
-
     public void editarTalhaoPorAreaAgricola(Long idTalhao, String idSafra, Long idAreaAgricola) {
         var safra = talhaoRepository.findById(idTalhao);
 
