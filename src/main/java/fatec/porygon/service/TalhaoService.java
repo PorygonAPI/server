@@ -150,6 +150,7 @@ public class TalhaoService {
             Safra safraAtual = safras.get(0);
             dto.setAno(safraAtual.getAno());
             dto.setStatus(safraAtual.getStatus());
+            dto.setProdutividadeAno(safraAtual.getProdutividadeAno().floatValue());
             if (safraAtual.getCultura() != null) {
                 dto.setCultura(safraAtual.getCultura().getId());
                 dto.setCulturaNome(safraAtual.getCultura().getNome());
