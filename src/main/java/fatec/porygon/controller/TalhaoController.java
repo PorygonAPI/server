@@ -1,7 +1,6 @@
 package fatec.porygon.controller;
 
 import fatec.porygon.dto.TalhaoDto;
-import fatec.porygon.dto.TalhaoPendenteDto;
 import fatec.porygon.service.TalhaoService;
 import fatec.porygon.service.SafraService;
 import fatec.porygon.entity.Talhao;
@@ -66,11 +65,6 @@ public class TalhaoController {
         } catch (RuntimeException e) {
             return ResponseEntity.notFound().build();
         }
-    }
-
-    @GetMapping("/pendentes")
-    public List<TalhaoPendenteDto> listarTalhoesPendentes() {
-        return talhaoService.listarTalhoesPendentes();
     }
 
     @PutMapping("/{id}")

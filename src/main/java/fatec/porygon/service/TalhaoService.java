@@ -1,7 +1,6 @@
 package fatec.porygon.service;
 
 import fatec.porygon.dto.TalhaoDto;
-import fatec.porygon.dto.TalhaoPendenteDto;
 import fatec.porygon.entity.AreaAgricola;
 import fatec.porygon.entity.Safra;
 import fatec.porygon.repository.TalhaoRepository;
@@ -16,7 +15,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Service
@@ -152,6 +150,7 @@ public class TalhaoService {
             Safra safraAtual = safras.get(0);
             dto.setAno(safraAtual.getAno());
             dto.setStatus(safraAtual.getStatus());
+            dto.setProdutividadeAno(safraAtual.getProdutividadeAno().floatValue());
             if (safraAtual.getCultura() != null) {
                 dto.setCultura(safraAtual.getCultura().getId());
                 dto.setCulturaNome(safraAtual.getCultura().getNome());
