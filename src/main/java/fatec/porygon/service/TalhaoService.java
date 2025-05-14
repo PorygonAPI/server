@@ -167,33 +167,6 @@ public class TalhaoService {
         return dto;
     }
 
-    public List<TalhaoPendenteDto> listarTalhoesPendentes() {
-        return talhaoRepository.findAll().stream()
-                .map(t -> {
-                    Safra safra = t.getSafras().stream()
-                            .filter(s -> s.getStatus() == StatusSafra.Pendente && s.getUsuarioAnalista() == null)
-                            .findFirst()
-                            .orElse(null);
-
-                    if (safra == null) {
-                        return null;
-                    }
-
-                    return new TalhaoPendenteDto(
-                            t.getId(),
-                            t.getAreaAgricola().getNomeFazenda(),
-                            safra.getCultura().getNome(),
-                            safra.getProdutividadeAno(),
-                            t.getArea(),
-                            t.getTipoSolo().getTipoSolo(),
-                            t.getAreaAgricola().getCidade().getNome(),
-                            t.getAreaAgricola().getEstado()
-                    );
-                })
-                .filter(Objects::nonNull) 
-                .toList();
-    }
-
     public void editarTalhaoPorAreaAgricola(Long idTalhao, String idSafra, Long idAreaAgricola) {
         var safra = talhaoRepository.findById(idTalhao);
 
