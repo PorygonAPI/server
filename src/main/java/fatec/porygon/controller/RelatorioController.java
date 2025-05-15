@@ -1,44 +1,25 @@
 package fatec.porygon.controller;
 
-<<<<<<< HEAD
-import fatec.porygon.dto.SafraRelatorioDto;
-import fatec.porygon.service.SafraService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
-=======
 import java.util.List;
 
->>>>>>> 5e2e92985e1bb99f456af601a6221ecee60462c7
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
-<<<<<<< HEAD
-import java.util.List;
-
-@RestController
-@RequestMapping("/api/relatorios")
-public class SafraRelatorioController {
-
-    @Autowired
-    private SafraService safraService;
-
-    @GetMapping("/safras-aprovadas")
-    public ResponseEntity<List<SafraRelatorioDto>> listarSafrasAprovadas() {
-        List<SafraRelatorioDto> relatorio = safraService.gerarRelatorioSafrasAprovadas();
-        return ResponseEntity.ok(relatorio);
-    }
-}
-
-=======
 import fatec.porygon.dto.RelatorioPorAnalistaDto;
 import fatec.porygon.dto.RelatorioProdutividadeDto;
+import fatec.porygon.dto.SafraRelatorioDto;
 import fatec.porygon.dto.StatusRelatorioDto;
 import fatec.porygon.service.RelatorioService;
+import fatec.porygon.service.SafraService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 
 @RestController
 @RequestMapping("/relatorios")
 public class RelatorioController {
+
+    @Autowired
+    private SafraService safraService;
 
     private final RelatorioService relatorioService;
 
@@ -60,5 +41,10 @@ public class RelatorioController {
     public RelatorioProdutividadeDto gerarRelatorioProdutividade() {
         return relatorioService.gerarRelatorioProdutividade();
     }
+
+    @GetMapping("/safras-aprovadas")
+    public ResponseEntity<List<SafraRelatorioDto>> listarSafrasAprovadas() {
+        List<SafraRelatorioDto> relatorio = safraService.gerarRelatorioSafrasAprovadas();
+        return ResponseEntity.ok(relatorio);
+    }
 }
->>>>>>> 5e2e92985e1bb99f456af601a6221ecee60462c7
