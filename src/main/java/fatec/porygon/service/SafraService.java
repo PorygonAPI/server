@@ -267,6 +267,7 @@ private List<TalhaoResumoDto> converterParaDto(List<Object[]> dadosBrutos) {
         }
 
         safra.setStatus(StatusSafra.Aprovado);
+        safra.setDataAprovacao(LocalDateTime.now());
         safra.setDataUltimaVersao(LocalDateTime.now());
         safraRepository.save(safra);
     }
