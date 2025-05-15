@@ -155,6 +155,7 @@ public class SafraService {
                 .orElseThrow(() -> new RuntimeException("Usuário não encontrado com ID: " + usuarioId));
 
         safra.setUsuarioAnalista(usuario);
+        safra.setDataAtribuicao(LocalDateTime.now());
         safra.setStatus(StatusSafra.Atribuido);
 
         return safraRepository.save(safra);
