@@ -2,6 +2,7 @@ package fatec.porygon.service;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -87,25 +88,28 @@ public class RelatorioService {
     }
 
     public RelatorioProdutividadeDto gerarRelatorioProdutividade() {
-        // TODO: Implementar lógica real sem filtros
+        List<ProdutividadeMediaPorCulturaDto> mediasPorCultura = mediaPorCultura();
+        List<ProdutividadeMediaPorEstadoDto> mediasPorEstado = mediaPorEstado();
+        List<ProdutividadeMediaPorTipoSoloDto> mediasPorTipoSolo = mediaPorTipoSolo();
+    
+        // CulturaMaisProdutivaDto culturaMaisProdutiva = mediasPorCultura.stream()
+        //         .max(Comparator.comparingDouble((ProdutividadeMediaPorCulturaDto dto) -> dto.getMediaProdutividade().doubleValue()))
+        //         .map(dto -> new CulturaMaisProdutivaDto(dto.getNomeCultura(), dto.getMediaProdutividade()))
+        //         .orElse(null);
+    
+        // List<RankingEstadosDto> rankingEstados = mediasPorEstado.stream()
+        //         .sorted(Comparator.comparingDouble((ProdutividadeMediaPorEstadoDto dto) -> dto.getMediaProdutividade().doubleValue()).reversed())
+        //         .map(dto -> new RankingEstadosDto(dto.getEstado(), dto.getMediaProdutividade()))
+        //         .toList();
+    
         return new RelatorioProdutividadeDto(
-                List.of(
-                        new ProdutividadeMediaPorCulturaDto("Soja", 3.5),
-                        new ProdutividadeMediaPorCulturaDto("Milho", 4.2)),
-                List.of(
-                        new ProdutividadeMediaPorEstadoDto("São Paulo", 5.0),
-                        new ProdutividadeMediaPorEstadoDto("Minas Gerais", 4.8)),
-                List.of(
-                        new ProdutividadeMediaPorTipoSoloDto("Argiloso", 4.0),
-                        new ProdutividadeMediaPorTipoSoloDto("Arenoso", 3.7)),
-                new CulturaMaisProdutivaDto("Soja", 3.5),
-                List.of(
-                        new RankingEstadosDto("São Paulo", 5.0),
-                        new RankingEstadosDto("Minas Gerais", 4.8),
-                        new RankingEstadosDto("Paraná", 4.6),
-                        new RankingEstadosDto("Rio Grande do Sul", 4.4),
-                        new RankingEstadosDto("Goiás", 4.2)));
-    }
+                mediasPorCultura,
+                mediasPorEstado,
+                mediasPorTipoSolo
+                // culturaMaisProdutiva,
+                // rankingEstados
+        );
+    }        
 
     public List<ProdutividadeMediaPorCulturaDto> mediaPorCultura() {
         List<Safra> safras = safraRepository.findAll();
