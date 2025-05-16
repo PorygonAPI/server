@@ -1,7 +1,6 @@
 package fatec.porygon.service;
 
 import fatec.porygon.dto.TalhaoDto;
-import fatec.porygon.dto.TalhaoPendenteDto;
 import fatec.porygon.entity.AreaAgricola;
 import fatec.porygon.entity.Safra;
 import fatec.porygon.repository.TalhaoRepository;
@@ -16,7 +15,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Service
@@ -152,6 +150,7 @@ public class TalhaoService {
             Safra safraAtual = safras.get(0);
             dto.setAno(safraAtual.getAno());
             dto.setStatus(safraAtual.getStatus());
+            dto.setProdutividadeAno(safraAtual.getProdutividadeAno().floatValue());
             if (safraAtual.getCultura() != null) {
                 dto.setCultura(safraAtual.getCultura().getId());
                 dto.setCulturaNome(safraAtual.getCultura().getNome());
@@ -166,61 +165,6 @@ public class TalhaoService {
         }
 
         return dto;
-    }
-
-    public List<TalhaoPendenteDto> listarTalhoesPendentes() {
-        return talhaoRepository.findAll().stream()
-                .map(t -> {
-                    Safra safra = t.getSafras().stream()
-                            .filter(s -> s.getStatus() == StatusSafra.Pendente && s.getUsuarioAnalista() == null)
-                            .findFirst()
-                            .orElse(null);
-
-                    if (safra == null) {
-                        return null;
-                    }
-
-                    return new TalhaoPendenteDto(
-                            t.getId(),
-                            t.getAreaAgricola().getNomeFazenda(),
-                            safra.getCultura().getNome(),
-                            safra.getProdutividadeAno(),
-                            t.getArea(),
-                            t.getTipoSolo().getTipoSolo(),
-                            t.getAreaAgricola().getCidade().getNome(),
-                            t.getAreaAgricola().getEstado()
-                    );
-                })
-                .filter(Objects::nonNull) 
-                .toList();
-    }
-
-    public void salvarEdicaoTalhao(Long idTalhao) {
-        var talhao = talhaoRepository.findById(idTalhao)
-                .orElseThrow(() -> new EntityNotFoundException("Talhão não encontrado"));
-
-        var safra = talhao.getSafras().stream()
-                .filter(s -> s.getUsuarioAnalista() != null && s.getStatus() == StatusSafra.Atribuido)
-                .findFirst()
-                .orElseThrow(() -> new EntityNotFoundException("Safra pendente não encontrada para esse talhão"));
-
-        safra.setDataUltimaVersao(LocalDateTime.now());
-        talhaoRepository.save(talhao);
-    }
-
-    public void aprovarTalhao(Long idTalhao) {
-        var talhao = talhaoRepository.findById(idTalhao)
-                .orElseThrow(() -> new EntityNotFoundException("Talhão não encontrado"));
-
-        var safra = talhao.getSafras().stream()
-                .filter(s -> s.getUsuarioAnalista() != null && s.getStatus() == StatusSafra.Atribuido)
-                .findFirst()
-                .orElseThrow(() -> new EntityNotFoundException("Safra pendente não encontrada para esse talhão"));
-
-        safra.setStatus(StatusSafra.Aprovado);
-        safra.setDataUltimaVersao(LocalDateTime.now());
-        safra.setDataAprovacao(LocalDateTime.now());
-        talhaoRepository.save(talhao);
     }
 
     public void editarTalhaoPorAreaAgricola(Long idTalhao, String idSafra, Long idAreaAgricola) {

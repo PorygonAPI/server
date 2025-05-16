@@ -1,13 +1,17 @@
 package fatec.porygon.controller;
 
 import fatec.porygon.dto.TalhaoDto;
-import fatec.porygon.dto.TalhaoPendenteDto;
 import fatec.porygon.service.TalhaoService;
+import fatec.porygon.service.SafraService;
+import fatec.porygon.entity.Talhao;
+import fatec.porygon.entity.Safra;
+import fatec.porygon.enums.StatusSafra;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -16,10 +20,12 @@ import java.util.List;
 public class TalhaoController {
 
     private final TalhaoService talhaoService;
+    private final SafraService safraService;
 
     @Autowired
-    public TalhaoController(TalhaoService talhaoService) {
+    public TalhaoController(TalhaoService talhaoService, SafraService safraService) {
         this.talhaoService = talhaoService;
+        this.safraService = safraService;
     }
 
     @PostMapping
@@ -61,11 +67,6 @@ public class TalhaoController {
         }
     }
 
-    @GetMapping("/pendentes")
-    public List<TalhaoPendenteDto> listarTalhoesPendentes() {
-        return talhaoService.listarTalhoesPendentes();
-    }
-
     @PutMapping("/{id}")
     public ResponseEntity<TalhaoDto> atualizarTalhao(@PathVariable Long id, @RequestBody TalhaoDto talhaoDto) {
         try {
@@ -100,30 +101,6 @@ public class TalhaoController {
             return ResponseEntity.noContent().build();
         } catch (RuntimeException e) {
             return ResponseEntity.notFound().build();
-        }
-    }
-
-    @PutMapping("/{id}/salvar")
-    public ResponseEntity<String> salvarTalhao(@PathVariable Long id) {
-        try {
-            talhaoService.salvarEdicaoTalhao(id);
-            return ResponseEntity.ok("Talhão salvo com sucesso.");
-        } catch (EntityNotFoundException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Talhão não encontrado.");
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erro ao salvar o talhão.");
-        }
-    }
-
-    @PutMapping("/{id}/aprovar")
-    public ResponseEntity<String> aprovarTalhao(@PathVariable Long id) {
-        try {
-            talhaoService.aprovarTalhao(id);
-            return ResponseEntity.ok("Talhão aprovado com sucesso.");
-        } catch (EntityNotFoundException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Talhão não encontrado.");
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erro ao aprovar o talhão.");
         }
     }
 }
