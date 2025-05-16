@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
@@ -105,4 +106,45 @@ public class RelatorioService {
                         new RankingEstadosDto("Rio Grande do Sul", 4.4),
                         new RankingEstadosDto("Goiás", 4.2)));
     }
+
+    public List<ProdutividadeMediaPorCulturaDto> mediaPorCultura() {
+        List<Safra> safras = safraRepository.findAll();
+
+        return safras.stream()
+                .collect(Collectors.groupingBy(
+                        s -> s.getCultura().getNome(),
+                        Collectors.averagingDouble(Safra::getProdutividadeAno)
+                ))
+                .entrySet().stream()
+                .map(e -> new ProdutividadeMediaPorCulturaDto(e.getKey(), e.getValue()))
+                .toList();
+    }
+
+    public List<ProdutividadeMediaPorEstadoDto> mediaPorEstado() {
+        List<Safra> safras = safraRepository.findAll();
+
+        return safras.stream()
+                .collect(Collectors.groupingBy(
+                        s -> s.getTalhao().getAreaAgricola().getEstado(),
+                        Collectors.averagingDouble(Safra::getProdutividadeAno)
+                ))
+                .entrySet().stream()
+                .map(e -> new ProdutividadeMediaPorEstadoDto(e.getKey(), e.getValue()))
+                .toList();
+    }
+
+    public List<ProdutividadeMediaPorTipoSoloDto> mediaPorTipoSolo() {
+        List<Safra> safras = safraRepository.findAll();
+
+        return safras.stream()
+                .collect(Collectors.groupingBy(
+                        s -> s.getTalhao().getTipoSolo().getTipoSolo(),
+                        Collectors.averagingDouble(Safra::getProdutividadeAno)
+                ))
+                .entrySet().stream()
+                .map(e -> new ProdutividadeMediaPorTipoSoloDto(e.getKey(), e.getValue()))
+                .toList();
+    }
 }
+
+
