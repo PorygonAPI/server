@@ -40,7 +40,9 @@ public class RelatorioSafraService {
                     safra.getId(),
                     safra.getUsuarioAnalista().getNome(),
                     safra.getDataCadastro(),
-                    safra.getDataAprovacao()
+                    safra.getDataAtribuicao(),
+                    safra.getDataAprovacao(),
+                    tempo
             );
         }).toList();
     }
