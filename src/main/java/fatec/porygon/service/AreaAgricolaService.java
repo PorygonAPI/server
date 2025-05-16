@@ -160,15 +160,6 @@ public class AreaAgricolaService {
         } else {
             areaAgricola.setStatus(StatusArea.Pendente);
         }
-
-        if (dto.getArquivoFazenda() != null && !dto.getArquivoFazenda().isEmpty()) {
-            try {
-                Geometry geometry = conversorGeoJson.convertGeoJsonToGeometry(dto.getArquivoFazenda());
-                areaAgricola.setArquivoFazenda(geometry);
-            } catch (Exception e) {
-                throw new RuntimeException("Erro ao processar o arquivo GeoJSON", e);
-            }
-        }
         
         return areaAgricola;
     }

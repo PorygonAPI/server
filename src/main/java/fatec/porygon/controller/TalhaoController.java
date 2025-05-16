@@ -62,9 +62,14 @@ public class TalhaoController {
     }
 
     @GetMapping("/pendentes")
-    public List<TalhaoPendenteDto> listarTalhoesPendentes() {
-        return talhaoService.listarTalhoesPendentes();
+public ResponseEntity<List<TalhaoPendenteDto>> listarTalhoesPendentes() {
+    try {
+        List<TalhaoPendenteDto> talhoes = talhaoService.listarTalhoesPendentes();
+        return ResponseEntity.ok(talhoes);
+    } catch (RuntimeException e) {
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
     }
+}
 
     @PutMapping("/{id}")
     public ResponseEntity<TalhaoDto> atualizarTalhao(@PathVariable Long id, @RequestBody TalhaoDto talhaoDto) {

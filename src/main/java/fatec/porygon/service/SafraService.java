@@ -7,6 +7,7 @@ import fatec.porygon.repository.SafraRepository;
 import fatec.porygon.repository.TalhaoRepository;
 import fatec.porygon.repository.UsuarioRepository;
 import fatec.porygon.utils.ConvertGeoJsonUtils;
+import jakarta.persistence.EntityNotFoundException;
 import fatec.porygon.dto.SafraDto;
 import fatec.porygon.dto.TalhaoResumoDto;
 
@@ -52,7 +53,7 @@ public class SafraService {
 
     public Safra buscarPorId(String id) {
         return safraRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Safra não encontrada"));
+            .orElseThrow(() -> new EntityNotFoundException("Safra não encontrada com ID: " + id));
     }
 
     public List<SafraDto> listarTodas() {
