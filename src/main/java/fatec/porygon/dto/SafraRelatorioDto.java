@@ -9,16 +9,21 @@ public class SafraRelatorioDto {
     private LocalDateTime dataAtribuicao;
     private LocalDateTime dataAprovacao;
     private String tempoTotalAnalise;
+    private LocalDateTime dataCadastro;
 
     public SafraRelatorioDto(String idSafra, String nomeAnalista,
-                             LocalDateTime dataAtribuicao, LocalDateTime dataAprovacao,
+                             LocalDateTime dataAtribuicao, LocalDateTime dataAprovacao, LocalDateTime dataCadastro,
                              String tempoTotalAnalise) {
         this.idSafra = idSafra;
         this.nomeAnalista = nomeAnalista;
         this.dataAtribuicao = dataAtribuicao;
         this.dataAprovacao = dataAprovacao;
         this.tempoTotalAnalise = tempoTotalAnalise;
+        this.dataCadastro = dataCadastro;
     }
+
+    public LocalDateTime getDataCadastro() {return dataCadastro;}
+    public void setDataCadastro(LocalDateTime dataCadastro) {this.dataCadastro = dataCadastro;}
 
     public String getIdSafra() {return idSafra;}
     public void setIdSafra(String idSafra) {this.idSafra = idSafra;}
