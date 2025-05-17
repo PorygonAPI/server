@@ -1,5 +1,6 @@
 package fatec.porygon.controller;
 
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import fatec.porygon.dto.CargoDto;
 import fatec.porygon.repository.CargoRepository;
@@ -16,7 +17,8 @@ public class CargoController {
         this.cargoRepository = cargoRepository;
     }
 
-
+    //Exemplo de como autenticar a api e só permitir authority XPTO
+    @PreAuthorize("hasAuthority('Administrador') or hasAuthority('Analista')")
     @GetMapping
     public List<CargoDto> listarCargos() {
         return cargoRepository.findAll().stream().map(cargo -> {

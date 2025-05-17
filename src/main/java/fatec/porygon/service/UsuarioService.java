@@ -6,6 +6,7 @@ import fatec.porygon.entity.Cargo;
 import fatec.porygon.repository.UsuarioRepository;
 import fatec.porygon.repository.CargoRepository;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Optional;
@@ -16,10 +17,12 @@ public class UsuarioService {
 
     private final UsuarioRepository usuarioRepository;
     private final CargoRepository cargoRepository;
+    private final BCryptPasswordEncoder passwordEncoder;
 
-    public UsuarioService(UsuarioRepository usuarioRepository, CargoRepository cargoRepository) {
+    public UsuarioService(UsuarioRepository usuarioRepository, CargoRepository cargoRepository, BCryptPasswordEncoder passwordEncoder) {
         this.usuarioRepository = usuarioRepository;
         this.cargoRepository = cargoRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
     public UsuarioDto criarUsuario(UsuarioDto usuarioDto) {
@@ -31,7 +34,7 @@ public class UsuarioService {
         Usuario usuario = new Usuario();
         usuario.setNome(usuarioDto.getNome());
         usuario.setEmail(usuarioDto.getEmail());
-        usuario.setSenha(usuarioDto.getSenha()); // usuario.setSenha(passwordEncoder.encode(usuarioDto.getSenha()));
+        usuario.setSenha(passwordEncoder.encode(usuarioDto.getSenha()));
         usuario.setCargo(cargoOpt.get());
         usuario = usuarioRepository.save(usuario);
         return toDto(usuario);
@@ -58,7 +61,7 @@ public class UsuarioService {
         usuario.setNome(usuarioDto.getNome());
         usuario.setEmail(usuarioDto.getEmail());
         if (usuarioDto.getSenha() != null && !usuarioDto.getSenha().isEmpty()) {
-            usuario.setSenha(usuarioDto.getSenha()); //usuario.setSenha(passwordEncoder.encode(usuarioDto.getSenha()));
+            usuario.setSenha(passwordEncoder.encode(usuarioDto.getSenha()));
         }
 
         Optional<Cargo> cargoOpt = cargoRepository.findById(usuarioDto.getCargo());
