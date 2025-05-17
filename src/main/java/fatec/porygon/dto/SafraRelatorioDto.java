@@ -6,24 +6,22 @@ public class SafraRelatorioDto {
 
     private String idSafra;
     private String nomeAnalista;
+    private LocalDateTime dataCadastro;
     private LocalDateTime dataAtribuicao;
     private LocalDateTime dataAprovacao;
     private String tempoTotalAnalise;
-    private LocalDateTime dataCadastro;
+    
 
-    public SafraRelatorioDto(String idSafra, String nomeAnalista,
-                             LocalDateTime dataAtribuicao, LocalDateTime dataAprovacao, LocalDateTime dataCadastro,
+    public SafraRelatorioDto(String idSafra, String nomeAnalista,LocalDateTime dataCadastro,
+                             LocalDateTime dataAtribuicao, LocalDateTime dataAprovacao, 
                              String tempoTotalAnalise) {
         this.idSafra = idSafra;
         this.nomeAnalista = nomeAnalista;
+        this.dataCadastro = dataCadastro;
         this.dataAtribuicao = dataAtribuicao;
         this.dataAprovacao = dataAprovacao;
         this.tempoTotalAnalise = tempoTotalAnalise;
-        this.dataCadastro = dataCadastro;
     }
-
-    public LocalDateTime getDataCadastro() {return dataCadastro;}
-    public void setDataCadastro(LocalDateTime dataCadastro) {this.dataCadastro = dataCadastro;}
 
     public String getIdSafra() {return idSafra;}
     public void setIdSafra(String idSafra) {this.idSafra = idSafra;}
@@ -40,5 +38,7 @@ public class SafraRelatorioDto {
     public String getTempoTotalAnalise() {return tempoTotalAnalise;}
     public void setTempoTotalAnalise(String tempoTotalAnalise) {this.tempoTotalAnalise = tempoTotalAnalise;}
 
+    public LocalDateTime getDataCadastro() {return dataCadastro;}
+    public void setDataCadastro(LocalDateTime dataCadastro) {this.dataCadastro = dataCadastro;}
 }
 
