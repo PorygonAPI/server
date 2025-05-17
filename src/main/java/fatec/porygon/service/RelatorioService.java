@@ -91,28 +91,28 @@ public class RelatorioService {
         List<ProdutividadeMediaPorCulturaDto> mediasPorCultura = mediaPorCultura();
         List<ProdutividadeMediaPorEstadoDto> mediasPorEstado = mediaPorEstado();
         List<ProdutividadeMediaPorTipoSoloDto> mediasPorTipoSolo = mediaPorTipoSolo();
+
+        CulturaMaisProdutivaDto culturaMaisProdutiva = mediasPorCultura.stream()
+                .max(Comparator.comparingDouble(ProdutividadeMediaPorCulturaDto::getProdutividadeMedia))
+                .map(dto -> new CulturaMaisProdutivaDto(dto.getNomeCultura(), dto.getProdutividadeMedia()))
+                .orElse(null);
     
-        // CulturaMaisProdutivaDto culturaMaisProdutiva = mediasPorCultura.stream()
-        //         .max(Comparator.comparingDouble((ProdutividadeMediaPorCulturaDto dto) -> dto.getMediaProdutividade().doubleValue()))
-        //         .map(dto -> new CulturaMaisProdutivaDto(dto.getNomeCultura(), dto.getMediaProdutividade()))
-        //         .orElse(null);
-    
-        // List<RankingEstadosDto> rankingEstados = mediasPorEstado.stream()
-        //         .sorted(Comparator.comparingDouble((ProdutividadeMediaPorEstadoDto dto) -> dto.getMediaProdutividade().doubleValue()).reversed())
-        //         .map(dto -> new RankingEstadosDto(dto.getEstado(), dto.getMediaProdutividade()))
-        //         .toList();
+         List<RankingEstadosDto> rankingEstados = mediasPorEstado.stream()
+                 .sorted(Comparator.comparingDouble(ProdutividadeMediaPorEstadoDto::getProdutividadeMedia).reversed())
+                 .map(dto -> new RankingEstadosDto(dto.getNomeEstado(), dto.getProdutividadeMedia()))
+                 .toList();
     
         return new RelatorioProdutividadeDto(
                 mediasPorCultura,
                 mediasPorEstado,
-                mediasPorTipoSolo
-                // culturaMaisProdutiva,
-                // rankingEstados
+                mediasPorTipoSolo,
+                culturaMaisProdutiva,
+                rankingEstados
         );
     }        
 
     public List<ProdutividadeMediaPorCulturaDto> mediaPorCultura() {
-        List<Safra> safras = safraRepository.findAll();
+        List<Safra> safras = Optional.ofNullable(safraRepository.findAll()).orElse(List.of());
 
         return safras.stream()
                 .collect(Collectors.groupingBy(
@@ -125,7 +125,7 @@ public class RelatorioService {
     }
 
     public List<ProdutividadeMediaPorEstadoDto> mediaPorEstado() {
-        List<Safra> safras = safraRepository.findAll();
+        List<Safra> safras = Optional.ofNullable(safraRepository.findAll()).orElse(List.of());
 
         return safras.stream()
                 .collect(Collectors.groupingBy(
@@ -138,7 +138,7 @@ public class RelatorioService {
     }
 
     public List<ProdutividadeMediaPorTipoSoloDto> mediaPorTipoSolo() {
-        List<Safra> safras = safraRepository.findAll();
+        List<Safra> safras = Optional.ofNullable(safraRepository.findAll()).orElse(List.of());
 
         return safras.stream()
                 .collect(Collectors.groupingBy(

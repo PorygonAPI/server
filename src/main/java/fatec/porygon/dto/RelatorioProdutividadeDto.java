@@ -13,15 +13,15 @@ public class RelatorioProdutividadeDto {
     public RelatorioProdutividadeDto(
         List<ProdutividadeMediaPorCulturaDto> produtividadePorCultura,
         List<ProdutividadeMediaPorEstadoDto> produtividadePorEstado,
-        List<ProdutividadeMediaPorTipoSoloDto> produtividadePorTipoSolo
-        // CulturaMaisProdutivaDto culturaMaisProdutiva,
-        // List<RankingEstadosDto> rankingTop5Estados
+        List<ProdutividadeMediaPorTipoSoloDto> produtividadePorTipoSolo,
+        CulturaMaisProdutivaDto culturaMaisProdutiva,
+        List<RankingEstadosDto> rankingTop5Estados
     ) {
         this.produtividadePorCultura = produtividadePorCultura;
         this.produtividadePorEstado = produtividadePorEstado;
         this.produtividadePorTipoSolo = produtividadePorTipoSolo;
-        // this.culturaMaisProdutiva = culturaMaisProdutiva;
-        // this.rankingTop5Estados = rankingTop5Estados;
+        this.culturaMaisProdutiva = culturaMaisProdutiva;
+        this.rankingTop5Estados = rankingTop5Estados;
     }
 
     public List<ProdutividadeMediaPorCulturaDto> getProdutividadePorCultura() {
