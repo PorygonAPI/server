@@ -1,5 +1,6 @@
 package fatec.porygon.dto;
 
+import java.time.Duration;
 import java.time.LocalDateTime;
 
 public class SafraRelatorioDto {
@@ -9,18 +10,18 @@ public class SafraRelatorioDto {
     private LocalDateTime dataCadastro;
     private LocalDateTime dataAtribuicao;
     private LocalDateTime dataAprovacao;
-    private String tempoTotalAnalise;
+    private DuracaoDto tempoTotal;
     
 
     public SafraRelatorioDto(String idSafra, String nomeAnalista,LocalDateTime dataCadastro,
                              LocalDateTime dataAtribuicao, LocalDateTime dataAprovacao, 
-                             String tempoTotalAnalise) {
+                             DuracaoDto tempoTotal) {
         this.idSafra = idSafra;
         this.nomeAnalista = nomeAnalista;
         this.dataCadastro = dataCadastro;
         this.dataAtribuicao = dataAtribuicao;
         this.dataAprovacao = dataAprovacao;
-        this.tempoTotalAnalise = tempoTotalAnalise;
+        this.tempoTotal = tempoTotal;;
     }
 
     public String getIdSafra() {return idSafra;}
@@ -35,10 +36,33 @@ public class SafraRelatorioDto {
     public LocalDateTime getDataAprovacao() {return dataAprovacao;}
     public void setDataAprovacao(LocalDateTime dataAprovacao) {this.dataAprovacao = dataAprovacao;}
 
-    public String getTempoTotalAnalise() {return tempoTotalAnalise;}
-    public void setTempoTotalAnalise(String tempoTotalAnalise) {this.tempoTotalAnalise = tempoTotalAnalise;}
-
     public LocalDateTime getDataCadastro() {return dataCadastro;}
     public void setDataCadastro(LocalDateTime dataCadastro) {this.dataCadastro = dataCadastro;}
+
+    public DuracaoDto getTempoTotal() {return tempoTotal;}
+    public void setTempoTotal(DuracaoDto tempoTotal) {this.tempoTotal = tempoTotal;}
+
+    public static class DuracaoDto {
+    public long dias;
+    public long horas;
+    public long minutos;
+
+    public DuracaoDto(long dias, long horas, long minutos) {
+        this.dias = dias;
+        this.horas = horas;
+        this.minutos = minutos;
+    }
+
+    public long getDias() {return dias;}
+    public void setDias(long dias) {this.dias = dias;}
+
+    public long getHoras() {return horas;}
+    public void setHoras(long horas) {this.horas = horas;}
+
+    public long getMinutos() {return minutos;}
+    public void setMinutos(long minutos) {this.minutos = minutos;}
+    
+    }
 }
+
 
