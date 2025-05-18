@@ -113,40 +113,49 @@ public class RelatorioService {
 
     public List<ProdutividadeMediaPorCulturaDto> mediaPorCultura() {
         List<Safra> safras = Optional.ofNullable(safraRepository.findAll()).orElse(List.of());
-
+    
         return safras.stream()
                 .collect(Collectors.groupingBy(
                         s -> s.getCultura().getNome(),
                         Collectors.averagingDouble(Safra::getProdutividadeAno)
                 ))
                 .entrySet().stream()
-                .map(e -> new ProdutividadeMediaPorCulturaDto(e.getKey(), e.getValue()))
+                .map(e -> new ProdutividadeMediaPorCulturaDto(
+                        e.getKey(), 
+                        Math.round(e.getValue() * 100.0) / 100.0 // Arredondando para 2 casas decimais
+                ))
                 .toList();
     }
-
+    
     public List<ProdutividadeMediaPorEstadoDto> mediaPorEstado() {
         List<Safra> safras = Optional.ofNullable(safraRepository.findAll()).orElse(List.of());
-
+    
         return safras.stream()
                 .collect(Collectors.groupingBy(
                         s -> s.getTalhao().getAreaAgricola().getEstado(),
                         Collectors.averagingDouble(Safra::getProdutividadeAno)
                 ))
                 .entrySet().stream()
-                .map(e -> new ProdutividadeMediaPorEstadoDto(e.getKey(), e.getValue()))
+                .map(e -> new ProdutividadeMediaPorEstadoDto(
+                        e.getKey(), 
+                        Math.round(e.getValue() * 100.0) / 100.0 // Arredondando para 2 casas decimais
+                ))
                 .toList();
     }
-
+    
     public List<ProdutividadeMediaPorTipoSoloDto> mediaPorTipoSolo() {
         List<Safra> safras = Optional.ofNullable(safraRepository.findAll()).orElse(List.of());
-
+    
         return safras.stream()
                 .collect(Collectors.groupingBy(
                         s -> s.getTalhao().getTipoSolo().getTipoSolo(),
                         Collectors.averagingDouble(Safra::getProdutividadeAno)
                 ))
                 .entrySet().stream()
-                .map(e -> new ProdutividadeMediaPorTipoSoloDto(e.getKey(), e.getValue()))
+                .map(e -> new ProdutividadeMediaPorTipoSoloDto(
+                        e.getKey(), 
+                        Math.round(e.getValue() * 100.0) / 100.0 // Arredondando para 2 casas decimais
+                ))
                 .toList();
     }
 }
