@@ -1,6 +1,7 @@
 package fatec.porygon.controller;
 
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -46,8 +47,16 @@ public class RelatorioController {
     }
 
     @GetMapping("/safras-aprovadas")
-    public ResponseEntity<List<SafraRelatorioDto>> listarSafrasAprovadas() {
-        List<SafraRelatorioDto> relatorio = relatorioSafraService.gerarRelatorioSafrasAprovadas();
-        return ResponseEntity.ok(relatorio);
-    }
+public ResponseEntity<Map<String, Object>> listarSafrasAprovadasComMedia() {
+    List<SafraRelatorioDto> relatorio = relatorioSafraService.gerarRelatorioSafrasAprovadas();
+    List<SafraRelatorioDto.MediaAnalistaDto> medias = relatorioSafraService.calcularMediaPorAnalista();
+
+    Map<String, Object> resposta = Map.of(
+        "safrasAprovadas", relatorio,
+        "mediaPorAnalista", medias
+    );
+
+    return ResponseEntity.ok(resposta);
+}
+
 }
