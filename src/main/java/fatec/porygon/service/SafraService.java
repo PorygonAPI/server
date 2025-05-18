@@ -216,34 +216,6 @@ private List<TalhaoResumoDto> converterParaDto(List<Object[]> dadosBrutos) {
         }
     }
 
-    // public String calcularDuracao(LocalDateTime inicio, LocalDateTime fim) {
-    //     if (inicio == null || fim == null) return "Desconhecido";
-    //     Duration duracao = Duration.between(inicio, fim);
-    //     long dias = duracao.toDays();
-    //     long horas = duracao.toHours() % 24;
-    //     long minutos = duracao.toMinutes() % 60;
-
-    //     List<Safra> safrasAprovadas = safraRepository.findByStatus(StatusSafra.Aprovado);
-    //     return String.format("%d dias, %d horas, %d minutos", dias, horas, minutos);
-    // }
-    // public List<SafraRelatorioDto> gerarRelatorioSafrasAprovadas() {
-    //     List<Safra> safrasAprovadas = safraRepository.findByStatus(StatusSafra.Aprovado);
-
-    //     return safrasAprovadas.stream().map(safra -> {
-    //         String tempo = calcularDuracao(
-    //                 safra.getDataCadastro(), safra.getDataAprovacao()
-    //         );
-
-    //         return new SafraRelatorioDto(
-    //                 safra.getId(),
-    //                 safra.getUsuarioAnalista().getNome(),
-    //                 safra.getDataCadastro(),
-    //                 safra.getDataAtribuicao(),
-    //                 safra.getDataAprovacao(),
-    //                 tempo
-    //         );
-    //     }).toList();
-    // }
 
     public List<TalhaoPendenteDto> listarSafrasPendentes() {
         return talhaoRepository.findAll().stream()

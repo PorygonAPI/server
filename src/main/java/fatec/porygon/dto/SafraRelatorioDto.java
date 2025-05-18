@@ -63,6 +63,43 @@ public class SafraRelatorioDto {
     public void setMinutos(long minutos) {this.minutos = minutos;}
     
     }
+
+    public static class MediaAnalistaDto {
+    private Long idAnalista;
+    private String nomeAnalista;
+    private DuracaoDto mediaDuracao;
+
+    public MediaAnalistaDto(Long idAnalista, String nomeAnalista, DuracaoDto mediaDuracao) {
+        this.idAnalista = idAnalista;
+        this.nomeAnalista = nomeAnalista;
+        this.mediaDuracao = mediaDuracao;
+    }
+
+    public Long getIdAnalista() {
+        return idAnalista;
+    }
+
+    public void setIdAnalista(Long idAnalista) {
+        this.idAnalista = idAnalista;
+    }
+
+    public String getNomeAnalista() {
+        return nomeAnalista;
+    }
+
+    public void setNomeAnalista(String nomeAnalista) {
+        this.nomeAnalista = nomeAnalista;
+    }
+
+    public DuracaoDto getMediaDuracao() {
+        return mediaDuracao;
+    }
+
+    public void setMediaDuracao(DuracaoDto mediaDuracao) {
+        this.mediaDuracao = mediaDuracao;
+    }
+}
+
 }
 
 
