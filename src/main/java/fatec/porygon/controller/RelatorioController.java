@@ -21,16 +21,19 @@ public class RelatorioController {
         this.relatorioService = relatorioService;
     }
 
+    @PreAuthorize("hasAuthority('Administrador') or hasAuthority('Consultor')")
     @GetMapping("/status")
     public StatusRelatorioDto obterStatusGeral() {
         return relatorioService.getContagemPorStatus();
     }
 
+    @PreAuthorize("hasAuthority('Administrador') or hasAuthority('Consultor')")
     @GetMapping("/analistas")
     public List<RelatorioPorAnalistaDto> obterRelatorioPorAnalista() {
         return relatorioService.getRelatorioPorAnalista();
     }
 
+    @PreAuthorize("hasAuthority('Administrador') or hasAuthority('Consultor')")
     @GetMapping("/produtividade")
     public RelatorioProdutividadeDto gerarRelatorioProdutividade() {
         return relatorioService.gerarRelatorioProdutividade();

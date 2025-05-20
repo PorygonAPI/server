@@ -16,6 +16,7 @@ public class LogController {
         this.logService = logService;
     }
 
+    @PreAuthorize("hasAuthority('Administrador') or hasAuthority('Analista') or hasAuthority('Consultor')")
     @GetMapping
     public ResponseEntity<List<LogDto>> buscarTodos() {
         return ResponseEntity.ok(logService.buscarTodos());

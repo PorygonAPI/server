@@ -18,6 +18,7 @@ public class CidadeController {
         this.cidadeService = cidadeService;
     }
 
+    @PreAuthorize("hasAuthority('Administrador') or hasAuthority('Analista') or hasAuthority('Consultor')")
     @GetMapping
     public ResponseEntity<List<Cidade>> listarCidades() {
         List<Cidade> cidades = cidadeService.listarTodas();

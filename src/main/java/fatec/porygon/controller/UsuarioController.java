@@ -15,21 +15,27 @@ public class UsuarioController {
     public UsuarioController(UsuarioService usuarioService) {
         this.usuarioService = usuarioService;}
 
+    @PreAuthorize("hasAuthority('Administrador') or hasAuthority('Consultor')")
     @PostMapping
     public ResponseEntity<UsuarioDto> criarUsuario(@RequestBody UsuarioDto usuarioDto) {
         return ResponseEntity.ok(usuarioService.criarUsuario(usuarioDto));}
+    
+    @PreAuthorize("hasAuthority('Administrador') or hasAuthority('Consultor')")
     @GetMapping
     public ResponseEntity<List<UsuarioDto>> listarUsuarios() {
         return ResponseEntity.ok(usuarioService.listarUsuarios());}
 
+    @PreAuthorize("hasAuthority('Administrador') or hasAuthority('Consultor')")
     @GetMapping("/{id}")
     public ResponseEntity<UsuarioDto> buscarUsuario(@PathVariable Long id) {
         return usuarioService.buscarUsuario(id);}
 
+    @PreAuthorize("hasAuthority('Administrador') or hasAuthority('Consultor')")
     @PutMapping("/{id}")
     public ResponseEntity<UsuarioDto> atualizarUsuario(@PathVariable Long id, @RequestBody UsuarioDto usuarioDto) {
         return usuarioService.atualizarUsuario(id, usuarioDto);}
 
+    @PreAuthorize("hasAuthority('Administrador') or hasAuthority('Consultor')")
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> removerUsuario(@PathVariable Long id) {
         return usuarioService.removerUsuario(id);

@@ -17,8 +17,7 @@ public class CargoController {
         this.cargoRepository = cargoRepository;
     }
 
-    //Exemplo de como autenticar a api e só permitir authority XPTO
-    @PreAuthorize("hasAuthority('Administrador') or hasAuthority('Analista')")
+    @PreAuthorize("hasAuthority('Administrador') or hasAuthority('Analista') or hasAuthority('Consultor')")
     @GetMapping
     public List<CargoDto> listarCargos() {
         return cargoRepository.findAll().stream().map(cargo -> {
