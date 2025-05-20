@@ -57,6 +57,7 @@ public class RelatorioController {
         return relatorioService.gerarRelatorioProdutividade();
     }
 
+    @PreAuthorize("hasAuthority('Administrador') or hasAuthority('Consultor')")
     @GetMapping("/safras-aprovadas")
     public ResponseEntity<Map<String, Object>> listarSafrasAprovadasComMedia() {
         List<SafraRelatorioDto> relatorio = relatorioService.gerarRelatorioSafrasAprovadas();
