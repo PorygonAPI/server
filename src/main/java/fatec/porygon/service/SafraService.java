@@ -9,12 +9,14 @@ import fatec.porygon.repository.TalhaoRepository;
 import fatec.porygon.repository.UsuarioRepository;
 import fatec.porygon.utils.ConvertGeoJsonUtils;
 import fatec.porygon.dto.SafraDto;
+import fatec.porygon.dto.SafraGeoJsonDto;
 import fatec.porygon.dto.TalhaoPendenteDto;
 import fatec.porygon.dto.TalhaoResumoDto;
 
 import jakarta.persistence.EntityNotFoundException;
 import org.locationtech.jts.geom.Geometry;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.ByteArrayResource;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -42,18 +44,16 @@ public class SafraService {
 
     @Autowired
     public SafraService(SafraRepository safraRepository,
-                        UsuarioRepository usuarioRepository,
-                        TalhaoRepository talhaoRepository,
-                        CulturaService culturaService,
-                        TipoSoloService tipoSoloService
-                        ) {
+            UsuarioRepository usuarioRepository,
+            TalhaoRepository talhaoRepository,
+            CulturaService culturaService,
+            TipoSoloService tipoSoloService) {
         this.safraRepository = safraRepository;
         this.usuarioRepository = usuarioRepository;
         this.talhaoRepository = talhaoRepository;
         this.culturaService = culturaService;
         this.tipoSoloService = tipoSoloService;
     }
-
 
     @Transactional
     public Safra salvar(Safra safra) {
@@ -84,7 +84,7 @@ public class SafraService {
             safra.setTalhao(novoTalhao);
         }
 
-        if(request.getArea() != null){
+        if (request.getArea() != null) {
             safra.getTalhao().setArea(request.getArea());
         }
 
@@ -108,6 +108,7 @@ public class SafraService {
 
         safraRepository.save(safra);
     }
+
     private SafraDto convertToDto(Safra safra) {
         SafraDto dto = new SafraDto();
         dto.setId(safra.getId());
@@ -115,7 +116,6 @@ public class SafraService {
         dto.setCultura(safra.getCultura() != null ? safra.getCultura().getNome() : null);
         dto.setStatus(safra.getStatus());
         dto.setTalhaoId(safra.getTalhao() != null ? safra.getTalhao().getId() : null);
-
 
         if (safra.getArquivoDaninha() != null) {
             dto.setArquivoDaninha(conversorGeoJson.convertGeometryToGeoJson(safra.getArquivoDaninha()));
@@ -177,34 +177,32 @@ public class SafraService {
         return safras;
     }
 
-public Map<String, List<TalhaoResumoDto>> listarTalhoesPorUsuario(Long idUsuario) {
-    List<TalhaoResumoDto> aprovados = converterParaDto(
-        safraRepository.buscarTalhoesBrutosPorStatus(idUsuario, StatusSafra.Aprovado)
-    );
+    public Map<String, List<TalhaoResumoDto>> listarTalhoesPorUsuario(Long idUsuario) {
+        List<TalhaoResumoDto> aprovados = converterParaDto(
+                safraRepository.buscarTalhoesBrutosPorStatus(idUsuario, StatusSafra.Aprovado));
 
-    List<TalhaoResumoDto> atribuidos = converterParaDto(
-        safraRepository.buscarTalhoesBrutosPorStatus(idUsuario, StatusSafra.Atribuido)
-    );
+        List<TalhaoResumoDto> atribuidos = converterParaDto(
+                safraRepository.buscarTalhoesBrutosPorStatus(idUsuario, StatusSafra.Atribuido));
 
-    Map<String, List<TalhaoResumoDto>> resultado = new HashMap<>();
-    resultado.put("aprovados", aprovados);
-    resultado.put("atribuidos", atribuidos);
-    return resultado;
-}
-
-private List<TalhaoResumoDto> converterParaDto(List<Object[]> dadosBrutos) {
-    List<TalhaoResumoDto> resultado = new ArrayList<>();
-    for (Object[] linha : dadosBrutos) {
-        Long talhaoId = (Long) linha[0];
-        String nomeFazenda = (String) linha[1];
-        Long safraId = Long.valueOf(linha[2].toString());
-        String cultura = (String) linha[3];
-        Integer anoSafra = (Integer) linha[4];
-
-        resultado.add(new TalhaoResumoDto(talhaoId, nomeFazenda, safraId, cultura, anoSafra));
+        Map<String, List<TalhaoResumoDto>> resultado = new HashMap<>();
+        resultado.put("aprovados", aprovados);
+        resultado.put("atribuidos", atribuidos);
+        return resultado;
     }
-    return resultado;
-}
+
+    private List<TalhaoResumoDto> converterParaDto(List<Object[]> dadosBrutos) {
+        List<TalhaoResumoDto> resultado = new ArrayList<>();
+        for (Object[] linha : dadosBrutos) {
+            Long talhaoId = (Long) linha[0];
+            String nomeFazenda = (String) linha[1];
+            Long safraId = Long.valueOf(linha[2].toString());
+            String cultura = (String) linha[3];
+            Integer anoSafra = (Integer) linha[4];
+
+            resultado.add(new TalhaoResumoDto(talhaoId, nomeFazenda, safraId, cultura, anoSafra));
+        }
+        return resultado;
+    }
 
     private void tratarArquivosDaninha(Safra safra) {
         if (safra.getArquivoDaninha() != null && safra.getArquivoDaninha().toString().contains("{")) {
@@ -229,12 +227,10 @@ private List<TalhaoResumoDto> converterParaDto(List<Object[]> dadosBrutos) {
                                 t.getArea(),
                                 t.getTipoSolo().getTipoSolo(),
                                 t.getAreaAgricola().getCidade().getNome(),
-                                t.getAreaAgricola().getEstado()
-                        ))
-                )
+                                t.getAreaAgricola().getEstado())))
                 .collect(Collectors.toList());
     }
-    
+
     @Transactional
     public void salvarEdicaoSafra(String idSafra, MultipartFile geoJsonFile) throws IOException {
         Safra safra = safraRepository.findById(idSafra)
@@ -274,4 +270,49 @@ private List<TalhaoResumoDto> converterParaDto(List<Object[]> dadosBrutos) {
         safra.setDataUltimaVersao(LocalDateTime.now());
         safraRepository.save(safra);
     }
+ 
+     @Transactional
+     public SafraGeoJsonDto buscarSafraGeoJson(String idSafra) {
+         Safra safra = safraRepository.findById(idSafra)
+                 .orElseThrow(() -> new RuntimeException("Safra não encontrada com ID: " + idSafra));
+ 
+         AreaAgricola areaAgricola = safra.getTalhao().getAreaAgricola();
+ 
+         SafraGeoJsonDto dto = new SafraGeoJsonDto();
+         dto.setIdSafra(safra.getId());
+         dto.setDataCadastro(safra.getDataCadastro());
+         dto.setDataUltimaVersao(safra.getDataUltimaVersao());
+ 
+         return dto;
+     }
+ 
+     public ByteArrayResource obterArquivoFazenda(Safra safra) {
+         String geoJson = conversorGeoJson.convertGeometryToGeoJson(safra.getTalhao().getAreaAgricola().getArquivoFazenda());
+         return criarArquivoGeoJson(geoJson, "arquivoFazenda.geojson");
+     }
+ 
+     public ByteArrayResource obterArquivoDaninha(Safra safra) {
+         String geoJson = conversorGeoJson.convertGeometryToGeoJson(safra.getArquivoDaninha());
+         return criarArquivoGeoJson(geoJson, "arquivoDaninha.geojson");
+     }
+ 
+     public ByteArrayResource obterArquivoFinalDaninha(Safra safra) {
+         String geoJson = conversorGeoJson.convertGeometryToGeoJson(safra.getArquivoFinalDaninha());
+         return criarArquivoGeoJson(geoJson, "arquivoFinalDaninha.geojson");
+     }
+ 
+     private ByteArrayResource criarArquivoGeoJson(String geoJson, String filename) {
+         return new ByteArrayResource(geoJson.getBytes(StandardCharsets.UTF_8)) {
+             @Override
+             public String getFilename() {
+                 return filename;
+             }
+         };
+     }
+ 
+     public Safra buscarSafra(String idSafra) {
+         return safraRepository.findById(idSafra)
+                 .orElseThrow(() -> new RuntimeException("Safra não encontrada com ID: " + idSafra));
+     }
+
 }

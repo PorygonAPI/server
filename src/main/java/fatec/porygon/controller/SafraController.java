@@ -2,14 +2,22 @@ package fatec.porygon.controller;
 
 import fatec.porygon.dto.AtualizarSafraRequestDto;
 import fatec.porygon.dto.SafraDto;
+import fatec.porygon.dto.SafraGeoJsonDto;
 import fatec.porygon.dto.TalhaoPendenteDto;
 import fatec.porygon.dto.TalhaoResumoDto;
 import fatec.porygon.entity.Safra;
 import fatec.porygon.service.SafraService;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.ByteArrayResource;
+import org.springframework.http.ContentDisposition;
+import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -120,4 +128,36 @@ public class SafraController {
                     .body("Erro ao aprovar a safra: " + e.getMessage());
         }
     }
+
+    @GetMapping(value = "/{id}/vetor", produces = MediaType.MULTIPART_MIXED_VALUE)
+    public ResponseEntity<MultiValueMap<String, Object>> buscarSafraGeoJson(@PathVariable String id) {
+        SafraGeoJsonDto dto = safraService.buscarSafraGeoJson(id);
+        Safra safra = safraService.buscarSafra(id);
+
+        ByteArrayResource arquivoFazenda = safraService.obterArquivoFazenda(safra);
+        ByteArrayResource arquivoDaninha = safraService.obterArquivoDaninha(safra);
+        ByteArrayResource arquivoFinalDaninha = safraService.obterArquivoFinalDaninha(safra);
+
+        MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
+
+        HttpHeaders jsonHeaders = new HttpHeaders();
+        jsonHeaders.setContentType(MediaType.APPLICATION_JSON);
+        HttpEntity<SafraGeoJsonDto> jsonPart = new HttpEntity<>(dto, jsonHeaders);
+        body.add("dadosSafra", jsonPart);
+
+        body.add("arquivoFazenda", new HttpEntity<>(arquivoFazenda, criarHeaders("arquivoFazenda.geojson")));
+        body.add("arquivoDaninha", new HttpEntity<>(arquivoDaninha, criarHeaders("arquivoDaninha.geojson")));
+        body.add("arquivoFinalDaninha",
+                new HttpEntity<>(arquivoFinalDaninha, criarHeaders("arquivoFinalDaninha.geojson")));
+
+        return new ResponseEntity<>(body, HttpStatus.OK);
+    }
+
+    private HttpHeaders criarHeaders(String filename) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.valueOf("application/geo+json"));
+        headers.setContentDisposition(ContentDisposition.builder("attachment").filename(filename).build());
+        return headers;
+    }
+
 }
