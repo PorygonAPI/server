@@ -45,12 +45,12 @@ VALUES
 -- Usuário
 INSERT INTO usuario (nome, senha, email, cargo_id)
 VALUES
-  ('admin', '1234', 'admin@visiona.com', 3),
-  ('analista', '1234', 'analista@visiona.com', 2),
-  ('consultor', '1234', 'consultor@visiona.com', 1),
-  ('Maria Portes', '1234', 'mariaportes@visiona.com', 2),
-  ('João Silva', '1234', 'joaosilva@visiona.com', 2),
-  ('Ana Souza', '1234', 'anasouza@visiona.com', 2);
+  ('admin', '$2a$10$nmJNaMEC2g2eGSOsovikAOJ.Dua8L8uvGayr/sumtPXmgADEWwV2S', 'admin@visiona.com', 3),
+  ('analista', '$2a$10$nmJNaMEC2g2eGSOsovikAOJ.Dua8L8uvGayr/sumtPXmgADEWwV2S', 'analista@visiona.com', 2),
+  ('consultor', '$2a$10$nmJNaMEC2g2eGSOsovikAOJ.Dua8L8uvGayr/sumtPXmgADEWwV2S', 'consultor@visiona.com', 1),
+  ('Maria Portes', '$2a$10$nmJNaMEC2g2eGSOsovikAOJ.Dua8L8uvGayr/sumtPXmgADEWwV2S', 'mariaportes@visiona.com', 2),
+  ('João Silva', '$2a$10$nmJNaMEC2g2eGSOsovikAOJ.Dua8L8uvGayr/sumtPXmgADEWwV2S', 'joaosilva@visiona.com', 2),
+  ('Ana Souza', '$2a$10$nmJNaMEC2g2eGSOsovikAOJ.Dua8L8uvGayr/sumtPXmgADEWwV2S', 'anasouza@visiona.com', 2);
 
 -- Cargo Permissão
 INSERT INTO cargo_permissao (cargo_id, permissao_id)

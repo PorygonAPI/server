@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -18,6 +19,7 @@ import fatec.porygon.service.RelatorioService;
 import fatec.porygon.service.SafraService;
 import org.springframework.beans.factory.annotation.Autowired;
 
+@PreAuthorize("hasAuthority('Administrador') or hasAuthority('Consultor')")
 @RestController
 @RequestMapping("/relatorios")
 public class RelatorioController {
@@ -30,6 +32,7 @@ public class RelatorioController {
         this.relatorioService = relatorioService;
     }
 
+    @PreAuthorize("hasAuthority('Administrador') or hasAuthority('Consultor')")
     @GetMapping("/status")
     public ResponseEntity<StatusRelatorioDto> getStatusRelatorio(
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate dataInicial,
@@ -38,6 +41,7 @@ public class RelatorioController {
         return ResponseEntity.ok(dto);
     }
 
+    @PreAuthorize("hasAuthority('Administrador') or hasAuthority('Consultor')")
     @GetMapping("/analistas")
     public ResponseEntity<List<RelatorioPorAnalistaDto>> getRelatorioAnalistas(
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate dataInicial,
@@ -47,11 +51,13 @@ public class RelatorioController {
         return ResponseEntity.ok(relatorio);
     }    
 
+    @PreAuthorize("hasAuthority('Administrador') or hasAuthority('Consultor')")
     @GetMapping("/produtividade")
     public RelatorioProdutividadeDto gerarRelatorioProdutividade() {
         return relatorioService.gerarRelatorioProdutividade();
     }
 
+    @PreAuthorize("hasAuthority('Administrador') or hasAuthority('Consultor')")
     @GetMapping("/safras-aprovadas")
     public ResponseEntity<Map<String, Object>> listarSafrasAprovadasComMedia() {
         List<SafraRelatorioDto> relatorio = relatorioService.gerarRelatorioSafrasAprovadas();

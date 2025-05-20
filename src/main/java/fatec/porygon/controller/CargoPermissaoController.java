@@ -3,6 +3,7 @@ package fatec.porygon.controller;
 import fatec.porygon.dto.CargoPermissaoDto;
 import fatec.porygon.service.CargoPermissaoService;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -22,6 +23,7 @@ public class CargoPermissaoController {
         return ResponseEntity.ok(cargoPermissaoService.buscarTodos());
     }
 
+    @PreAuthorize("hasAuthority('Administrador') or hasAuthority('Analista') or hasAuthority('Consultor')")
     @GetMapping("/cargos")
     public ResponseEntity<List<Long>> listarCargos() {
         return ResponseEntity.ok(cargoPermissaoService.buscarCargos());

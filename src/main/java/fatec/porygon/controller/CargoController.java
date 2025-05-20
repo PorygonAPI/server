@@ -1,5 +1,6 @@
 package fatec.porygon.controller;
 
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import fatec.porygon.dto.CargoDto;
 import fatec.porygon.repository.CargoRepository;
@@ -16,7 +17,7 @@ public class CargoController {
         this.cargoRepository = cargoRepository;
     }
 
-
+    @PreAuthorize("hasAuthority('Administrador') or hasAuthority('Analista') or hasAuthority('Consultor')")
     @GetMapping
     public List<CargoDto> listarCargos() {
         return cargoRepository.findAll().stream().map(cargo -> {

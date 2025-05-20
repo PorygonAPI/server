@@ -10,6 +10,7 @@ import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -28,6 +29,7 @@ public class TalhaoController {
         this.safraService = safraService;
     }
 
+    @PreAuthorize("hasAuthority('Administrador') or hasAuthority('Consultor')")
     @PostMapping
     public ResponseEntity<TalhaoDto> criarTalhao(@RequestBody TalhaoDto talhaoDto) {
         if (talhaoDto.getArea() == null || talhaoDto.getArea() <= 0) {
@@ -51,12 +53,14 @@ public class TalhaoController {
         return new ResponseEntity<>(novoTalhao, HttpStatus.CREATED);
     }
 
+    @PreAuthorize("hasAuthority('Administrador') or hasAuthority('Analista') or hasAuthority('Consultor')")
     @GetMapping
     public ResponseEntity<List<TalhaoDto>> listarTalhoes() {
         List<TalhaoDto> talhoes = talhaoService.listarTodos();
         return ResponseEntity.ok(talhoes);
     }
 
+    @PreAuthorize("hasAuthority('Administrador') or hasAuthority('Analista') or hasAuthority('Consultor')")
     @GetMapping("/{id}")
     public ResponseEntity<TalhaoDto> buscarTalhaoPorId(@PathVariable Long id) {
         try {
@@ -67,6 +71,7 @@ public class TalhaoController {
         }
     }
 
+    @PreAuthorize("hasAuthority('Administrador') or hasAuthority('Consultor')")
     @PutMapping("/{id}")
     public ResponseEntity<TalhaoDto> atualizarTalhao(@PathVariable Long id, @RequestBody TalhaoDto talhaoDto) {
         try {
@@ -94,6 +99,7 @@ public class TalhaoController {
         }
     }
 
+    @PreAuthorize("hasAuthority('Administrador') or hasAuthority('Consultor')")
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> removerTalhao(@PathVariable Long id) {
         try {

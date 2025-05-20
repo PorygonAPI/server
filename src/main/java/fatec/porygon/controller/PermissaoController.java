@@ -4,6 +4,7 @@ import fatec.porygon.dto.PermissaoDto;
 import fatec.porygon.service.PermissaoService;
 import java.util.List;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -16,6 +17,7 @@ public class PermissaoController {
         this.permissaoService = permissaoService;
     }
 
+    @PreAuthorize("hasAuthority('Administrador') or hasAuthority('Analista') or hasAuthority('Consultor')")
     @GetMapping
     public ResponseEntity<List<PermissaoDto>> buscarTodos() {
         return ResponseEntity.ok(permissaoService.buscarTodos());
