@@ -38,7 +38,7 @@ public class SafraService {
     private final TalhaoRepository talhaoRepository;
     private final CulturaService culturaService;
     private final TipoSoloService tipoSoloService;
-    private RelatorioSafraService relatorioSafraService;
+
 
     @Autowired
     public SafraService(SafraRepository safraRepository,

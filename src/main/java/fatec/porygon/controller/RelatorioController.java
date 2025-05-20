@@ -14,7 +14,7 @@ import fatec.porygon.service.RelatorioService;
 import fatec.porygon.service.SafraService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import fatec.porygon.service.RelatorioSafraService;
+import fatec.porygon.service.RelatorioService;
 
 @RestController
 @RequestMapping("/relatorios")
@@ -22,12 +22,11 @@ public class RelatorioController {
 
     @Autowired
     private SafraService safraService;
-    private final RelatorioSafraService relatorioSafraService;
+    
 
     private final RelatorioService relatorioService;
 
-    public RelatorioController(RelatorioService relatorioService, RelatorioSafraService relatorioSafraService) {
-        this.relatorioSafraService = relatorioSafraService;
+    public RelatorioController(RelatorioService relatorioService, RelatorioService RelatorioService) {
         this.relatorioService = relatorioService;
     }
 
@@ -48,8 +47,8 @@ public class RelatorioController {
 
     @GetMapping("/safras-aprovadas")
 public ResponseEntity<Map<String, Object>> listarSafrasAprovadasComMedia() {
-    List<SafraRelatorioDto> relatorio = relatorioSafraService.gerarRelatorioSafrasAprovadas();
-    List<SafraRelatorioDto.MediaAnalistaDto> medias = relatorioSafraService.calcularMediaPorAnalista();
+    List<SafraRelatorioDto> relatorio = relatorioService.gerarRelatorioSafrasAprovadas();
+    List<SafraRelatorioDto.MediaAnalistaDto> medias = relatorioService.calcularMediaPorAnalista();
 
     Map<String, Object> resposta = Map.of(
         "safrasAprovadas", relatorio,
