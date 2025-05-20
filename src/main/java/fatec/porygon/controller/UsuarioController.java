@@ -3,6 +3,8 @@ package fatec.porygon.controller;
 import org.springframework.web.bind.annotation.*;
 import fatec.porygon.dto.UsuarioDto;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+
 import java.util.List;
 import fatec.porygon.service.UsuarioService;
 

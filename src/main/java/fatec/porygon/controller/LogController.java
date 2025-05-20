@@ -4,6 +4,7 @@ import fatec.porygon.dto.LogDto;
 import fatec.porygon.service.LogService;
 import java.util.List;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
