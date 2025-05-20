@@ -1,6 +1,7 @@
 package fatec.porygon.service;
 
 import fatec.porygon.dto.AtualizarSafraRequestDto;
+import fatec.porygon.dto.SafraRelatorioDto;
 import fatec.porygon.entity.*;
 import fatec.porygon.enums.StatusSafra;
 import fatec.porygon.repository.SafraRepository;
@@ -21,6 +22,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.time.Duration;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -38,6 +40,7 @@ public class SafraService {
     private final TalhaoRepository talhaoRepository;
     private final CulturaService culturaService;
     private final TipoSoloService tipoSoloService;
+
 
     @Autowired
     public SafraService(SafraRepository safraRepository,
@@ -152,8 +155,10 @@ public class SafraService {
         Usuario usuario = usuarioRepository.findById(usuarioId)
                 .orElseThrow(() -> new RuntimeException("Usuário não encontrado com ID: " + usuarioId));
 
-        safra.setUsuarioAnalista(usuario);
-        safra.setStatus(StatusSafra.Atribuido);
+            safra.setUsuarioAnalista(usuario);
+            safra.setDataAtribuicao(LocalDateTime.now());
+            safra.setStatus(StatusSafra.Atribuido);
+        
 
         return safraRepository.save(safra);
     }
@@ -209,6 +214,7 @@ public class SafraService {
         }
     }
 
+
     public List<TalhaoPendenteDto> listarSafrasPendentes() {
         return talhaoRepository.findAll().stream()
                 .flatMap(t -> t.getSafras().stream()
@@ -260,6 +266,7 @@ public class SafraService {
         }
 
         safra.setStatus(StatusSafra.Aprovado);
+        safra.setDataAprovacao(LocalDateTime.now());
         safra.setDataUltimaVersao(LocalDateTime.now());
         safraRepository.save(safra);
     }
