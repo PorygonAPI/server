@@ -11,6 +11,7 @@ import java.util.Comparator;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
 import fatec.porygon.dto.CulturaMaisProdutivaDto;
@@ -37,6 +38,7 @@ public class RelatorioService {
         this.safraRepository = safraRepository;
     }
 
+    @PreAuthorize("hasAuthority('Administrador') or hasAuthority('Consultor')")
     public StatusRelatorioDto getContagemPorStatus(LocalDate dataInicial, LocalDate dataFinal) {
         List<Safra> safras;
 
@@ -58,6 +60,7 @@ public class RelatorioService {
         return new StatusRelatorioDto(pendentes, atribuidos, aprovados);
     }
 
+    @PreAuthorize("hasAuthority('Administrador') or hasAuthority('Consultor')")
     public List<RelatorioPorAnalistaDto> getRelatorioPorAnalista(LocalDate dataInicial, LocalDate dataFinal) {
         List<Safra> safras;
 
@@ -92,6 +95,7 @@ public class RelatorioService {
         return relatorio;
     }
 
+    @PreAuthorize("hasAuthority('Administrador') or hasAuthority('Consultor')")
     public RelatorioProdutividadeDto gerarRelatorioProdutividade() {
         List<ProdutividadeMediaPorCulturaDto> mediasPorCultura = mediaPorCultura();
         List<ProdutividadeMediaPorEstadoDto> mediasPorEstado = mediaPorEstado();
@@ -168,6 +172,7 @@ public class RelatorioService {
         return new DuracaoDto(dias, horas, minutos);
     }
 
+    @PreAuthorize("hasAuthority('Administrador') or hasAuthority('Consultor')")
     public List<SafraRelatorioDto> gerarRelatorioSafrasAprovadas() {
         List<Safra> safrasAprovadas = safraRepository.findByStatus(StatusSafra.Aprovado);
 
@@ -185,6 +190,7 @@ public class RelatorioService {
         }).toList();
     }
 
+    @PreAuthorize("hasAuthority('Administrador') or hasAuthority('Consultor')")
     public List<SafraRelatorioDto.MediaAnalistaDto> calcularMediaPorAnalista() {
         List<Safra> safrasAprovadas = safraRepository.findByStatus(StatusSafra.Aprovado);
 
