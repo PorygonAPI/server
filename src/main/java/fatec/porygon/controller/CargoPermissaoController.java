@@ -23,7 +23,6 @@ public class CargoPermissaoController {
         return ResponseEntity.ok(cargoPermissaoService.buscarTodos());
     }
 
-    @PreAuthorize("hasAuthority('Administrador') or hasAuthority('Analista') or hasAuthority('Consultor')")
     @GetMapping("/cargos")
     public ResponseEntity<List<Long>> listarCargos() {
         return ResponseEntity.ok(cargoPermissaoService.buscarCargos());
