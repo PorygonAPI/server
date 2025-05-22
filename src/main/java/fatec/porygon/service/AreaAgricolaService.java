@@ -1,23 +1,13 @@
 package fatec.porygon.service;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ArrayNode;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import fatec.porygon.dto.AreaAgricolaDto;
 import fatec.porygon.dto.CadastroAreaAgricolaDto;
 import fatec.porygon.entity.*;
 import fatec.porygon.enums.StatusArea;
 import fatec.porygon.enums.StatusSafra;
 import fatec.porygon.repository.*;
-import fatec.porygon.entity.AreaAgricola;
-import fatec.porygon.entity.Cidade;
-import fatec.porygon.entity.Safra;
-import fatec.porygon.enums.StatusArea;
-import fatec.porygon.repository.AreaAgricolaRepository;
-import fatec.porygon.repository.SafraRepository;
 import fatec.porygon.utils.ConvertGeoJsonUtils;
 
 import org.locationtech.jts.geom.Geometry;
@@ -25,15 +15,13 @@ import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.io.ParseException;
 import org.locationtech.jts.io.geojson.GeoJsonReader;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.util.HashMap;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -65,6 +53,7 @@ public class AreaAgricolaService {
         this.tipoSoloRepository = tipoSoloRepository;
     }
 
+    @PreAuthorize("hasAuthority('Administrador') or hasAuthority('Consultor')")
     @Transactional
     public AreaAgricolaDto criarAreaAgricolaECriarSafra(CadastroAreaAgricolaDto dto) {
         Cidade cidade = cidadeService.buscarOuCriar(dto.getCidadeNome());
@@ -109,6 +98,7 @@ public class AreaAgricolaService {
         return convertToDto(savedAreaAgricola);
     }
 
+    @PreAuthorize("hasAuthority('Administrador') or hasAuthority('Analista') or hasAuthority('Consultor')")
     public List<AreaAgricolaDto> listarAreasAgricolas() {
         List<AreaAgricola> areasAgricolas = areaAgricolaRepository.findAll();
         return areasAgricolas.stream()
@@ -116,6 +106,7 @@ public class AreaAgricolaService {
                 .collect(Collectors.toList());
     }
 
+    @PreAuthorize("hasAuthority('Administrador') or hasAuthority('Analista') or hasAuthority('Consultor')")
     public AreaAgricolaDto buscarAreaAgricolaPorId(Long id) {
         Optional<AreaAgricola> areaAgricolaOpt = areaAgricolaRepository.findById(id);
         if (areaAgricolaOpt.isPresent()) {
@@ -124,6 +115,7 @@ public class AreaAgricolaService {
         throw new RuntimeException("Área agrícola não encontrada com ID: " + id);
     }
 
+    @PreAuthorize("hasAuthority('Administrador') or hasAuthority('Consultor')")
     @Transactional
     public AreaAgricolaDto atualizarAreaAgricola(Long id, AreaAgricolaDto areaAgricolaDto) {
         if (!areaAgricolaRepository.existsById(id)) {
@@ -135,6 +127,7 @@ public class AreaAgricolaService {
         return convertToDto(updatedAreaAgricola);
     }
 
+    @PreAuthorize("hasAuthority('Administrador') or hasAuthority('Consultor')")
     @Transactional
     public void removerAreaAgricola(Long id) {
         if (!areaAgricolaRepository.existsById(id)) {
