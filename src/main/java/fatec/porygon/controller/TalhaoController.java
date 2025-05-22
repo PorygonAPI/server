@@ -60,6 +60,7 @@ public class TalhaoController {
         return ResponseEntity.ok(talhoes);
     }
 
+
     @PreAuthorize("hasAuthority('Administrador') or hasAuthority('Analista') or hasAuthority('Consultor')")
     @GetMapping("/{id}")
     public ResponseEntity<TalhaoDto> buscarTalhaoPorId(@PathVariable Long id) {
