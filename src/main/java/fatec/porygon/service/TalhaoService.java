@@ -67,8 +67,8 @@ public class TalhaoService {
         List<Talhao> talhoes = talhaoRepository.findAll();
 
         return talhoes.stream()
-                .flatMap(t -> t.getSafras().stream()) // Pega as safras de cada talhão
-                .map(this::convertSafraToDto)         // Converte Safra para TalhaoDto
+                .flatMap(t -> t.getSafras().stream())
+                .map(this::convertSafraToDto)
                 .collect(Collectors.toList());
     }
 
