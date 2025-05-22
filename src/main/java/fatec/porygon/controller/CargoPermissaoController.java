@@ -3,7 +3,6 @@ package fatec.porygon.controller;
 import fatec.porygon.dto.CargoPermissaoDto;
 import fatec.porygon.service.CargoPermissaoService;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
