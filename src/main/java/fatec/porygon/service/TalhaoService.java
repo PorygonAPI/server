@@ -4,16 +4,14 @@ import fatec.porygon.dto.TalhaoDto;
 import fatec.porygon.entity.AreaAgricola;
 import fatec.porygon.entity.Safra;
 import fatec.porygon.repository.TalhaoRepository;
-import jakarta.persistence.EntityNotFoundException;
 import org.springframework.stereotype.Service;
 import fatec.porygon.entity.Talhao;
 import fatec.porygon.entity.TipoSolo;
-import fatec.porygon.enums.StatusSafra;
 import fatec.porygon.utils.ConvertGeoJsonUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -40,6 +38,7 @@ public class TalhaoService {
         this.safraService = safraService;
     }
 
+    @PreAuthorize("hasAuthority('Administrador') or hasAuthority('Consultor')")
     @Transactional
     public TalhaoDto criarTalhao(TalhaoDto talhaoDto) {
         Talhao talhao = convertToEntity(talhaoDto);
@@ -63,6 +62,7 @@ public class TalhaoService {
         return convertToDto(savedTalhao);
     }
 
+    @PreAuthorize("hasAuthority('Administrador') or hasAuthority('Analista') or hasAuthority('Consultor')")
     public List<TalhaoDto> listarTodos() {
         List<Talhao> talhoes = talhaoRepository.findAll();
         return talhoes.stream()
@@ -70,12 +70,14 @@ public class TalhaoService {
                 .collect(Collectors.toList());
     }
 
+    @PreAuthorize("hasAuthority('Administrador') or hasAuthority('Analista') or hasAuthority('Consultor')")
     public TalhaoDto buscarPorId(Long id) {
         Talhao talhao = talhaoRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Talhão não encontrado com ID: " + id));
         return convertToDto(talhao);
     }
 
+    @PreAuthorize("hasAuthority('Administrador') or hasAuthority('Consultor')")
     @Transactional
     public TalhaoDto atualizarTalhao(Long id, TalhaoDto talhaoDto) {
         if (!talhaoRepository.existsById(id)) {
@@ -106,6 +108,7 @@ public class TalhaoService {
         return convertToDto(updatedTalhao);
     }
 
+    @PreAuthorize("hasAuthority('Administrador') or hasAuthority('Consultor')")
     @Transactional
     public void deletar(Long id) {
         if (!talhaoRepository.existsById(id)) {
