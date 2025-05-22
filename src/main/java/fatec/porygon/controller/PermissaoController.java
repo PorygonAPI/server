@@ -17,7 +17,6 @@ public class PermissaoController {
         this.permissaoService = permissaoService;
     }
 
-    @PreAuthorize("hasAuthority('Administrador') or hasAuthority('Analista') or hasAuthority('Consultor')")
     @GetMapping
     public ResponseEntity<List<PermissaoDto>> buscarTodos() {
         return ResponseEntity.ok(permissaoService.buscarTodos());
