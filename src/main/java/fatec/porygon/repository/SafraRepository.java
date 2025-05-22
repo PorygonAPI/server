@@ -1,5 +1,6 @@
 package fatec.porygon.repository;
 
+import fatec.porygon.dto.TalhaoResumoDto;
 import fatec.porygon.entity.Safra;
 import fatec.porygon.enums.StatusSafra;
 
@@ -14,6 +15,26 @@ public interface SafraRepository extends JpaRepository<Safra, String> {
     List<Safra> findByTalhaoId(Long talhaoId);
 
     @Query("""
+        SELECT new fatec.porygon.dto.TalhaoResumoDto(
+            t.id,
+            a.nomeFazenda,
+            cast(s.id as long),
+            c.nome,
+            s.ano
+        )
+        FROM Safra s
+        JOIN s.talhao t
+        JOIN t.areaAgricola a
+        JOIN s.cultura c
+        WHERE s.usuarioAnalista.id = :idUsuario
+        AND s.status = :status
+    """)
+    List<TalhaoResumoDto> buscarTalhoesPorStatus(
+        @Param("idUsuario") Long idUsuario, 
+        @Param("status") StatusSafra status
+    );
+
+    @Query("""
         SELECT t.id, a.nomeFazenda, s.id, c.nome, s.ano
         FROM Safra s
         JOIN s.talhao t
@@ -22,7 +43,8 @@ public interface SafraRepository extends JpaRepository<Safra, String> {
         WHERE s.usuarioAnalista.id = :idUsuario
         AND s.status = :status
     """)
-    
-List<Object[]> buscarTalhoesBrutosPorStatus(@Param("idUsuario") Long idUsuario, @Param("status") StatusSafra status);
-
+    List<Object[]> buscarTalhoesBrutosPorStatus(
+        @Param("idUsuario") Long idUsuario,
+        @Param("status") StatusSafra status
+    );
 }

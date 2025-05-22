@@ -12,7 +12,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-
+import org.springframework.http.MediaType;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.List;
 
 @RestController
@@ -28,27 +29,39 @@ public class TalhaoController {
         this.safraService = safraService;
     }
 
-    @PostMapping
-    public ResponseEntity<TalhaoDto> criarTalhao(@RequestBody TalhaoDto talhaoDto) {
-        if (talhaoDto.getArea() == null || talhaoDto.getArea() <= 0) {
-            System.out.println("Erro: Área do talhão é inválida.");
-            return ResponseEntity.badRequest().body(null);
-        }
-        if (talhaoDto.getTipoSoloNome() == null) {
-            System.out.println("Erro: Tipo de solo não informado.");
-            return ResponseEntity.badRequest().body(null);
-        }
-        if (talhaoDto.getAreaAgricola() == null) {
-            System.out.println("Erro: Área agrícola não informada.");
-            return ResponseEntity.badRequest().body(null);
-        }
-        if (talhaoDto.getCulturaNome() == null || talhaoDto.getCulturaNome().trim().isEmpty()) {
-            System.out.println("Erro: Nome da cultura não informado.");
-            return ResponseEntity.badRequest().body(null);
-        }
+    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<TalhaoDto> criarTalhao(
+        @RequestPart("dados") String dadosJson,
+        @RequestPart(value = "arquivoDaninha", required = false) MultipartFile arquivoDaninha
+    ) {
+        try {
+            ObjectMapper mapper = new ObjectMapper();
+            TalhaoDto talhaoDto = mapper.readValue(dadosJson, TalhaoDto.class);
 
-        TalhaoDto novoTalhao = talhaoService.criarTalhao(talhaoDto);
-        return new ResponseEntity<>(novoTalhao, HttpStatus.CREATED);
+            // Validate the talhaoDto
+            if (talhaoDto.getArea() == null || talhaoDto.getArea() <= 0) {
+                return ResponseEntity.badRequest()
+                    .body(null);
+            }
+            if (talhaoDto.getTipoSoloNome() == null) {
+                return ResponseEntity.badRequest()
+                    .body(null);
+            }
+            if (talhaoDto.getAreaAgricola() == null) {
+                return ResponseEntity.badRequest()
+                    .body(null);
+            }
+            if (talhaoDto.getCulturaNome() == null || talhaoDto.getCulturaNome().trim().isEmpty()) {
+                return ResponseEntity.badRequest()
+                    .body(null);
+            }
+
+            // Process the talhao creation
+            TalhaoDto novoTalhao = talhaoService.criarTalhao(talhaoDto, arquivoDaninha);
+            return new ResponseEntity<>(novoTalhao, HttpStatus.CREATED);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
     }
 
     @GetMapping
@@ -67,30 +80,38 @@ public class TalhaoController {
         }
     }
 
-    @PutMapping("/{id}")
-    public ResponseEntity<TalhaoDto> atualizarTalhao(@PathVariable Long id, @RequestBody TalhaoDto talhaoDto) {
+    @PutMapping(value = "/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<TalhaoDto> atualizarTalhao(
+        @PathVariable Long id,
+        @RequestPart("dados") String dadosJson,
+        @RequestPart(value = "arquivoDaninha", required = false) MultipartFile arquivoDaninha
+    ) {
         try {
+            ObjectMapper mapper = new ObjectMapper();
+            TalhaoDto talhaoDto = mapper.readValue(dadosJson, TalhaoDto.class);
+
+            // Validações
             if (talhaoDto.getArea() == null || talhaoDto.getArea() <= 0) {
-                System.out.println("Erro: Área do talhão é inválida.");
-                return ResponseEntity.badRequest().build();
+                return ResponseEntity.badRequest()
+                    .body(null);
             }
             if (talhaoDto.getTipoSoloNome() == null) {
-                System.out.println("Erro: Tipo de solo não informado.");
-                return ResponseEntity.badRequest().build();
+                return ResponseEntity.badRequest()
+                    .body(null);
             }
             if (talhaoDto.getAreaAgricola() == null) {
-                System.out.println("Erro: Área agrícola não informada.");
-                return ResponseEntity.badRequest().build();
+                return ResponseEntity.badRequest()
+                    .body(null);
             }
             if (talhaoDto.getCulturaNome() == null || talhaoDto.getCulturaNome().trim().isEmpty()) {
-                System.out.println("Erro: Nome da cultura não informado.");
-                return ResponseEntity.badRequest().build();
+                return ResponseEntity.badRequest()
+                    .body(null);
             }
 
-            TalhaoDto talhaoAtualizado = talhaoService.atualizarTalhao(id, talhaoDto);
+            TalhaoDto talhaoAtualizado = talhaoService.atualizarTalhao(id, talhaoDto, arquivoDaninha);
             return ResponseEntity.ok(talhaoAtualizado);
-        } catch (RuntimeException e) {
-            return ResponseEntity.notFound().build();
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
 

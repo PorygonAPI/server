@@ -11,6 +11,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import org.springframework.http.MediaType;
 
 import java.util.List;
@@ -37,14 +40,26 @@ public class AreaAgricolaController {
         return fazendaDetalhada.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
     }
 
-    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<AreaAgricolaDto> criarAreaAgricola(
-            @RequestParam("nomeFazenda") String nomeFazenda,
-            @RequestParam("estado") String estado,
-            @RequestParam("cidadeNome") String cidadeNome,
-            @RequestPart("arquivoFazenda") MultipartFile arquivoFazenda,
-            @RequestPart("arquivoErvaDaninha") MultipartFile arquivoErvaDaninha) {
-        
+    @PostMapping(
+    consumes = MediaType.MULTIPART_FORM_DATA_VALUE,
+    produces = MediaType.APPLICATION_JSON_VALUE
+)
+public ResponseEntity<AreaAgricolaDto> criarAreaAgricola(
+        @RequestPart("nomeFazenda") String nomeFazenda,
+        @RequestPart("estado") String estado,
+        @RequestPart("cidadeNome") String cidadeNome,
+        @RequestPart("arquivoFazenda") MultipartFile arquivoFazenda,
+        @RequestPart(value = "arquivoErvaDaninha", required = false) MultipartFile arquivoErvaDaninha) {
+    try {
+        // Basic validations
+        if (nomeFazenda == null || nomeFazenda.trim().isEmpty() ||
+            estado == null || estado.trim().isEmpty() ||
+            cidadeNome == null || cidadeNome.trim().isEmpty()) {
+            return ResponseEntity.badRequest()
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(null);
+        }
+
         CadastroAreaAgricolaDto dto = new CadastroAreaAgricolaDto();
         dto.setNomeFazenda(nomeFazenda);
         dto.setEstado(estado);
@@ -53,8 +68,15 @@ public class AreaAgricolaController {
         dto.setArquivoErvaDaninha(arquivoErvaDaninha);
 
         AreaAgricolaDto novaAreaAgricola = areaAgricolaService.criarAreaAgricolaECriarSafra(dto);
-        return new ResponseEntity<>(novaAreaAgricola, HttpStatus.CREATED);
+        return ResponseEntity.status(HttpStatus.CREATED)
+            .contentType(MediaType.APPLICATION_JSON)
+            .body(novaAreaAgricola);
+    } catch (Exception e) {
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+            .contentType(MediaType.APPLICATION_JSON)
+            .body(null);
     }
+}
 
     @GetMapping
     public ResponseEntity<List<AreaAgricolaDto>> listarAreasAgricolas() {
@@ -72,20 +94,71 @@ public class AreaAgricolaController {
         }
     }
 
-    @PutMapping("/{id}")
-    public ResponseEntity<AreaAgricolaDto> atualizarAreaAgricola(@PathVariable Long id, 
-                                                               @RequestBody AreaAgricolaDto areaAgricolaDto) {
-        try {
-            if (areaAgricolaDto.getCidadeNome() == null || areaAgricolaDto.getCidadeNome().trim().isEmpty()) {
-                return ResponseEntity.badRequest().build();
-            }
-            
-            AreaAgricolaDto areaAgricolaAtualizada = areaAgricolaService.atualizarAreaAgricola(id, areaAgricolaDto);
-            return ResponseEntity.ok(areaAgricolaAtualizada);
-        } catch (RuntimeException e) {
-            return ResponseEntity.notFound().build();
+  @PutMapping(
+    value = "/{id}",
+    consumes = MediaType.MULTIPART_FORM_DATA_VALUE,
+    produces = MediaType.APPLICATION_JSON_VALUE
+)
+public ResponseEntity<AreaAgricolaDto> atualizarAreaAgricola(
+        @PathVariable Long id,
+        @RequestParam("nomeFazenda") String nomeFazenda,
+        @RequestParam("estado") String estado,
+        @RequestParam("cidadeNome") String cidadeNome,
+        @RequestPart(value = "arquivoFazenda", required = false) MultipartFile arquivoFazenda,
+        @RequestPart(value = "arquivoErvaDaninha", required = false) MultipartFile arquivoErvaDaninha) {
+    try {
+        // Basic validations
+        if (nomeFazenda == null || nomeFazenda.trim().isEmpty() ||
+            estado == null || estado.trim().isEmpty() ||
+            cidadeNome == null || cidadeNome.trim().isEmpty()) {
+            return ResponseEntity.badRequest()
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(null);
         }
+
+        // Get existing area agricola
+        AreaAgricolaDto existingArea;
+        try {
+            existingArea = areaAgricolaService.buscarAreaAgricolaPorId(id);
+        } catch (RuntimeException e) {
+            return ResponseEntity.notFound()
+                .build();
+        }
+
+        // Create DTO with the updated data
+        AreaAgricolaDto areaAgricolaDto = new AreaAgricolaDto();
+        areaAgricolaDto.setId(id);
+        areaAgricolaDto.setNomeFazenda(nomeFazenda);
+        areaAgricolaDto.setEstado(estado);
+        areaAgricolaDto.setCidadeNome(cidadeNome);
+        areaAgricolaDto.setStatus(existingArea.getStatus());
+        
+        // If no new arquivo_fazenda is provided, keep the existing one
+        if (arquivoFazenda == null || arquivoFazenda.isEmpty()) {
+            areaAgricolaDto.setArquivoFazenda(existingArea.getArquivoFazenda());
+        }
+
+        // Update area agricola
+        AreaAgricolaDto areaAgricolaAtualizada = areaAgricolaService.atualizarAreaAgricola(
+            id, 
+            areaAgricolaDto, 
+            arquivoFazenda, 
+            arquivoErvaDaninha
+        );
+        
+        return ResponseEntity.ok()
+            .contentType(MediaType.APPLICATION_JSON)
+            .body(areaAgricolaAtualizada);
+            
+    } catch (Exception e) {
+        // Log the error for debugging
+        e.printStackTrace();
+        
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+            .contentType(MediaType.APPLICATION_JSON)
+            .body(null);
     }
+}
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> removerAreaAgricola(@PathVariable Long id) {

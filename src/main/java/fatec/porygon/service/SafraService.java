@@ -72,40 +72,54 @@ public class SafraService {
     }
 
     @Transactional
-    public void atualizarSafra(String idSafra, AtualizarSafraRequestDto request) {
-        Safra safra = safraRepository.findById(idSafra)
-                .orElseThrow(() -> new RuntimeException("Safra não encontrada com ID: " + idSafra));
+    public void atualizarSafra(String idSafra, AtualizarSafraRequestDto request, MultipartFile arquivoDaninha) {
+        try {
+            Safra safra = safraRepository.findById(idSafra)
+                    .orElseThrow(() -> new RuntimeException("Safra não encontrada com ID: " + idSafra));
 
-        if (request.getIdTalhao() != null) {
-            Talhao novoTalhao = talhaoRepository.findById(request.getIdTalhao())
-                    .orElseThrow(() -> new RuntimeException("Talhão não encontrado com ID: " + request.getIdTalhao()));
-            safra.setTalhao(novoTalhao);
+            // Atualiza dados básicos
+            if (request.getIdTalhao() != null) {
+                Talhao novoTalhao = talhaoRepository.findById(request.getIdTalhao())
+                        .orElseThrow(() -> new RuntimeException("Talhão não encontrado com ID: " + request.getIdTalhao()));
+                safra.setTalhao(novoTalhao);
+            }
+
+            if(request.getArea() != null){
+                safra.getTalhao().setArea(request.getArea());
+            }
+
+            if (request.getAnoSafra() != null) {
+                safra.setAno(request.getAnoSafra());
+            }
+
+            if (request.getCulturaNome() != null) {
+                Cultura cultura = culturaService.buscarOuCriar(request.getCulturaNome());
+                safra.setCultura(cultura);
+            }
+
+            if (request.getProdutividadeAno() != null) {
+                safra.setProdutividadeAno(request.getProdutividadeAno());
+            }
+
+            if (request.getTipoSoloNome() != null) {
+                TipoSolo tipoSolo = tipoSoloService.buscarOuCriar(request.getTipoSoloNome());
+                safra.getTalhao().setTipoSolo(tipoSolo);
+            }
+
+            // Processa novo arquivo se fornecido
+            if (arquivoDaninha != null && !arquivoDaninha.isEmpty()) {
+                String conteudoGeoJson = new String(arquivoDaninha.getBytes(), StandardCharsets.UTF_8);
+                Geometry geometria = conversorGeoJson.convertGeoJsonToGeometry(conteudoGeoJson);
+                safra.setArquivoDaninha(geometria);
+                safra.setDataUltimaVersao(LocalDateTime.now());
+            }
+
+            safraRepository.save(safra);
+        } catch (IOException e) {
+            throw new RuntimeException("Erro ao processar arquivo de erva daninha", e);
         }
-
-        if(request.getArea() != null){
-            safra.getTalhao().setArea(request.getArea());
-        }
-
-        if (request.getAnoSafra() != null) {
-            safra.setAno(request.getAnoSafra());
-        }
-
-        if (request.getCulturaNome() != null) {
-            Cultura cultura = culturaService.buscarOuCriar(request.getCulturaNome());
-            safra.setCultura(cultura);
-        }
-
-        if (request.getProdutividadeAno() != null) {
-            safra.setProdutividadeAno(request.getProdutividadeAno());
-        }
-
-        if (request.getTipoSoloNome() != null) {
-            TipoSolo tipoSolo = tipoSoloService.buscarOuCriar(request.getTipoSoloNome());
-            safra.getTalhao().setTipoSolo(tipoSolo);
-        }
-
-        safraRepository.save(safra);
     }
+
     private SafraDto convertToDto(Safra safra) {
         SafraDto dto = new SafraDto();
         dto.setId(safra.getId());
@@ -160,10 +174,34 @@ public class SafraService {
     }
 
     @Transactional
-    public Safra criarSafra(Safra safra) {
-        tratarArquivosDaninha(safra);
+public Safra criar(Safra safra, MultipartFile arquivoDaninha) {
+    try {
+        // Generate UUID for new safra
+        safra.setId(java.util.UUID.randomUUID().toString());
+        
+        // Set initial status and timestamps
+        safra.setStatus(StatusSafra.Pendente);
+        LocalDateTime now = LocalDateTime.now();
+        safra.setDataCadastro(now);
+        safra.setDataUltimaVersao(now);
+
+        // Process arquivoDaninha if provided
+        if (arquivoDaninha != null && !arquivoDaninha.isEmpty()) {
+            String conteudoGeoJson = new String(arquivoDaninha.getBytes(), StandardCharsets.UTF_8);
+            Geometry geometria = conversorGeoJson.convertGeoJsonToGeometry(conteudoGeoJson);
+            safra.setArquivoDaninha(geometria);
+        }
+
+        // Set default produtividadeAno if not provided
+        if (safra.getProdutividadeAno() == null) {
+            safra.setProdutividadeAno(0.0);
+        }
+
         return safraRepository.save(safra);
+    } catch (IOException e) {
+        throw new RuntimeException("Erro ao processar arquivo de erva daninha: " + e.getMessage(), e);
     }
+}
 
     public List<Safra> buscarPorTalhao(Long talhaoId) {
         List<Safra> safras = safraRepository.findByTalhaoId(talhaoId);
@@ -203,14 +241,26 @@ private List<TalhaoResumoDto> converterParaDto(List<Object[]> dadosBrutos) {
 }
 
     private void tratarArquivosDaninha(Safra safra) {
-        if (safra.getArquivoDaninha() != null && safra.getArquivoDaninha().toString().contains("{")) {
-            safra.setArquivoDaninha(conversorGeoJson.convertGeoJsonToGeometry(safra.getArquivoDaninha().toString()));
+    try {
+        if (safra.getArquivoDaninha() instanceof MultipartFile) {
+            MultipartFile arquivo = (MultipartFile) safra.getArquivoDaninha();
+            if (!arquivo.isEmpty()) {
+                String conteudoGeoJson = new String(arquivo.getBytes(), StandardCharsets.UTF_8);
+                safra.setArquivoDaninha(conversorGeoJson.convertGeoJsonToGeometry(conteudoGeoJson));
+            }
         }
-        if (safra.getArquivoFinalDaninha() != null && safra.getArquivoFinalDaninha().toString().contains("{")) {
-            safra.setArquivoFinalDaninha(
-                    conversorGeoJson.convertGeoJsonToGeometry(safra.getArquivoFinalDaninha().toString()));
+
+        if (safra.getArquivoFinalDaninha() instanceof MultipartFile) {
+            MultipartFile arquivoFinal = (MultipartFile) safra.getArquivoFinalDaninha();
+            if (!arquivoFinal.isEmpty()) {
+                String conteudoGeoJson = new String(arquivoFinal.getBytes(), StandardCharsets.UTF_8);
+                safra.setArquivoFinalDaninha(conversorGeoJson.convertGeoJsonToGeometry(conteudoGeoJson));
+            }
         }
+    } catch (IOException e) {
+        throw new RuntimeException("Erro ao processar arquivos de erva daninha", e);
     }
+}
 
     public List<TalhaoPendenteDto> listarSafrasPendentes() {
         return talhaoRepository.findAll().stream()

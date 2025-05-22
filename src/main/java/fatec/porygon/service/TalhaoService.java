@@ -14,10 +14,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
+import org.locationtech.jts.geom.Geometry;
 
 @Service
 public class TalhaoService {
@@ -43,26 +47,48 @@ public class TalhaoService {
     }
 
     @Transactional
-    public TalhaoDto criarTalhao(TalhaoDto talhaoDto) {
-        Talhao talhao = convertToEntity(talhaoDto);
-        Talhao savedTalhao = talhaoRepository.save(talhao);
+    public TalhaoDto criarTalhao(TalhaoDto talhaoDto, MultipartFile arquivoDaninha) {
+        try {
+            // Create and save Talhao with all relationships loaded
+            Talhao talhao = convertToEntity(talhaoDto);
+            Talhao savedTalhao = talhaoRepository.save(talhao);
 
-        Safra safra = new Safra();
-        safra.setAno(talhaoDto.getAno());
-        safra.setStatus(talhaoDto.getStatus());
-        safra.setCultura(culturaService.buscarOuCriar(talhaoDto.getCulturaNome()));
-        safra.setTalhao(savedTalhao);
+            // Create Safra with all required fields
+            Safra safra = new Safra();
+            safra.setId(java.util.UUID.randomUUID().toString());
+            safra.setAno(talhaoDto.getAno());
+            safra.setStatus(StatusSafra.Pendente);
+            safra.setProdutividadeAno(0.0); // Set default value
+            
+            // Set relationships
+            safra.setCultura(culturaService.buscarOuCriar(talhaoDto.getCulturaNome()));
+            safra.setTalhao(savedTalhao);
+            
+            // Set timestamps
+            LocalDateTime now = LocalDateTime.now();
+            safra.setDataCadastro(now);
+            safra.setDataUltimaVersao(now);
+            
+            // Process GeoJSON file if provided
+            if (arquivoDaninha != null && !arquivoDaninha.isEmpty()) {
+                String conteudoGeoJson = new String(arquivoDaninha.getBytes(), StandardCharsets.UTF_8);
+                Geometry geometria = conversorGeoJson.convertGeoJsonToGeometry(conteudoGeoJson);
+                safra.setArquivoDaninha(geometria);
+            }
 
-        if (talhaoDto.getArquivoDaninha() != null && !talhaoDto.getArquivoDaninha().isEmpty()) {
-            safra.setArquivoDaninha(conversorGeoJson.convertGeoJsonToGeometry(talhaoDto.getArquivoDaninha()));
+            // Save Safra
+            Safra savedSafra = safraService.criar(safra, arquivoDaninha);
+
+            // Convert to DTO with loaded relationships
+            TalhaoDto result = convertToDto(savedTalhao);
+            result.setStatus(savedSafra.getStatus());
+            result.setAno(savedSafra.getAno());
+            
+            return result;
+
+        } catch (Exception e) {
+            throw new RuntimeException("Erro ao criar talhão: " + e.getMessage(), e);
         }
-        if (talhaoDto.getArquivoFinalDaninha() != null && !talhaoDto.getArquivoFinalDaninha().isEmpty()) {
-            safra.setArquivoFinalDaninha(conversorGeoJson.convertGeoJsonToGeometry(talhaoDto.getArquivoFinalDaninha()));
-        }
-
-        safraService.criarSafra(safra);
-
-        return convertToDto(savedTalhao);
     }
 
     public List<TalhaoDto> listarTodos() {
@@ -79,33 +105,38 @@ public class TalhaoService {
     }
 
     @Transactional
-    public TalhaoDto atualizarTalhao(Long id, TalhaoDto talhaoDto) {
-        if (!talhaoRepository.existsById(id)) {
-            throw new RuntimeException("Talhão não encontrado com ID: " + id);
-        }
-        talhaoDto.setId(id);
-        Talhao talhao = convertToEntity(talhaoDto);
-        Talhao updatedTalhao = talhaoRepository.save(talhao);
-
-        List<Safra> safras = safraService.buscarPorTalhao(id);
-        for (Safra safra : safras) {
-            safra.setAno(talhaoDto.getAno());
-            safra.setStatus(talhaoDto.getStatus());
-            safra.setCultura(culturaService.buscarOuCriar(talhaoDto.getCulturaNome()));
-            safra.setTalhao(updatedTalhao);
-
-            if (talhaoDto.getArquivoDaninha() != null && !talhaoDto.getArquivoDaninha().isEmpty()) {
-                safra.setArquivoDaninha(conversorGeoJson.convertGeoJsonToGeometry(talhaoDto.getArquivoDaninha()));
+    public TalhaoDto atualizarTalhao(Long id, TalhaoDto talhaoDto, MultipartFile arquivoDaninha) {
+        try {
+            if (!talhaoRepository.existsById(id)) {
+                throw new RuntimeException("Talhão não encontrado com ID: " + id);
             }
-            if (talhaoDto.getArquivoFinalDaninha() != null && !talhaoDto.getArquivoFinalDaninha().isEmpty()) {
-                safra.setArquivoFinalDaninha(
-                        conversorGeoJson.convertGeoJsonToGeometry(talhaoDto.getArquivoFinalDaninha()));
+            
+            talhaoDto.setId(id);
+            Talhao talhao = convertToEntity(talhaoDto);
+            Talhao updatedTalhao = talhaoRepository.save(talhao);
+
+            List<Safra> safras = safraService.buscarPorTalhao(id);
+            for (Safra safra : safras) {
+                safra.setAno(talhaoDto.getAno());
+                safra.setStatus(talhaoDto.getStatus());
+                safra.setCultura(culturaService.buscarOuCriar(talhaoDto.getCulturaNome()));
+                safra.setTalhao(updatedTalhao);
+
+                // Processar arquivo se fornecido
+                if (arquivoDaninha != null && !arquivoDaninha.isEmpty()) {
+                    String conteudoGeoJson = new String(arquivoDaninha.getBytes(), StandardCharsets.UTF_8);
+                    Geometry geometria = conversorGeoJson.convertGeoJsonToGeometry(conteudoGeoJson);
+                    safra.setArquivoDaninha(geometria);
+                    safra.setDataUltimaVersao(LocalDateTime.now());
+                }
+
+                safraService.criar(safra, arquivoDaninha);
             }
 
-            safraService.criarSafra(safra);
+            return convertToDto(updatedTalhao);
+        } catch (Exception e) {
+            throw new RuntimeException("Erro ao atualizar talhão: " + e.getMessage(), e);
         }
-
-        return convertToDto(updatedTalhao);
     }
 
     @Transactional
@@ -117,22 +148,30 @@ public class TalhaoService {
     }
 
     private Talhao convertToEntity(TalhaoDto dto) {
-        Talhao talhao = new Talhao();
-        talhao.setId(dto.getId());
-        talhao.setArea(dto.getArea());
+    Talhao talhao = new Talhao();
+    
+    // Configurar campos básicos
+    talhao.setArea(dto.getArea());
 
-        TipoSolo tipoSolo = tipoSoloService.buscarOuCriar(dto.getTipoSoloNome().toString());
+    // Configurar TipoSolo
+    if (dto.getTipoSoloNome() != null && !dto.getTipoSoloNome().trim().isEmpty()) {
+        TipoSolo tipoSolo = tipoSoloService.buscarOuCriar(dto.getTipoSoloNome());
         talhao.setTipoSolo(tipoSolo);
+    }
 
+    // Configurar AreaAgricola
+    if (dto.getAreaAgricola() != null) {
         AreaAgricola areaAgricola = areaAgricolaService.buscarAreaAgricolaEntityPorId(dto.getAreaAgricola());
-        talhao.setAreaAgricola(areaAgricola);
         if (areaAgricola == null) {
             throw new RuntimeException("Área agrícola não encontrada com ID: " + dto.getAreaAgricola());
         }
         talhao.setAreaAgricola(areaAgricola);
-
-        return talhao;
+    } else {
+        throw new RuntimeException("ID da área agrícola é obrigatório");
     }
+
+    return talhao;
+}
 
     private TalhaoDto convertToDto(Talhao talhao) {
         TalhaoDto dto = new TalhaoDto();
@@ -147,22 +186,23 @@ public class TalhaoService {
             dto.setTipoSoloNome(talhao.getTipoSolo().getTipoSolo());
         }
 
+        // Get latest safra eagerly
         List<Safra> safras = safraService.buscarPorTalhao(talhao.getId());
         if (!safras.isEmpty()) {
             Safra safraAtual = safras.get(0);
             dto.setAno(safraAtual.getAno());
             dto.setStatus(safraAtual.getStatus());
-            dto.setProdutividadeAno(safraAtual.getProdutividadeAno().floatValue());
+            dto.setProdutividadeAno(safraAtual.getProdutividadeAno() != null ? 
+                safraAtual.getProdutividadeAno().floatValue() : 0.0f);
+            
             if (safraAtual.getCultura() != null) {
                 dto.setCultura(safraAtual.getCultura().getId());
                 dto.setCulturaNome(safraAtual.getCultura().getNome());
             }
+            
             if (safraAtual.getArquivoDaninha() != null) {
-                dto.setArquivoDaninha(conversorGeoJson.convertGeometryToGeoJson(safraAtual.getArquivoDaninha()));
-            }
-            if (safraAtual.getArquivoFinalDaninha() != null) {
-                dto.setArquivoFinalDaninha(
-                        conversorGeoJson.convertGeometryToGeoJson(safraAtual.getArquivoFinalDaninha()));
+                dto.setArquivoDaninha(conversorGeoJson.convertGeometryToGeoJson(
+                    safraAtual.getArquivoDaninha()));
             }
         }
 

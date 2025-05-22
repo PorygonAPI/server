@@ -5,7 +5,9 @@ import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.io.ParseException;
 import org.locationtech.jts.io.geojson.GeoJsonReader;
 import org.springframework.stereotype.Component;
-
+import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.io.WKTReader;
+import org.locationtech.jts.io.ParseException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -49,5 +51,10 @@ public class ConvertGeoJsonUtils {
         } catch (Exception e) {
             throw new RuntimeException("Erro ao converter Geometry para GeoJSON", e);
         }
+    }
+
+    public Geometry convertWKTToGeometry(String wkt) throws ParseException {
+        WKTReader reader = new WKTReader();
+        return reader.read(wkt);
     }
 }
