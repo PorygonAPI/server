@@ -3,6 +3,7 @@ package fatec.porygon.controller;
 import fatec.porygon.dto.UsuarioDto;
 import fatec.porygon.service.AutenticacaoService;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
@@ -12,7 +13,7 @@ import java.util.Map;
 public class AutenticacaoController {
     private final AutenticacaoService authService;
 
-    public AutenticacaoController(AutenticacaoService authService) {
+    public AutenticacaoController(AutenticacaoService authService, BCryptPasswordEncoder passwordEncoder) {
         this.authService = authService;
     }
 

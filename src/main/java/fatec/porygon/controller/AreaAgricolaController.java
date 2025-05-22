@@ -9,6 +9,7 @@ import fatec.porygon.service.FazendaDetalhadaService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -33,6 +34,7 @@ public class AreaAgricolaController {
         this.areaAgricolaService = areaAgricolaService;
     }
 
+    @PreAuthorize("hasAuthority('Administrador') or hasAuthority('Analista') or hasAuthority('Consultor')")
     @GetMapping("/{id}/detalhes-completos")
     public ResponseEntity<FazendaDetalhadaDto> getFazendaDetalhada(@PathVariable Long id) {
         Optional<FazendaDetalhadaDto> fazendaDetalhada = fazendaDetalhadaService.getFazendaDetalhadaById(id);
@@ -60,6 +62,11 @@ public ResponseEntity<AreaAgricolaDto> criarAreaAgricola(
                 .body(null);
         }
 
+        if (cidadeNome == null || cidadeNome.trim().isEmpty()) {
+            System.out.println("Erro: Nome da cidade está vazio ou nulo.");
+            return ResponseEntity.badRequest().body(null);
+        }
+
         CadastroAreaAgricolaDto dto = new CadastroAreaAgricolaDto();
         dto.setNomeFazenda(nomeFazenda);
         dto.setEstado(estado);
@@ -78,12 +85,14 @@ public ResponseEntity<AreaAgricolaDto> criarAreaAgricola(
     }
 }
 
+    @PreAuthorize("hasAuthority('Administrador') or hasAuthority('Analista') or hasAuthority('Consultor')")
     @GetMapping
     public ResponseEntity<List<AreaAgricolaDto>> listarAreasAgricolas() {
         List<AreaAgricolaDto> areasAgricolas = areaAgricolaService.listarAreasAgricolas();
         return ResponseEntity.ok(areasAgricolas);
     }
 
+    @PreAuthorize("hasAuthority('Administrador') or hasAuthority('Analista') or hasAuthority('Consultor')")
     @GetMapping("/{id}")
     public ResponseEntity<AreaAgricolaDto> buscarAreaAgricolaPorId(@PathVariable Long id) {
         try {
@@ -160,6 +169,7 @@ public ResponseEntity<AreaAgricolaDto> atualizarAreaAgricola(
     }
 }
 
+    @PreAuthorize("hasAuthority('Administrador') or hasAuthority('Consultor')")
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> removerAreaAgricola(@PathVariable Long id) {
         try {

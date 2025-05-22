@@ -47,4 +47,8 @@ public interface SafraRepository extends JpaRepository<Safra, String> {
         @Param("idUsuario") Long idUsuario,
         @Param("status") StatusSafra status
     );
+
+    List<Safra> findByStatus(StatusSafra statusSafra);
+
+    long countByStatus(StatusSafra status);
 }

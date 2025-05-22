@@ -105,39 +105,53 @@ public class TalhaoService {
     }
 
     @Transactional
-    public TalhaoDto atualizarTalhao(Long id, TalhaoDto talhaoDto, MultipartFile arquivoDaninha) {
-        try {
-            if (!talhaoRepository.existsById(id)) {
-                throw new RuntimeException("Talhão não encontrado com ID: " + id);
+public TalhaoDto atualizarTalhao(Long id, TalhaoDto talhaoDto, MultipartFile arquivoDaninha) {
+    try {
+        // Busca o talhão existente
+        Talhao talhao = talhaoRepository.findById(id)
+            .orElseThrow(() -> new EntityNotFoundException("Talhão não encontrado com ID: " + id));
+        
+        // Atualiza dados básicos do talhão
+        talhao.setArea(talhaoDto.getArea());
+        talhao.setTipoSolo(tipoSoloService.buscarOuCriar(talhaoDto.getTipoSoloNome()));
+        
+        if (talhaoDto.getAreaAgricola() != null) {
+            AreaAgricola areaAgricola = areaAgricolaService.buscarAreaAgricolaEntityPorId(talhaoDto.getAreaAgricola());
+            if (areaAgricola == null) {
+                throw new EntityNotFoundException("Área Agrícola não encontrada");
+            }
+            talhao.setAreaAgricola(areaAgricola);
+        }
+
+        // Atualiza a safra existente em vez de criar uma nova
+        List<Safra> safras = safraService.buscarPorTalhao(id);
+        if (!safras.isEmpty()) {
+            // Atualiza a primeira safra encontrada
+            Safra safraExistente = safras.get(0);
+            safraExistente.setAno(talhaoDto.getAno());
+            safraExistente.setStatus(talhaoDto.getStatus());
+            safraExistente.setCultura(culturaService.buscarOuCriar(talhaoDto.getCulturaNome()));
+            
+            // Atualiza arquivo daninha se fornecido
+            if (arquivoDaninha != null && !arquivoDaninha.isEmpty()) {
+                String conteudoGeoJson = new String(arquivoDaninha.getBytes(), StandardCharsets.UTF_8);
+                Geometry geometria = conversorGeoJson.convertGeoJsonToGeometry(conteudoGeoJson);
+                safraExistente.setArquivoDaninha(geometria);
+                safraExistente.setDataUltimaVersao(LocalDateTime.now());
             }
             
-            talhaoDto.setId(id);
-            Talhao talhao = convertToEntity(talhaoDto);
-            Talhao updatedTalhao = talhaoRepository.save(talhao);
-
-            List<Safra> safras = safraService.buscarPorTalhao(id);
-            for (Safra safra : safras) {
-                safra.setAno(talhaoDto.getAno());
-                safra.setStatus(talhaoDto.getStatus());
-                safra.setCultura(culturaService.buscarOuCriar(talhaoDto.getCulturaNome()));
-                safra.setTalhao(updatedTalhao);
-
-                // Processar arquivo se fornecido
-                if (arquivoDaninha != null && !arquivoDaninha.isEmpty()) {
-                    String conteudoGeoJson = new String(arquivoDaninha.getBytes(), StandardCharsets.UTF_8);
-                    Geometry geometria = conversorGeoJson.convertGeoJsonToGeometry(conteudoGeoJson);
-                    safra.setArquivoDaninha(geometria);
-                    safra.setDataUltimaVersao(LocalDateTime.now());
-                }
-
-                safraService.criar(safra, arquivoDaninha);
-            }
-
-            return convertToDto(updatedTalhao);
-        } catch (Exception e) {
-            throw new RuntimeException("Erro ao atualizar talhão: " + e.getMessage(), e);
+            // Salva a safra atualizada
+            safraService.atualizar(safraExistente.getId(), safraExistente);
         }
+
+        // Salva o talhão atualizado
+        Talhao talhaoAtualizado = talhaoRepository.save(talhao);
+        return convertToDto(talhaoAtualizado);
+        
+    } catch (Exception e) {
+        throw new RuntimeException("Erro ao atualizar talhão: " + e.getMessage(), e);
     }
+}
 
     @Transactional
     public void deletar(Long id) {

@@ -45,6 +45,12 @@ public class Safra {
     @Column(name = "data_ultima_versao")
     private LocalDateTime dataUltimaVersao;
 
+    @Column(name = "data_atribuicao")
+    private LocalDateTime dataAtribuicao;
+
+    @Column(name = "data_aprovacao")
+    private LocalDateTime dataAprovacao;
+
     public String getId() { return id; }
     public void setId(String id) { this.id = id; }
 
@@ -77,4 +83,10 @@ public class Safra {
 
     public LocalDateTime getDataUltimaVersao() { return dataUltimaVersao; }
     public void setDataUltimaVersao(LocalDateTime dataUltimaVersao) { this.dataUltimaVersao = dataUltimaVersao; }
+
+    public LocalDateTime getDataAtribuicao() {return dataAtribuicao;}
+    public void setDataAtribuicao(LocalDateTime dataAtribuicao) {this.dataAtribuicao = dataAtribuicao;}
+
+    public LocalDateTime getDataAprovacao() {return dataAprovacao;}
+    public void setDataAprovacao(LocalDateTime dataAprovacao) {this.dataAprovacao = dataAprovacao;}
 }
