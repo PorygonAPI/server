@@ -1,7 +1,6 @@
 package fatec.porygon.service;
 
 import fatec.porygon.dto.AtualizarSafraRequestDto;
-import fatec.porygon.dto.SafraRelatorioDto;
 import fatec.porygon.entity.*;
 import fatec.porygon.enums.StatusSafra;
 import fatec.porygon.repository.SafraRepository;
@@ -17,12 +16,12 @@ import jakarta.persistence.EntityNotFoundException;
 import org.locationtech.jts.geom.Geometry;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ByteArrayResource;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.time.Duration;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -55,17 +54,20 @@ public class SafraService {
         this.tipoSoloService = tipoSoloService;
     }
 
+    @PreAuthorize("hasAuthority('Administrador') or hasAuthority('Consultor')")
     @Transactional
     public Safra salvar(Safra safra) {
         tratarArquivosDaninha(safra);
         return safraRepository.save(safra);
     }
 
+    @PreAuthorize("hasAuthority('Administrador') or hasAuthority('Analista') or hasAuthority('Consultor')")
     public Safra buscarPorId(String id) {
         return safraRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Safra não encontrada"));
     }
 
+    @PreAuthorize("hasAuthority('Administrador') or hasAuthority('Analista') or hasAuthority('Consultor')")
     public List<SafraDto> listarTodas() {
         List<Safra> safras = safraRepository.findAll();
         return safras.stream()
@@ -73,6 +75,7 @@ public class SafraService {
                 .toList();
     }
 
+    @PreAuthorize("hasAuthority('Administrador') or hasAuthority('Analista') or hasAuthority('Consultor')")
     @Transactional
     public void atualizarSafra(String idSafra, AtualizarSafraRequestDto request) {
         Safra safra = safraRepository.findById(idSafra)
@@ -127,6 +130,7 @@ public class SafraService {
         return dto;
     }
 
+    @PreAuthorize("hasAuthority('Administrador') or hasAuthority('Consultor')")
     @Transactional
     public Safra atualizar(String id, Safra safraAtualizada) {
         Safra existente = buscarPorId(id);
@@ -143,10 +147,12 @@ public class SafraService {
         return safraRepository.save(existente);
     }
 
+    @PreAuthorize("hasAuthority('Administrador') or hasAuthority('Consultor')")
     public void deletar(String id) {
         safraRepository.deleteById(id);
     }
 
+    @PreAuthorize("hasAuthority('Analista')")
     @Transactional
     public Safra associarAnalista(String safraId, Long usuarioId) {
         Safra safra = safraRepository.findById(safraId)
@@ -177,6 +183,7 @@ public class SafraService {
         return safras;
     }
 
+    @PreAuthorize("hasAuthority('Analista')")
     public Map<String, List<TalhaoResumoDto>> listarTalhoesPorUsuario(Long idUsuario) {
         List<TalhaoResumoDto> aprovados = converterParaDto(
                 safraRepository.buscarTalhoesBrutosPorStatus(idUsuario, StatusSafra.Aprovado));
@@ -214,7 +221,7 @@ public class SafraService {
         }
     }
 
-
+    @PreAuthorize("hasAuthority('Analista')")
     public List<TalhaoPendenteDto> listarSafrasPendentes() {
         return talhaoRepository.findAll().stream()
                 .flatMap(t -> t.getSafras().stream()
@@ -231,6 +238,7 @@ public class SafraService {
                 .collect(Collectors.toList());
     }
 
+    @PreAuthorize("hasAuthority('Analista')")
     @Transactional
     public void salvarEdicaoSafra(String idSafra, MultipartFile geoJsonFile) throws IOException {
         Safra safra = safraRepository.findById(idSafra)
@@ -250,6 +258,7 @@ public class SafraService {
         safraRepository.save(safra);
     }
 
+    @PreAuthorize("hasAuthority('Analista')")
     @Transactional
     public void aprovarSafra(String idSafra, MultipartFile geoJsonFile) throws IOException {
         Safra safra = safraRepository.findById(idSafra)
@@ -271,6 +280,7 @@ public class SafraService {
         safraRepository.save(safra);
     }
  
+    @PreAuthorize("hasAuthority('Administrador') or hasAuthority('Analista') or hasAuthority('Consultor')")
      @Transactional
      public SafraGeoJsonDto buscarSafraGeoJson(String idSafra) {
          Safra safra = safraRepository.findById(idSafra)

@@ -15,7 +15,6 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.http.HttpHeaders;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
@@ -37,7 +36,6 @@ public class SafraController {
         this.safraService = safraService;
     }
 
-    @PreAuthorize("hasAuthority('Administrador') or hasAuthority('Consultor')")
     @PostMapping
     public ResponseEntity<Safra> criar(@RequestBody Safra safra) {
         Safra salva = safraService.salvar(safra);
@@ -45,25 +43,21 @@ public class SafraController {
         return ResponseEntity.status(HttpStatus.CREATED).body(salva);
     }
 
-    @PreAuthorize("hasAuthority('Administrador') or hasAuthority('Analista') or hasAuthority('Consultor')")
     @GetMapping
     public ResponseEntity<List<SafraDto>> listar() {
         return ResponseEntity.ok(safraService.listarTodas());
     }
 
-    @PreAuthorize("hasAuthority('Administrador') or hasAuthority('Analista') or hasAuthority('Consultor')")
     @GetMapping("/{id}")
     public ResponseEntity<Safra> buscar(@PathVariable String id) {
         return ResponseEntity.ok(safraService.buscarPorId(id));
     }
 
-    @PreAuthorize("hasAuthority('Administrador') or hasAuthority('Consultor')")
     @PutMapping("/{id}")
     public ResponseEntity<Safra> atualizar(@PathVariable String id, @RequestBody Safra safra) {
         return ResponseEntity.ok(safraService.atualizar(id, safra));
     }
 
-    @PreAuthorize("hasAuthority('Administrador') or hasAuthority('Analista') or hasAuthority('Consultor')")
     @PutMapping("/{idSafra}/atualizar")
     public ResponseEntity<String> atualizarSafra(
             @PathVariable Long idSafra,
@@ -72,20 +66,17 @@ public class SafraController {
         return ResponseEntity.ok("Safra atualizada com sucesso.");
     }
 
-    @PreAuthorize("hasAuthority('Administrador') or hasAuthority('Consultor')")
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deletar(@PathVariable String id) {
         safraService.deletar(id);
         return ResponseEntity.noContent().build();
     }
 
-    @PreAuthorize("hasAuthority('Analista')")
     @GetMapping("/api/talhoes/usuario/{idUsuario}")
     public ResponseEntity<Map<String, List<TalhaoResumoDto>>> listarTalhoesDoUsuario(@PathVariable Long idUsuario) {
         return ResponseEntity.ok(safraService.listarTalhoesPorUsuario(idUsuario));
     }
 
-    @PreAuthorize("hasAuthority('Analista')")
     @PutMapping("/{safraId}/associar-analista/{usuarioId}")
     public ResponseEntity<String> associarAnalista(
             @PathVariable String safraId,
@@ -99,13 +90,11 @@ public class SafraController {
         }
     }
 
-    @PreAuthorize("hasAuthority('Analista')")
     @GetMapping("/pendentes")
     public List<TalhaoPendenteDto> listarSafrasPendentes() {
         return safraService.listarSafrasPendentes();
     }
 
-    @PreAuthorize("hasAuthority('Analista')")
     @PutMapping("/{id}/salvar")
     public ResponseEntity<String> salvarSafra(
             @PathVariable String id,
@@ -123,7 +112,6 @@ public class SafraController {
         }
     }
 
-    @PreAuthorize("hasAuthority('Analista')")
     @PutMapping("/{id}/aprovar")
     public ResponseEntity<String> aprovarSafra(
             @PathVariable String id,
@@ -141,7 +129,6 @@ public class SafraController {
         }
     }
 
-    @PreAuthorize("hasAuthority('Administrador') or hasAuthority('Analista') or hasAuthority('Consultor')")
     @GetMapping(value = "/{id}/vetor", produces = MediaType.MULTIPART_MIXED_VALUE)
     public ResponseEntity<MultiValueMap<String, Object>> buscarSafraGeoJson(@PathVariable String id) {
         SafraGeoJsonDto dto = safraService.buscarSafraGeoJson(id);
