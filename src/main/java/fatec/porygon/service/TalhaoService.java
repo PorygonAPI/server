@@ -49,37 +49,30 @@ public class TalhaoService {
     @Transactional
     public TalhaoDto criarTalhao(TalhaoDto talhaoDto, MultipartFile arquivoDaninha) {
         try {
-            // Create and save Talhao with all relationships loaded
             Talhao talhao = convertToEntity(talhaoDto);
             Talhao savedTalhao = talhaoRepository.save(talhao);
 
-            // Create Safra with all required fields
             Safra safra = new Safra();
             safra.setId(java.util.UUID.randomUUID().toString());
             safra.setAno(talhaoDto.getAno());
             safra.setStatus(StatusSafra.Pendente);
-            safra.setProdutividadeAno(0.0); // Set default value
+            safra.setProdutividadeAno(0.0);
             
-            // Set relationships
             safra.setCultura(culturaService.buscarOuCriar(talhaoDto.getCulturaNome()));
             safra.setTalhao(savedTalhao);
             
-            // Set timestamps
             LocalDateTime now = LocalDateTime.now();
             safra.setDataCadastro(now);
             safra.setDataUltimaVersao(now);
             
-            // Process GeoJSON file if provided
             if (arquivoDaninha != null && !arquivoDaninha.isEmpty()) {
                 String conteudoGeoJson = new String(arquivoDaninha.getBytes(), StandardCharsets.UTF_8);
                 Geometry geometria = conversorGeoJson.convertGeoJsonToGeometry(conteudoGeoJson);
                 safra.setArquivoDaninha(geometria);
             }
 
-            // Save Safra
             Safra savedSafra = safraService.criar(safra, arquivoDaninha);
 
-            // Convert to DTO with loaded relationships
             TalhaoDto result = convertToDto(savedTalhao);
             result.setStatus(savedSafra.getStatus());
             result.setAno(savedSafra.getAno());
@@ -107,11 +100,9 @@ public class TalhaoService {
     @Transactional
 public TalhaoDto atualizarTalhao(Long id, TalhaoDto talhaoDto, MultipartFile arquivoDaninha) {
     try {
-        // Busca o talhão existente
         Talhao talhao = talhaoRepository.findById(id)
             .orElseThrow(() -> new EntityNotFoundException("Talhão não encontrado com ID: " + id));
         
-        // Atualiza dados básicos do talhão
         talhao.setArea(talhaoDto.getArea());
         talhao.setTipoSolo(tipoSoloService.buscarOuCriar(talhaoDto.getTipoSoloNome()));
         
@@ -123,16 +114,13 @@ public TalhaoDto atualizarTalhao(Long id, TalhaoDto talhaoDto, MultipartFile arq
             talhao.setAreaAgricola(areaAgricola);
         }
 
-        // Atualiza a safra existente em vez de criar uma nova
         List<Safra> safras = safraService.buscarPorTalhao(id);
         if (!safras.isEmpty()) {
-            // Atualiza a primeira safra encontrada
             Safra safraExistente = safras.get(0);
             safraExistente.setAno(talhaoDto.getAno());
             safraExistente.setStatus(talhaoDto.getStatus());
             safraExistente.setCultura(culturaService.buscarOuCriar(talhaoDto.getCulturaNome()));
             
-            // Atualiza arquivo daninha se fornecido
             if (arquivoDaninha != null && !arquivoDaninha.isEmpty()) {
                 String conteudoGeoJson = new String(arquivoDaninha.getBytes(), StandardCharsets.UTF_8);
                 Geometry geometria = conversorGeoJson.convertGeoJsonToGeometry(conteudoGeoJson);
@@ -140,11 +128,9 @@ public TalhaoDto atualizarTalhao(Long id, TalhaoDto talhaoDto, MultipartFile arq
                 safraExistente.setDataUltimaVersao(LocalDateTime.now());
             }
             
-            // Salva a safra atualizada
             safraService.atualizar(safraExistente.getId(), safraExistente);
         }
 
-        // Salva o talhão atualizado
         Talhao talhaoAtualizado = talhaoRepository.save(talhao);
         return convertToDto(talhaoAtualizado);
         
@@ -164,16 +150,13 @@ public TalhaoDto atualizarTalhao(Long id, TalhaoDto talhaoDto, MultipartFile arq
     private Talhao convertToEntity(TalhaoDto dto) {
     Talhao talhao = new Talhao();
     
-    // Configurar campos básicos
     talhao.setArea(dto.getArea());
 
-    // Configurar TipoSolo
     if (dto.getTipoSoloNome() != null && !dto.getTipoSoloNome().trim().isEmpty()) {
         TipoSolo tipoSolo = tipoSoloService.buscarOuCriar(dto.getTipoSoloNome());
         talhao.setTipoSolo(tipoSolo);
     }
 
-    // Configurar AreaAgricola
     if (dto.getAreaAgricola() != null) {
         AreaAgricola areaAgricola = areaAgricolaService.buscarAreaAgricolaEntityPorId(dto.getAreaAgricola());
         if (areaAgricola == null) {
@@ -200,7 +183,6 @@ public TalhaoDto atualizarTalhao(Long id, TalhaoDto talhaoDto, MultipartFile arq
             dto.setTipoSoloNome(talhao.getTipoSolo().getTipoSolo());
         }
 
-        // Get latest safra eagerly
         List<Safra> safras = safraService.buscarPorTalhao(talhao.getId());
         if (!safras.isEmpty()) {
             Safra safraAtual = safras.get(0);

@@ -22,17 +22,13 @@ import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import com.fasterxml.jackson.databind.ObjectMapper;
-
 import com.fasterxml.jackson.databind.ObjectMapper;
-
 import org.springframework.http.MediaType;
-
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 
-// import fatec.porygon.service.ConversorGeoJson; // Removed because the class does not exist
 
 @RestController
 @RequestMapping("/safras")
@@ -55,11 +51,9 @@ public class SafraController {
         @RequestPart(value = "arquivoDaninha", required = false) MultipartFile arquivoDaninha
     ) {
         try {
-            // Convert JSON string to Safra object
             Safra safra = objectMapper.readValue(dadosJson, Safra.class);
             safra.setDataCadastro(LocalDateTime.now());
             
-            // Create safra with file
             Safra novaSafra = safraService.criar(safra, arquivoDaninha);
             
             return ResponseEntity.status(HttpStatus.CREATED).body(novaSafra);

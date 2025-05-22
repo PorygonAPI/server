@@ -39,7 +39,6 @@ public class TalhaoController {
             ObjectMapper mapper = new ObjectMapper();
             TalhaoDto talhaoDto = mapper.readValue(dadosJson, TalhaoDto.class);
 
-            // Validate the talhaoDto
             if (talhaoDto.getArea() == null || talhaoDto.getArea() <= 0) {
                 return ResponseEntity.badRequest()
                     .body(null);
@@ -57,7 +56,6 @@ public class TalhaoController {
                     .body(null);
             }
 
-            // Process the talhao creation
             TalhaoDto novoTalhao = talhaoService.criarTalhao(talhaoDto, arquivoDaninha);
             return new ResponseEntity<>(novoTalhao, HttpStatus.CREATED);
         } catch (Exception e) {
@@ -93,11 +91,9 @@ public ResponseEntity<?> atualizarTalhao(
         ObjectMapper mapper = new ObjectMapper();
         TalhaoDto talhaoDto = mapper.readValue(dadosJson, TalhaoDto.class);
         
-        // Log incoming data
         System.out.println("Updating talhao with ID: " + id);
         System.out.println("Received data: " + dadosJson);
 
-        // Validações com mensagens específicas
         if (talhaoDto.getArea() == null || talhaoDto.getArea() <= 0) {
             return ResponseEntity
                 .badRequest()
@@ -126,7 +122,6 @@ public ResponseEntity<?> atualizarTalhao(
             .status(HttpStatus.NOT_FOUND)
             .body(new ErrorResponse("Talhão não encontrado: " + e.getMessage()));
     } catch (Exception e) {
-        // Enhanced error logging
         System.err.println("Error updating talhao " + id + ": " + e.getMessage());
         e.printStackTrace();
         return ResponseEntity

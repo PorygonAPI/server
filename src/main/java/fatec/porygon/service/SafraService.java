@@ -81,7 +81,6 @@ public class SafraService {
             Safra safra = safraRepository.findById(idSafra)
                     .orElseThrow(() -> new RuntimeException("Safra não encontrada com ID: " + idSafra));
 
-            // Atualiza dados básicos
             if (request.getIdTalhao() != null) {
                 Talhao novoTalhao = talhaoRepository.findById(request.getIdTalhao())
                         .orElseThrow(() -> new RuntimeException("Talhão não encontrado com ID: " + request.getIdTalhao()));
@@ -110,7 +109,6 @@ public class SafraService {
                 safra.getTalhao().setTipoSolo(tipoSolo);
             }
 
-            // Processa novo arquivo se fornecido
             if (arquivoDaninha != null && !arquivoDaninha.isEmpty()) {
                 String conteudoGeoJson = new String(arquivoDaninha.getBytes(), StandardCharsets.UTF_8);
                 Geometry geometria = conversorGeoJson.convertGeoJsonToGeometry(conteudoGeoJson);
@@ -193,24 +191,20 @@ public class SafraService {
     @Transactional
     public Safra criar(Safra safra, MultipartFile arquivoDaninha) {
         try {
-            // Generate sequential ID
             Long nextId = findLastId() + 1;
             safra.setId(nextId.toString());
             
-            // Set initial status and timestamps
             safra.setStatus(StatusSafra.Pendente);
             LocalDateTime now = LocalDateTime.now();
             safra.setDataCadastro(now);
             safra.setDataUltimaVersao(now);
 
-            // Process arquivoDaninha if provided
             if (arquivoDaninha != null && !arquivoDaninha.isEmpty()) {
                 String conteudoGeoJson = new String(arquivoDaninha.getBytes(), StandardCharsets.UTF_8);
                 Geometry geometria = conversorGeoJson.convertGeoJsonToGeometry(conteudoGeoJson);
                 safra.setArquivoDaninha(geometria);
             }
 
-            // Set default produtividadeAno if not provided
             if (safra.getProdutividadeAno() == null) {
                 safra.setProdutividadeAno(0.0);
             }

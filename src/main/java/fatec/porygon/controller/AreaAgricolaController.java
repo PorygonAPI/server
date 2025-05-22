@@ -53,7 +53,6 @@ public ResponseEntity<AreaAgricolaDto> criarAreaAgricola(
         @RequestPart("arquivoFazenda") MultipartFile arquivoFazenda,
         @RequestPart(value = "arquivoErvaDaninha", required = false) MultipartFile arquivoErvaDaninha) {
     try {
-        // Basic validations
         if (nomeFazenda == null || nomeFazenda.trim().isEmpty() ||
             estado == null || estado.trim().isEmpty() ||
             cidadeNome == null || cidadeNome.trim().isEmpty()) {
@@ -116,7 +115,6 @@ public ResponseEntity<AreaAgricolaDto> atualizarAreaAgricola(
         @RequestPart(value = "arquivoFazenda", required = false) MultipartFile arquivoFazenda,
         @RequestPart(value = "arquivoErvaDaninha", required = false) MultipartFile arquivoErvaDaninha) {
     try {
-        // Basic validations
         if (nomeFazenda == null || nomeFazenda.trim().isEmpty() ||
             estado == null || estado.trim().isEmpty() ||
             cidadeNome == null || cidadeNome.trim().isEmpty()) {
@@ -125,7 +123,6 @@ public ResponseEntity<AreaAgricolaDto> atualizarAreaAgricola(
                 .body(null);
         }
 
-        // Get existing area agricola
         AreaAgricolaDto existingArea;
         try {
             existingArea = areaAgricolaService.buscarAreaAgricolaPorId(id);
@@ -134,7 +131,6 @@ public ResponseEntity<AreaAgricolaDto> atualizarAreaAgricola(
                 .build();
         }
 
-        // Create DTO with the updated data
         AreaAgricolaDto areaAgricolaDto = new AreaAgricolaDto();
         areaAgricolaDto.setId(id);
         areaAgricolaDto.setNomeFazenda(nomeFazenda);
@@ -142,12 +138,10 @@ public ResponseEntity<AreaAgricolaDto> atualizarAreaAgricola(
         areaAgricolaDto.setCidadeNome(cidadeNome);
         areaAgricolaDto.setStatus(existingArea.getStatus());
         
-        // If no new arquivo_fazenda is provided, keep the existing one
         if (arquivoFazenda == null || arquivoFazenda.isEmpty()) {
             areaAgricolaDto.setArquivoFazenda(existingArea.getArquivoFazenda());
         }
 
-        // Update area agricola
         AreaAgricolaDto areaAgricolaAtualizada = areaAgricolaService.atualizarAreaAgricola(
             id, 
             areaAgricolaDto, 
@@ -160,7 +154,6 @@ public ResponseEntity<AreaAgricolaDto> atualizarAreaAgricola(
             .body(areaAgricolaAtualizada);
             
     } catch (Exception e) {
-        // Log the error for debugging
         e.printStackTrace();
         
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)

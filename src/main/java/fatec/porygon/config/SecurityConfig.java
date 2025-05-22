@@ -24,7 +24,7 @@ public class SecurityConfig {
                             .requestMatchers("/auth/login").permitAll()
                             .anyRequest().authenticated()
             )
-            .csrf(csrf -> csrf.disable()) // Desabilita CSRF para facilitar testes no Postman
+            .csrf(csrf -> csrf.disable())
             .addFilterBefore(jwtConfig(), UsernamePasswordAuthenticationFilter.class)
             .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
 
@@ -38,7 +38,7 @@ public class SecurityConfig {
 
     @Bean
     public JwtConfig jwtConfig() {
-        return new JwtConfig(); // Registra o filtro JWT
+        return new JwtConfig();
     }
 }
           

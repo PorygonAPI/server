@@ -29,7 +29,7 @@ public class JwtConfig extends OncePerRequestFilter {
 
        if(!request.getRequestURI().startsWith("/auth/login")) {
            if (token == null || !token.startsWith("Bearer ")) {
-               response.setStatus(HttpServletResponse.SC_UNAUTHORIZED); // Código 401
+               response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
                response.setContentType("application/json");
                response.getWriter().write("{\"error\": \"Token não encontrado ou mal formado\"}");
                return;
@@ -58,19 +58,19 @@ public class JwtConfig extends OncePerRequestFilter {
                    authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                    SecurityContextHolder.getContext().setAuthentication(authentication);
                } else {
-                   response.setStatus(HttpServletResponse.SC_UNAUTHORIZED); // Código 401
+                   response.setStatus(HttpServletResponse.SC_UNAUTHORIZED); 
                    response.setContentType("application/json");
                    response.getWriter().write("{\"error\": \"Token inválido ou ausente\"}");
                    return;
                }
            } catch (JWTVerificationException e) {
-               response.setStatus(HttpServletResponse.SC_UNAUTHORIZED); // Código 401
+               response.setStatus(HttpServletResponse.SC_UNAUTHORIZED); 
                response.setContentType("application/json");
                response.getWriter().write("{\"error\": \"Token inválido ou expirado\"}");
                return;
            }
        }
 
-        chain.doFilter(request, response); // Continua com a requisição
+        chain.doFilter(request, response);
     }
 }

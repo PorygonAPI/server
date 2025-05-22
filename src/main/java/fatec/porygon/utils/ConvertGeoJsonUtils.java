@@ -14,24 +14,20 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 @Component
 public class ConvertGeoJsonUtils {
 
-    private static final int DEFAULT_SRID = 4326; // WGS 84
+    private static final int DEFAULT_SRID = 4326;
 
     public Geometry convertGeoJsonToGeometry(String geoJson) {
         try {
-            // Remove or fix CRS information if present
             ObjectMapper mapper = new ObjectMapper();
             JsonNode rootNode = mapper.readTree(geoJson);
             
-            // Remove CRS node if it exists
             if (rootNode.has("crs")) {
                 ((com.fasterxml.jackson.databind.node.ObjectNode) rootNode).remove("crs");
             }
             
-            // Create GeometryFactory with default SRID
             GeometryFactory geometryFactory = new GeometryFactory();
             GeoJsonReader reader = new GeoJsonReader(geometryFactory);
             
-            // Convert back to string and parse
             String cleanedGeoJson = mapper.writeValueAsString(rootNode);
             return reader.read(cleanedGeoJson);
             

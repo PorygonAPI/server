@@ -65,11 +65,9 @@ public class AreaAgricolaService {
     @Transactional
     public AreaAgricolaDto criarAreaAgricolaECriarSafra(CadastroAreaAgricolaDto dto) {
     try {
-        // Process GeoJSON files first
         String geoJsonContent = new String(dto.getArquivoFazenda().getBytes(), StandardCharsets.UTF_8);
         String ervaDaninhaContent = new String(dto.getArquivoErvaDaninha().getBytes(), StandardCharsets.UTF_8);
 
-        // Create and configure AreaAgricola
         Cidade cidade = cidadeService.buscarOuCriar(dto.getCidadeNome());
         AreaAgricola areaAgricola = new AreaAgricola();
         areaAgricola.setNomeFazenda(dto.getNomeFazenda());
@@ -77,7 +75,6 @@ public class AreaAgricolaService {
         areaAgricola.setCidade(cidade);
         areaAgricola.setStatus(StatusArea.Pendente);
 
-        // Convert and set arquivo_fazenda with error handling
         try {
             Geometry geometry = conversorGeoJson.convertGeoJsonToGeometry(geoJsonContent);
             if (geometry == null) {
@@ -88,10 +85,8 @@ public class AreaAgricolaService {
             throw new RuntimeException("Erro ao processar o arquivo GeoJSON da fazenda: " + e.getMessage(), e);
         }
 
-        // Save AreaAgricola
         AreaAgricola savedAreaAgricola = areaAgricolaRepository.save(areaAgricola);
 
-        // Process talhoes
         processarTalhoesGeoJson(geoJsonContent, savedAreaAgricola, ervaDaninhaContent);
 
         return convertToDto(savedAreaAgricola);
@@ -121,12 +116,10 @@ public class AreaAgricolaService {
         AreaAgricolaDto areaAgricolaDto, 
         MultipartFile arquivoFazenda,
         MultipartFile arquivoErvaDaninha) {
-        
-        // Buscar área existente
+  
         AreaAgricola existingArea = areaAgricolaRepository.findById(id)
             .orElseThrow(() -> new RuntimeException("Área agrícola não encontrada: " + id));
 
-        // Atualizar dados básicos
         existingArea.setNomeFazenda(areaAgricolaDto.getNomeFazenda());
         existingArea.setEstado(areaAgricolaDto.getEstado());
 
@@ -147,7 +140,6 @@ public class AreaAgricolaService {
                 }
                 existingArea.setArquivoFazenda(geometry);
             } else {
-                // Caso não envie o arquivo de fazenda, utilizar o existente
                 geoJsonContent = conversorGeoJson.convertGeometryToGeoJson(existingArea.getArquivoFazenda());
             }
 
@@ -159,10 +151,8 @@ public class AreaAgricolaService {
             throw new RuntimeException("Erro ao ler os arquivos enviados: " + e.getMessage());
         }
 
-        // Salvar atualizações da área
         AreaAgricola updatedArea = areaAgricolaRepository.save(existingArea);
 
-        // ⚠️ Remover talhões e safras anteriores
         List<Talhao> talhoesExistentes = talhaoRepository.findByAreaAgricolaId(updatedArea.getId());
         talhoesExistentes.forEach(t -> {
             safraRepository.deleteAll(safraRepository.findByTalhaoId(t.getId()));
@@ -171,7 +161,6 @@ public class AreaAgricolaService {
         talhaoRepository.deleteAll(talhoesExistentes);
         talhaoRepository.flush();
 
-        // Processar novos talhões e safras
         processarTalhoesGeoJson(geoJsonContent, updatedArea, ervaDaninhaContent);
 
         return convertToDto(updatedArea);
@@ -213,20 +202,16 @@ public class AreaAgricolaService {
 private void processarTalhoesGeoJson(String arquivo, AreaAgricola areaAgricola, String ervaDaninha) {
     ObjectMapper objectMapper = new ObjectMapper();
     try {
-        // Parse GeoJSON
         JsonNode rootNode = objectMapper.readTree(arquivo);
         
-        // Validate FeatureCollection
         if (!rootNode.has("type") || 
             !rootNode.get("type").asText().equals("FeatureCollection") ||
             !rootNode.has("features")) {
             throw new RuntimeException("Arquivo GeoJSON inválido: deve ser um FeatureCollection");
         }
 
-        // Get features array
         JsonNode features = rootNode.get("features");
         
-        // Convert erva daninha if provided
         Geometry geometryErvaDaninha = null;
         if (ervaDaninha != null && !ervaDaninha.trim().isEmpty()) {
             JsonNode ervaDaninhaNode = objectMapper.readTree(ervaDaninha);
@@ -235,7 +220,6 @@ private void processarTalhoesGeoJson(String arquivo, AreaAgricola areaAgricola, 
                 throw new RuntimeException("Arquivo erva daninha inválido: deve ser um FeatureCollection");
             }
             
-            // Merge all erva daninha geometries
             GeometryFactory geometryFactory = new GeometryFactory();
             for (JsonNode feature : ervaDaninhaNode.get("features")) {
                 String geometryJson = feature.get("geometry").toString();
@@ -248,7 +232,6 @@ private void processarTalhoesGeoJson(String arquivo, AreaAgricola areaAgricola, 
             }
         }
 
-        // Process each talhao feature
         for (JsonNode feature : features) {
             processarTalhaoFeature(feature, areaAgricola, geometryErvaDaninha);
         }
@@ -258,7 +241,6 @@ private void processarTalhoesGeoJson(String arquivo, AreaAgricola areaAgricola, 
     }
 }
 
-    // Adicionado para corrigir erro de método não encontrado
     private void processarFeatures(JsonNode featuresNode, AreaAgricola areaAgricola, String ervaDaninha) {
         if (featuresNode == null || !featuresNode.isArray()) {
             throw new RuntimeException("Features inválidas no GeoJSON");
@@ -281,25 +263,20 @@ private void processarTalhoesGeoJson(String arquivo, AreaAgricola areaAgricola, 
 
     @Transactional
     public void processarTalhaoFeature(JsonNode feature, AreaAgricola areaAgricola, Geometry geometryErvaDaninha) {
-        // Get properties from feature
         JsonNode properties = feature.get("properties");
         
-        // Create and save Talhao first
         Talhao novoTalhao = new Talhao();
         novoTalhao.setAreaAgricola(areaAgricola);
         novoTalhao.setArea(properties.get("AREA_HA_TL").asDouble());
         
-        // Get and set TipoSolo
         String nomeTipoSolo = properties.get("SOLO").asText();
         String nomeTipoSoloCap = nomeTipoSolo.substring(0, 1).toUpperCase() + nomeTipoSolo.substring(1).toLowerCase();
         TipoSolo tipoSolo = tipoSoloRepository.findByTipoSolo(nomeTipoSoloCap)
             .orElseThrow(() -> new RuntimeException("TipoSolo não encontrado: " + nomeTipoSoloCap));
         novoTalhao.setTipoSolo(tipoSolo);
         
-        // Save Talhao
         Talhao talhaoSalvo = talhaoRepository.save(novoTalhao);
 
-        // Create and save Safra
         String idSafra = properties.get("MN_TL").asText();
         Safra novaSafra = new Safra();
         novaSafra.setId(idSafra);
@@ -307,7 +284,6 @@ private void processarTalhoesGeoJson(String arquivo, AreaAgricola areaAgricola, 
         novaSafra.setAno(Integer.parseInt(properties.get("SAFRA").asText().split("/")[0]));
         novaSafra.setStatus(StatusSafra.Pendente);
         
-        // Get and set Cultura
         String nomeCultura = properties.get("CULTURA").asText();
         String nomeCulturaCap = nomeCultura.substring(0, 1).toUpperCase() + nomeCultura.substring(1).toLowerCase();
         Cultura cultura = culturaRepository.findByNome(nomeCulturaCap)
@@ -318,7 +294,6 @@ private void processarTalhoesGeoJson(String arquivo, AreaAgricola areaAgricola, 
         novaSafra.setDataCadastro(LocalDateTime.now());
         novaSafra.setDataUltimaVersao(LocalDateTime.now());
         
-        // Save Safra
         safraRepository.save(novaSafra);
     }
 
