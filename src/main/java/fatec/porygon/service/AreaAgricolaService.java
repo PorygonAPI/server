@@ -215,6 +215,7 @@ public class AreaAgricolaService {
                     throw new RuntimeException("Arquivo erva daninha inválido: deve ser um FeatureCollection");
                 }
 
+                @SuppressWarnings("unused")
                 GeometryFactory geometryFactory = new GeometryFactory();
                 for (JsonNode feature : ervaDaninhaNode.get("features")) {
                     String geometryJson = feature.get("geometry").toString();
