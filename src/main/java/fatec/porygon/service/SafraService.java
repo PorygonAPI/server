@@ -243,7 +243,7 @@ public class SafraService {
         if (geoJsonFile != null && !geoJsonFile.isEmpty()) {
             String conteudoGeoJson = new String(geoJsonFile.getBytes(), StandardCharsets.UTF_8);
             Geometry geometria = conversorGeoJson.convertGeoJsonToGeometry(conteudoGeoJson);
-            safra.setArquivoDaninha(geometria);
+            safra.setArquivoFinalDaninha(geometria);
         }
 
         safra.setDataUltimaVersao(LocalDateTime.now());
