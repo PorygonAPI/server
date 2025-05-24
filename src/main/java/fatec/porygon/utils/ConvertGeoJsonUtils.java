@@ -1,36 +1,56 @@
 package fatec.porygon.utils;
 
 import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.io.ParseException;
 import org.locationtech.jts.io.geojson.GeoJsonReader;
-import org.locationtech.jts.io.geojson.GeoJsonWriter;
+import org.springframework.stereotype.Component;
+import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.io.WKTReader;
+import org.locationtech.jts.io.ParseException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
+@Component
 public class ConvertGeoJsonUtils {
 
+    private static final int DEFAULT_SRID = 4326;
+
     public Geometry convertGeoJsonToGeometry(String geoJson) {
-        GeoJsonReader geoJsonReader = new GeoJsonReader();
-
-        if (geoJson == null || geoJson.trim().isEmpty()) {
-            return null;
-        }
-
         try {
-            return geoJsonReader.read(geoJson);
-        } catch (ParseException e) {
+            ObjectMapper mapper = new ObjectMapper();
+            JsonNode rootNode = mapper.readTree(geoJson);
+            
+            if (rootNode.has("crs")) {
+                ((com.fasterxml.jackson.databind.node.ObjectNode) rootNode).remove("crs");
+            }
+            
+            GeometryFactory geometryFactory = new GeometryFactory();
+            GeoJsonReader reader = new GeoJsonReader(geometryFactory);
+            
+            String cleanedGeoJson = mapper.writeValueAsString(rootNode);
+            return reader.read(cleanedGeoJson);
+            
+        } catch (Exception e) {
             throw new RuntimeException("Erro ao converter GeoJSON para Geometry: " + e.getMessage(), e);
         }
-
     }
 
     public String convertGeometryToGeoJson(Geometry geometry) {
-
-        GeoJsonWriter geoJsonWriter = new GeoJsonWriter();
-
-        if (geometry == null) {
-            return null;
+        try {
+            if (geometry == null) {
+                return null;
+            }
+            org.locationtech.jts.io.geojson.GeoJsonWriter writer = 
+                new org.locationtech.jts.io.geojson.GeoJsonWriter();
+            return writer.write(geometry);
+        } catch (Exception e) {
+            throw new RuntimeException("Erro ao converter Geometry para GeoJSON", e);
         }
-
-        return geoJsonWriter.write(geometry);
     }
 
+    public Geometry convertWKTToGeometry(String wkt) throws ParseException {
+        WKTReader reader = new WKTReader();
+        return reader.read(wkt);
+    }
 }

@@ -20,7 +20,7 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-
+import com.fasterxml.jackson.databind.ObjectMapper;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
@@ -30,17 +30,30 @@ import java.util.Map;
 public class SafraController {
 
     private final SafraService safraService;
+    private final ObjectMapper objectMapper;
 
     @Autowired
-    public SafraController(SafraService safraService) {
+    public SafraController(SafraService safraService, ObjectMapper objectMapper) {
         this.safraService = safraService;
+        this.objectMapper = objectMapper;
     }
 
-    @PostMapping
-    public ResponseEntity<Safra> criar(@RequestBody Safra safra) {
-        Safra salva = safraService.salvar(safra);
-        safra.setDataCadastro(LocalDateTime.now());
-        return ResponseEntity.status(HttpStatus.CREATED).body(salva);
+    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<?> criar(
+            @RequestPart("dados") String dadosJson,
+            @RequestPart(value = "arquivoDaninha", required = false) MultipartFile arquivoDaninha) {
+        try {
+            Safra safra = objectMapper.readValue(dadosJson, Safra.class);
+            safra.setDataCadastro(LocalDateTime.now());
+
+            Safra novaSafra = safraService.criar(safra, arquivoDaninha);
+
+            return ResponseEntity.status(HttpStatus.CREATED).body(novaSafra);
+        } catch (Exception e) {
+            return ResponseEntity
+                    .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Erro ao criar safra: " + e.getMessage());
+        }
     }
 
     @GetMapping
@@ -58,12 +71,24 @@ public class SafraController {
         return ResponseEntity.ok(safraService.atualizar(id, safra));
     }
 
-    @PutMapping("/{idSafra}/atualizar")
+    @PutMapping(value = "/{idSafra}/atualizar", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<String> atualizarSafra(
-            @PathVariable Long idSafra,
-            @RequestBody AtualizarSafraRequestDto request) {
-        safraService.atualizarSafra(String.valueOf(idSafra), request);
-        return ResponseEntity.ok("Safra atualizada com sucesso.");
+            @PathVariable String idSafra,
+            @RequestPart("dados") String dadosJson,
+            @RequestPart(value = "arquivoDaninha", required = false) MultipartFile arquivoDaninha) {
+        try {
+            ObjectMapper mapper = new ObjectMapper();
+            AtualizarSafraRequestDto request = mapper.readValue(dadosJson, AtualizarSafraRequestDto.class);
+
+            safraService.atualizarSafra(idSafra, request, arquivoDaninha);
+            return ResponseEntity.ok()
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .body("{\"message\": \"Safra atualizada com sucesso.\"}");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .body("{\"error\": \"" + e.getMessage() + "\"}");
+        }
     }
 
     @DeleteMapping("/{id}")

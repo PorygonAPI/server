@@ -32,6 +32,6 @@ public class SecurityConfig {
 
     @Bean
     public JwtConfig jwtConfig() {
-        return new JwtConfig(); // Registra o filtro JWT
+        return new JwtConfig();
     }
 }

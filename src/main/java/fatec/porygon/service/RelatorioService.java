@@ -13,7 +13,6 @@ import java.util.stream.Collectors;
 
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
-
 import fatec.porygon.dto.CulturaMaisProdutivaDto;
 import fatec.porygon.dto.ProdutividadeMediaPorCulturaDto;
 import fatec.porygon.dto.ProdutividadeMediaPorEstadoDto;
