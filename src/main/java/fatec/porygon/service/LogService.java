@@ -3,6 +3,8 @@ package fatec.porygon.service;
 import fatec.porygon.dto.LogDto;
 import fatec.porygon.entity.Log;
 import fatec.porygon.repository.LogRepository;
+
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -17,6 +19,7 @@ public class LogService {
         this.logRepository = logRepository;
     }
 
+    @PreAuthorize("hasAuthority('Administrador') or hasAuthority('Analista') or hasAuthority('Consultor')")
     public List<LogDto> buscarTodos() {
         return logRepository.findAll().stream()
                 .map(this::converterParaDto)

@@ -10,7 +10,6 @@ public class AreaAgricolaDto {
     private String arquivoFazenda;
     private String cidadeNome;
 
-    // Getters
     public Long getId() {return id;}
     public String getNomeFazenda() {return nomeFazenda;}
     public String getEstado() {return estado;}
@@ -18,7 +17,6 @@ public class AreaAgricolaDto {
     public String getArquivoFazenda() {return arquivoFazenda;}
     public String getCidadeNome() {return cidadeNome;}
 
-    // Setters
     public void setId(Long id) {this.id = id;}
     public void setNomeFazenda(String nomeFazenda) {this.nomeFazenda = nomeFazenda;}
     public void setEstado(String estado) {this.estado = estado;}

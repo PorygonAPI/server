@@ -2,7 +2,6 @@ package fatec.porygon.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -19,14 +18,9 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-            .authorizeHttpRequests(authorizeRequests ->
-                    authorizeRequests
-                            .requestMatchers("/auth/login").permitAll()
-                            .anyRequest().authenticated()
-            )
-            .csrf(csrf -> csrf.disable()) // Desabilita CSRF para facilitar testes no Postman
-            .addFilterBefore(jwtConfig(), UsernamePasswordAuthenticationFilter.class)
-            .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
+                .csrf(csrf -> csrf.disable())
+                .addFilterBefore(jwtConfig(), UsernamePasswordAuthenticationFilter.class)
+                .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
 
         return http.build();
     }
@@ -38,7 +32,6 @@ public class SecurityConfig {
 
     @Bean
     public JwtConfig jwtConfig() {
-        return new JwtConfig(); // Registra o filtro JWT
+        return new JwtConfig();
     }
 }
-          

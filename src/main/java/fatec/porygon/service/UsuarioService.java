@@ -6,6 +6,7 @@ import fatec.porygon.entity.Cargo;
 import fatec.porygon.repository.UsuarioRepository;
 import fatec.porygon.repository.CargoRepository;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import java.util.List;
@@ -25,6 +26,7 @@ public class UsuarioService {
         this.passwordEncoder = passwordEncoder;
     }
 
+    @PreAuthorize("hasAuthority('Administrador') or hasAuthority('Consultor')")
     public UsuarioDto criarUsuario(UsuarioDto usuarioDto) {
         Optional<Cargo> cargoOpt = cargoRepository.findById(usuarioDto.getCargo());
         if (cargoOpt.isEmpty()) {
@@ -40,10 +42,12 @@ public class UsuarioService {
         return toDto(usuario);
     }
 
+    @PreAuthorize("hasAuthority('Administrador') or hasAuthority('Consultor')")
     public List<UsuarioDto> listarUsuarios() {
         return usuarioRepository.findAll().stream().map(this::toDto).collect(Collectors.toList());
     }
 
+    @PreAuthorize("hasAuthority('Administrador') or hasAuthority('Consultor')")
     public ResponseEntity<UsuarioDto> buscarUsuario(Long id) {
         Optional<Usuario> usuarioOpt = usuarioRepository.findById(id);
         if (usuarioOpt.isEmpty()) {
@@ -52,6 +56,7 @@ public class UsuarioService {
         return ResponseEntity.ok(toDto(usuarioOpt.get()));
     }
 
+    @PreAuthorize("hasAuthority('Administrador') or hasAuthority('Consultor')")
     public ResponseEntity<UsuarioDto> atualizarUsuario(Long id, UsuarioDto usuarioDto) {
         Optional<Usuario> usuarioOpt = usuarioRepository.findById(id);
         if (usuarioOpt.isEmpty()) {
@@ -72,6 +77,7 @@ public class UsuarioService {
         return ResponseEntity.ok(toDto(usuario));
     }
 
+    @PreAuthorize("hasAuthority('Administrador') or hasAuthority('Consultor')")
     public ResponseEntity<Void> removerUsuario(Long id) {
         if (!usuarioRepository.existsById(id)) {
             return ResponseEntity.notFound().build();

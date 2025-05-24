@@ -3,6 +3,7 @@ package fatec.porygon.service;
 import fatec.porygon.entity.Cidade;
 import fatec.porygon.repository.CidadeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -37,6 +38,7 @@ public class CidadeService {
         }
     }
     
+    @PreAuthorize("hasAuthority('Administrador') or hasAuthority('Analista') or hasAuthority('Consultor')")
     public List<Cidade> listarTodas() {
         return cidadeRepository.findAll();
     }
