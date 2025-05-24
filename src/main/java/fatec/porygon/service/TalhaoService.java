@@ -170,6 +170,7 @@ public class TalhaoService {
         return dto;
     }
 
+    @SuppressWarnings("unused")
     public void editarTalhaoPorAreaAgricola(Long idTalhao, String idSafra, Long idAreaAgricola) {
         var safra = talhaoRepository.findById(idTalhao);
 

@@ -286,6 +286,7 @@ public class SafraService {
          Safra safra = safraRepository.findById(idSafra)
                  .orElseThrow(() -> new RuntimeException("Safra não encontrada com ID: " + idSafra));
  
+         @SuppressWarnings("unused")
          AreaAgricola areaAgricola = safra.getTalhao().getAreaAgricola();
  
          SafraGeoJsonDto dto = new SafraGeoJsonDto();
