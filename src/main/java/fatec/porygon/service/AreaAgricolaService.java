@@ -185,60 +185,22 @@ public class AreaAgricolaService {
     }
 
     @Transactional
-    public AreaAgricolaDto atualizarAreaAgricola(
-        Long id, 
-        AreaAgricolaDto areaAgricolaDto, 
-        MultipartFile arquivoFazenda,
-        MultipartFile arquivoErvaDaninha) {
-  
-        AreaAgricola existingArea = areaAgricolaRepository.findById(id)
-            .orElseThrow(() -> new RuntimeException("Área agrícola não encontrada: " + id));
+public AreaAgricolaDto atualizarAreaAgricola(Long id, AreaAgricolaDto areaAgricolaDto) {
+    AreaAgricola existingArea = areaAgricolaRepository.findById(id)
+        .orElseThrow(() -> new RuntimeException("Área agrícola não encontrada: " + id));
 
-        existingArea.setNomeFazenda(areaAgricolaDto.getNomeFazenda());
-        existingArea.setEstado(areaAgricolaDto.getEstado());
+    // Update only basic fields
+    existingArea.setNomeFazenda(areaAgricolaDto.getNomeFazenda());
+    existingArea.setEstado(areaAgricolaDto.getEstado());
 
-        if (areaAgricolaDto.getCidadeNome() != null && !areaAgricolaDto.getCidadeNome().isEmpty()) {
-            Cidade cidade = cidadeService.buscarOuCriar(areaAgricolaDto.getCidadeNome());
-            existingArea.setCidade(cidade);
-        }
-
-        String geoJsonContent = null;
-        String ervaDaninhaContent = null;
-
-        try {
-            if (arquivoFazenda != null && !arquivoFazenda.isEmpty()) {
-                geoJsonContent = new String(arquivoFazenda.getBytes(), StandardCharsets.UTF_8);
-                Geometry geometry = conversorGeoJson.convertGeoJsonToGeometry(geoJsonContent);
-                if (geometry == null) {
-                    throw new RuntimeException("Geometria inválida no arquivo GeoJSON da fazenda");
-                }
-                existingArea.setArquivoFazenda(geometry);
-            } else {
-                geoJsonContent = conversorGeoJson.convertGeometryToGeoJson(existingArea.getArquivoFazenda());
-            }
-
-            if (arquivoErvaDaninha != null && !arquivoErvaDaninha.isEmpty()) {
-                ervaDaninhaContent = new String(arquivoErvaDaninha.getBytes(), StandardCharsets.UTF_8);
-            }
-
-        } catch (IOException e) {
-            throw new RuntimeException("Erro ao ler os arquivos enviados: " + e.getMessage());
-        }
-
-        AreaAgricola updatedArea = areaAgricolaRepository.save(existingArea);
-
-        List<Talhao> talhoesExistentes = talhaoRepository.findByAreaAgricolaId(updatedArea.getId());
-        talhoesExistentes.forEach(t -> {
-            safraRepository.deleteAll(safraRepository.findByTalhaoId(t.getId()));
-            talhaoRepository.flush();
-        });
-        talhaoRepository.deleteAll(talhoesExistentes);
-        talhaoRepository.flush();
-
-        processarTalhoesGeoJson(geoJsonContent, updatedArea, ervaDaninhaContent);
-
-        return convertToDto(updatedArea);
+    if (areaAgricolaDto.getCidadeNome() != null && !areaAgricolaDto.getCidadeNome().isEmpty()) {
+        Cidade cidade = cidadeService.buscarOuCriar(areaAgricolaDto.getCidadeNome());
+        existingArea.setCidade(cidade);
     }
+
+    AreaAgricola updatedArea = areaAgricolaRepository.save(existingArea);
+    return convertToDto(updatedArea);
+}
 
 
     @Transactional
