@@ -160,8 +160,11 @@ public class SafraController {
 
         body.add("arquivoFazenda", new HttpEntity<>(arquivoFazenda, criarHeaders("arquivoFazenda.geojson")));
         body.add("arquivoDaninha", new HttpEntity<>(arquivoDaninha, criarHeaders("arquivoDaninha.geojson")));
-        body.add("arquivoFinalDaninha",
+        if (arquivoFinalDaninha != null) {
+             body.add("arquivoFinalDaninha",
                 new HttpEntity<>(arquivoFinalDaninha, criarHeaders("arquivoFinalDaninha.geojson")));
+        }
+       
 
         return new ResponseEntity<>(body, HttpStatus.OK);
     }
