@@ -65,10 +65,13 @@ public class TalhaoService {
 
     public List<TalhaoDto> listarTodos() {
         List<Talhao> talhoes = talhaoRepository.findAll();
+
         return talhoes.stream()
-                .map(this::convertToDto)
+                .flatMap(t -> t.getSafras().stream())
+                .map(this::convertSafraToDto)
                 .collect(Collectors.toList());
     }
+
 
     public TalhaoDto buscarPorId(Long id) {
         Talhao talhao = talhaoRepository.findById(id)
@@ -162,6 +165,38 @@ public class TalhaoService {
                 dto.setArquivoFinalDaninha(
                         conversorGeoJson.convertGeometryToGeoJson(safraAtual.getArquivoFinalDaninha()));
             }
+        }
+
+        return dto;
+    }
+
+    private TalhaoDto convertSafraToDto(Safra safra) {
+        TalhaoDto dto = new TalhaoDto();
+        dto.setId(safra.getTalhao().getId());
+        dto.setArea(safra.getTalhao().getArea());
+
+        if (safra.getTalhao().getAreaAgricola() != null) {
+            dto.setAreaAgricola(safra.getTalhao().getAreaAgricola().getId());
+        }
+
+        if (safra.getTalhao().getTipoSolo() != null) {
+            dto.setTipoSoloNome(safra.getTalhao().getTipoSolo().getTipoSolo());
+        }
+
+        dto.setAno(safra.getAno());
+        dto.setStatus(safra.getStatus());
+        if (safra.getProdutividadeAno() != null) {
+            dto.setProdutividadeAno(safra.getProdutividadeAno().floatValue());
+        }
+        if (safra.getCultura() != null) {
+            dto.setCultura(safra.getCultura().getId());
+            dto.setCulturaNome(safra.getCultura().getNome());
+        }
+        if (safra.getArquivoDaninha() != null) {
+            dto.setArquivoDaninha(conversorGeoJson.convertGeometryToGeoJson(safra.getArquivoDaninha()));
+        }
+        if (safra.getArquivoFinalDaninha() != null) {
+            dto.setArquivoFinalDaninha(conversorGeoJson.convertGeometryToGeoJson(safra.getArquivoFinalDaninha()));
         }
 
         return dto;
