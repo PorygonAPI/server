@@ -83,9 +83,6 @@ public class TalhaoController {
             ObjectMapper mapper = new ObjectMapper();
             TalhaoDto talhaoDto = mapper.readValue(dadosJson, TalhaoDto.class);
 
-            System.out.println("Updating talhao with ID: " + id);
-            System.out.println("Received data: " + dadosJson);
-
             if (talhaoDto.getArea() == null || talhaoDto.getArea() <= 0) {
                 return ResponseEntity
                         .badRequest()

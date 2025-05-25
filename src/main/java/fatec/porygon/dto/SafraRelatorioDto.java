@@ -1,6 +1,5 @@
 package fatec.porygon.dto;
 
-import java.time.Duration;
 import java.time.LocalDateTime;
 
 public class SafraRelatorioDto {

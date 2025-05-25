@@ -192,6 +192,7 @@ public class SafraService {
                 .orElse(0L);
     }
 
+    @PreAuthorize("hasAuthority('Administrador') or hasAuthority('Consultor')")
     @Transactional
     public Safra criar(Safra safra, MultipartFile arquivoDaninha) {
         try {
@@ -227,7 +228,7 @@ public class SafraService {
         return safras;
     }
 
-    @PreAuthorize("hasAuthority('Analista')")
+    @PreAuthorize("hasAuthority('Administrador') or hasAuthority('Analista') or hasAuthority('Consultor')")
     public Map<String, List<TalhaoResumoDto>> listarTalhoesPorUsuario(Long idUsuario) {
         List<TalhaoResumoDto> aprovados = converterParaDto(
                 safraRepository.buscarTalhoesBrutosPorStatus(idUsuario, StatusSafra.Aprovado));
@@ -277,7 +278,7 @@ public class SafraService {
         }
     }
 
-    @PreAuthorize("hasAuthority('Analista')")
+    @PreAuthorize("hasAuthority('Administrador') or hasAuthority('Analista') or hasAuthority('Consultor')")
     public List<TalhaoPendenteDto> listarSafrasPendentes() {
         return talhaoRepository.findAll().stream()
                 .flatMap(t -> t.getSafras().stream()
