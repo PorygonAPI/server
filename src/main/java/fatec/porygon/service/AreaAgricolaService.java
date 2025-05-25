@@ -299,6 +299,7 @@ public class AreaAgricolaService {
         Safra novaSafra = new Safra();
         novaSafra.setId(idSafra);
         novaSafra.setTalhao(talhaoSalvo);
+        novaSafra.setProdutividadeAno(0.0);
         novaSafra.setAno(Integer.parseInt(properties.get("SAFRA").asText().split("/")[0]));
         novaSafra.setStatus(StatusSafra.Pendente);
 

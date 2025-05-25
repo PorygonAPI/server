@@ -190,6 +190,9 @@ public class TalhaoService {
             dto.setStatus(safraAtual.getStatus());
             dto.setProdutividadeAno(safraAtual.getProdutividadeAno() != null ? safraAtual.getProdutividadeAno().floatValue() : 0.0f);
         }
+        if (talhao.getTipoSolo() != null) {
+            dto.setTipoSoloNome(talhao.getTipoSolo().getTipoSolo());
+        }
     } catch (RuntimeException e) {
         dto.setCulturaNome("");
         dto.setAno(LocalDateTime.now().getYear());
