@@ -360,6 +360,9 @@ public class SafraService {
      }
  
      private ByteArrayResource criarArquivoGeoJson(String geoJson, String filename) {
+        if (geoJson == null) {
+           return null;
+        }
          return new ByteArrayResource(geoJson.getBytes(StandardCharsets.UTF_8)) {
              @Override
              public String getFilename() {
