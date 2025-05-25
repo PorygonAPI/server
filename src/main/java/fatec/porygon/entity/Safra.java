@@ -27,12 +27,11 @@ public class Safra {
     @Enumerated(EnumType.STRING)
     private StatusSafra status;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "talhao_id")
-    @JsonBackReference
     private Talhao talhao;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "cultura_id")
     private Cultura cultura;
 

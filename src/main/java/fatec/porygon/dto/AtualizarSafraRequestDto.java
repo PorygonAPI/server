@@ -8,7 +8,6 @@ public class AtualizarSafraRequestDto {
     private String tipoSoloNome;
     private Double area;
 
-    // Getters and Setters
     public Long getIdTalhao() { return idTalhao; }
     public void setIdTalhao(Long novoIdTalhao) { this.idTalhao = novoIdTalhao; }
 

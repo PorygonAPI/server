@@ -41,7 +41,7 @@ public class AutenticacaoService {
                 .withSubject(String.valueOf(usuario.getId()))
                 .withIssuedAt(new Date())
                 .withExpiresAt(new Date(System.currentTimeMillis() + 86400000))
-                .withClaim("roles", Collections.singletonList(role)) // Adiciona a role como uma claim
+                .withClaim("roles", Collections.singletonList(role))
                 .sign(Algorithm.HMAC256(SECRET));
         response.put("token", token);
         response.put("role", role);

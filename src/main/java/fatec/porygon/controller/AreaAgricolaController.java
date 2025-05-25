@@ -13,6 +13,10 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import org.springframework.http.MediaType;
+
 import java.util.List;
 import java.util.Optional;
 
@@ -38,21 +42,47 @@ public class AreaAgricolaController {
         return fazendaDetalhada.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
     }
 
-    @PreAuthorize("hasAuthority('Administrador') or hasAuthority('Consultor')")
-    @PostMapping
-    public ResponseEntity<AreaAgricolaDto> criarAreaAgricola(@RequestBody CadastroAreaAgricolaDto dto) {
-        if (dto.getCidadeNome() == null || dto.getCidadeNome().trim().isEmpty()) {
+    @PostMapping(
+    consumes = MediaType.MULTIPART_FORM_DATA_VALUE,
+    produces = MediaType.APPLICATION_JSON_VALUE
+)
+public ResponseEntity<AreaAgricolaDto> criarAreaAgricola(
+        @RequestPart("nomeFazenda") String nomeFazenda,
+        @RequestPart("estado") String estado,
+        @RequestPart("cidadeNome") String cidadeNome,
+        @RequestPart("arquivoFazenda") MultipartFile arquivoFazenda,
+        @RequestPart(value = "arquivoErvaDaninha", required = false) MultipartFile arquivoErvaDaninha) {
+    try {
+        if (nomeFazenda == null || nomeFazenda.trim().isEmpty() ||
+            estado == null || estado.trim().isEmpty() ||
+            cidadeNome == null || cidadeNome.trim().isEmpty()) {
+            return ResponseEntity.badRequest()
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(null);
+        }
+
+        if (cidadeNome == null || cidadeNome.trim().isEmpty()) {
             System.out.println("Erro: Nome da cidade está vazio ou nulo.");
             return ResponseEntity.badRequest().body(null);
         }
-        if (dto.getArquivoFazenda() == null || dto.getArquivoFazenda().trim().isEmpty()) {
-            System.out.println("Erro: Arquivo Fazenda está vazio ou nulo.");
-            return ResponseEntity.badRequest().body(null);
-        }
-        
+
+        CadastroAreaAgricolaDto dto = new CadastroAreaAgricolaDto();
+        dto.setNomeFazenda(nomeFazenda);
+        dto.setEstado(estado);
+        dto.setCidadeNome(cidadeNome);
+        dto.setArquivoFazenda(arquivoFazenda);
+        dto.setArquivoErvaDaninha(arquivoErvaDaninha);
+
         AreaAgricolaDto novaAreaAgricola = areaAgricolaService.criarAreaAgricolaECriarSafra(dto);
-        return new ResponseEntity<>(novaAreaAgricola, HttpStatus.CREATED);
+        return ResponseEntity.status(HttpStatus.CREATED)
+            .contentType(MediaType.APPLICATION_JSON)
+            .body(novaAreaAgricola);
+    } catch (Exception e) {
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+            .contentType(MediaType.APPLICATION_JSON)
+            .body(null);
     }
+}
 
     @PreAuthorize("hasAuthority('Administrador') or hasAuthority('Analista') or hasAuthority('Consultor')")
     @GetMapping
@@ -72,21 +102,65 @@ public class AreaAgricolaController {
         }
     }
 
-    @PreAuthorize("hasAuthority('Administrador') or hasAuthority('Consultor')")
-    @PutMapping("/{id}")
-    public ResponseEntity<AreaAgricolaDto> atualizarAreaAgricola(@PathVariable Long id, 
-                                                               @RequestBody AreaAgricolaDto areaAgricolaDto) {
-        try {
-            if (areaAgricolaDto.getCidadeNome() == null || areaAgricolaDto.getCidadeNome().trim().isEmpty()) {
-                return ResponseEntity.badRequest().build();
-            }
-            
-            AreaAgricolaDto areaAgricolaAtualizada = areaAgricolaService.atualizarAreaAgricola(id, areaAgricolaDto);
-            return ResponseEntity.ok(areaAgricolaAtualizada);
-        } catch (RuntimeException e) {
-            return ResponseEntity.notFound().build();
+  @PutMapping(
+    value = "/{id}",
+    consumes = MediaType.MULTIPART_FORM_DATA_VALUE,
+    produces = MediaType.APPLICATION_JSON_VALUE
+)
+public ResponseEntity<AreaAgricolaDto> atualizarAreaAgricola(
+        @PathVariable Long id,
+        @RequestParam("nomeFazenda") String nomeFazenda,
+        @RequestParam("estado") String estado,
+        @RequestParam("cidadeNome") String cidadeNome,
+        @RequestPart(value = "arquivoFazenda", required = false) MultipartFile arquivoFazenda,
+        @RequestPart(value = "arquivoErvaDaninha", required = false) MultipartFile arquivoErvaDaninha) {
+    try {
+        if (nomeFazenda == null || nomeFazenda.trim().isEmpty() ||
+            estado == null || estado.trim().isEmpty() ||
+            cidadeNome == null || cidadeNome.trim().isEmpty()) {
+            return ResponseEntity.badRequest()
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(null);
         }
+
+        AreaAgricolaDto existingArea;
+        try {
+            existingArea = areaAgricolaService.buscarAreaAgricolaPorId(id);
+        } catch (RuntimeException e) {
+            return ResponseEntity.notFound()
+                .build();
+        }
+
+        AreaAgricolaDto areaAgricolaDto = new AreaAgricolaDto();
+        areaAgricolaDto.setId(id);
+        areaAgricolaDto.setNomeFazenda(nomeFazenda);
+        areaAgricolaDto.setEstado(estado);
+        areaAgricolaDto.setCidadeNome(cidadeNome);
+        areaAgricolaDto.setStatus(existingArea.getStatus());
+        
+        if (arquivoFazenda == null || arquivoFazenda.isEmpty()) {
+            areaAgricolaDto.setArquivoFazenda(existingArea.getArquivoFazenda());
+        }
+
+        AreaAgricolaDto areaAgricolaAtualizada = areaAgricolaService.atualizarAreaAgricola(
+            id, 
+            areaAgricolaDto, 
+            arquivoFazenda, 
+            arquivoErvaDaninha
+        );
+        
+        return ResponseEntity.ok()
+            .contentType(MediaType.APPLICATION_JSON)
+            .body(areaAgricolaAtualizada);
+            
+    } catch (Exception e) {
+        e.printStackTrace();
+        
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+            .contentType(MediaType.APPLICATION_JSON)
+            .body(null);
     }
+}
 
     @PreAuthorize("hasAuthority('Administrador') or hasAuthority('Consultor')")
     @DeleteMapping("/{id}")
