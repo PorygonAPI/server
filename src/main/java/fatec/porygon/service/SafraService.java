@@ -243,7 +243,7 @@ public class SafraService {
         if (geoJsonFile != null && !geoJsonFile.isEmpty()) {
             String conteudoGeoJson = new String(geoJsonFile.getBytes(), StandardCharsets.UTF_8);
             Geometry geometria = conversorGeoJson.convertGeoJsonToGeometry(conteudoGeoJson);
-            safra.setArquivoDaninha(geometria);
+            safra.setArquivoFinalDaninha(geometria);
         }
 
         safra.setDataUltimaVersao(LocalDateTime.now());
@@ -298,7 +298,12 @@ public class SafraService {
  
      public ByteArrayResource obterArquivoFinalDaninha(Safra safra) {
          String geoJson = conversorGeoJson.convertGeometryToGeoJson(safra.getArquivoFinalDaninha());
+         if (geoJson == null) {
+
+            return null;
+         }
          return criarArquivoGeoJson(geoJson, "arquivoFinalDaninha.geojson");
+        
      }
  
      private ByteArrayResource criarArquivoGeoJson(String geoJson, String filename) {
