@@ -8,6 +8,7 @@ import fatec.porygon.repository.SafraRepository;
 import fatec.porygon.repository.TalhaoRepository;
 import fatec.porygon.repository.UsuarioRepository;
 import fatec.porygon.utils.ConvertGeoJsonUtils;
+import jakarta.persistence.EntityNotFoundException;
 import fatec.porygon.dto.SafraDto;
 import fatec.porygon.dto.SafraGeoJsonDto;
 import fatec.porygon.dto.TalhaoPendenteDto;
@@ -17,6 +18,7 @@ import jakarta.persistence.EntityNotFoundException;
 import org.locationtech.jts.geom.Geometry;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ByteArrayResource;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -63,7 +65,7 @@ public class SafraService {
 
     public Safra buscarPorId(String id) {
         return safraRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Safra não encontrada"));
+            .orElseThrow(() -> new EntityNotFoundException("Safra não encontrada com ID: " + id));
     }
 
     public List<SafraDto> listarTodas() {
@@ -74,39 +76,50 @@ public class SafraService {
     }
 
     @Transactional
-    public void atualizarSafra(String idSafra, AtualizarSafraRequestDto request) {
-        Safra safra = safraRepository.findById(idSafra)
-                .orElseThrow(() -> new RuntimeException("Safra não encontrada com ID: " + idSafra));
+    public void atualizarSafra(String idSafra, AtualizarSafraRequestDto request, MultipartFile arquivoDaninha) {
+        try {
+            Safra safra = safraRepository.findById(idSafra)
+                    .orElseThrow(() -> new RuntimeException("Safra não encontrada com ID: " + idSafra));
 
-        if (request.getIdTalhao() != null) {
-            Talhao novoTalhao = talhaoRepository.findById(request.getIdTalhao())
-                    .orElseThrow(() -> new RuntimeException("Talhão não encontrado com ID: " + request.getIdTalhao()));
-            safra.setTalhao(novoTalhao);
+            if (request.getIdTalhao() != null) {
+                Talhao novoTalhao = talhaoRepository.findById(request.getIdTalhao())
+                        .orElseThrow(() -> new RuntimeException("Talhão não encontrado com ID: " + request.getIdTalhao()));
+                safra.setTalhao(novoTalhao);
+            }
+
+            if(request.getArea() != null){
+                safra.getTalhao().setArea(request.getArea());
+            }
+
+            if (request.getAnoSafra() != null) {
+                safra.setAno(request.getAnoSafra());
+            }
+
+            if (request.getCulturaNome() != null) {
+                Cultura cultura = culturaService.buscarOuCriar(request.getCulturaNome());
+                safra.setCultura(cultura);
+            }
+
+            if (request.getProdutividadeAno() != null) {
+                safra.setProdutividadeAno(request.getProdutividadeAno());
+            }
+
+            if (request.getTipoSoloNome() != null) {
+                TipoSolo tipoSolo = tipoSoloService.buscarOuCriar(request.getTipoSoloNome());
+                safra.getTalhao().setTipoSolo(tipoSolo);
+            }
+
+            if (arquivoDaninha != null && !arquivoDaninha.isEmpty()) {
+                String conteudoGeoJson = new String(arquivoDaninha.getBytes(), StandardCharsets.UTF_8);
+                Geometry geometria = conversorGeoJson.convertGeoJsonToGeometry(conteudoGeoJson);
+                safra.setArquivoDaninha(geometria);
+                safra.setDataUltimaVersao(LocalDateTime.now());
+            }
+
+            safraRepository.save(safra);
+        } catch (IOException e) {
+            throw new RuntimeException("Erro ao processar arquivo de erva daninha", e);
         }
-
-        if (request.getArea() != null) {
-            safra.getTalhao().setArea(request.getArea());
-        }
-
-        if (request.getAnoSafra() != null) {
-            safra.setAno(request.getAnoSafra());
-        }
-
-        if (request.getCulturaNome() != null) {
-            Cultura cultura = culturaService.buscarOuCriar(request.getCulturaNome());
-            safra.setCultura(cultura);
-        }
-
-        if (request.getProdutividadeAno() != null) {
-            safra.setProdutividadeAno(request.getProdutividadeAno());
-        }
-
-        if (request.getTipoSoloNome() != null) {
-            TipoSolo tipoSolo = tipoSoloService.buscarOuCriar(request.getTipoSoloNome());
-            safra.getTalhao().setTipoSolo(tipoSolo);
-        }
-
-        safraRepository.save(safra);
     }
 
     private SafraDto convertToDto(Safra safra) {
@@ -163,10 +176,43 @@ public class SafraService {
         return safraRepository.save(safra);
     }
 
+    @Query("SELECT MAX(CAST(s.id AS long)) FROM Safra s")
+    private Long findLastId() {
+        List<String> allIds = safraRepository.findAll().stream()
+            .map(Safra::getId)
+            .collect(Collectors.toList());
+            
+        return allIds.stream()
+            .mapToLong(Long::parseLong)
+            .max()
+            .orElse(0L);
+    }
+
     @Transactional
-    public Safra criarSafra(Safra safra) {
-        tratarArquivosDaninha(safra);
-        return safraRepository.save(safra);
+    public Safra criar(Safra safra, MultipartFile arquivoDaninha) {
+        try {
+            Long nextId = findLastId() + 1;
+            safra.setId(nextId.toString());
+            
+            safra.setStatus(StatusSafra.Pendente);
+            LocalDateTime now = LocalDateTime.now();
+            safra.setDataCadastro(now);
+            safra.setDataUltimaVersao(now);
+
+            if (arquivoDaninha != null && !arquivoDaninha.isEmpty()) {
+                String conteudoGeoJson = new String(arquivoDaninha.getBytes(), StandardCharsets.UTF_8);
+                Geometry geometria = conversorGeoJson.convertGeoJsonToGeometry(conteudoGeoJson);
+                safra.setArquivoDaninha(geometria);
+            }
+
+            if (safra.getProdutividadeAno() == null) {
+                safra.setProdutividadeAno(0.0);
+            }
+
+            return safraRepository.save(safra);
+        } catch (IOException e) {
+            throw new RuntimeException("Erro ao processar arquivo de erva daninha: " + e.getMessage(), e);
+        }
     }
 
     public List<Safra> buscarPorTalhao(Long talhaoId) {
@@ -205,14 +251,26 @@ public class SafraService {
     }
 
     private void tratarArquivosDaninha(Safra safra) {
-        if (safra.getArquivoDaninha() != null && safra.getArquivoDaninha().toString().contains("{")) {
-            safra.setArquivoDaninha(conversorGeoJson.convertGeoJsonToGeometry(safra.getArquivoDaninha().toString()));
+    try {
+        if (safra.getArquivoDaninha() instanceof MultipartFile) {
+            MultipartFile arquivo = (MultipartFile) safra.getArquivoDaninha();
+            if (!arquivo.isEmpty()) {
+                String conteudoGeoJson = new String(arquivo.getBytes(), StandardCharsets.UTF_8);
+                safra.setArquivoDaninha(conversorGeoJson.convertGeoJsonToGeometry(conteudoGeoJson));
+            }
         }
-        if (safra.getArquivoFinalDaninha() != null && safra.getArquivoFinalDaninha().toString().contains("{")) {
-            safra.setArquivoFinalDaninha(
-                    conversorGeoJson.convertGeoJsonToGeometry(safra.getArquivoFinalDaninha().toString()));
+
+        if (safra.getArquivoFinalDaninha() instanceof MultipartFile) {
+            MultipartFile arquivoFinal = (MultipartFile) safra.getArquivoFinalDaninha();
+            if (!arquivoFinal.isEmpty()) {
+                String conteudoGeoJson = new String(arquivoFinal.getBytes(), StandardCharsets.UTF_8);
+                safra.setArquivoFinalDaninha(conversorGeoJson.convertGeoJsonToGeometry(conteudoGeoJson));
+            }
         }
+    } catch (IOException e) {
+        throw new RuntimeException("Erro ao processar arquivos de erva daninha", e);
     }
+}
 
 
     public List<TalhaoPendenteDto> listarSafrasPendentes() {
@@ -243,7 +301,7 @@ public class SafraService {
         if (geoJsonFile != null && !geoJsonFile.isEmpty()) {
             String conteudoGeoJson = new String(geoJsonFile.getBytes(), StandardCharsets.UTF_8);
             Geometry geometria = conversorGeoJson.convertGeoJsonToGeometry(conteudoGeoJson);
-            safra.setArquivoFinalDaninha(geometria);
+            safra.setArquivoDaninha(geometria);
         }
 
         safra.setDataUltimaVersao(LocalDateTime.now());
@@ -298,15 +356,13 @@ public class SafraService {
  
      public ByteArrayResource obterArquivoFinalDaninha(Safra safra) {
          String geoJson = conversorGeoJson.convertGeometryToGeoJson(safra.getArquivoFinalDaninha());
-         if (geoJson == null) {
-
-            return null;
-         }
          return criarArquivoGeoJson(geoJson, "arquivoFinalDaninha.geojson");
-        
      }
  
      private ByteArrayResource criarArquivoGeoJson(String geoJson, String filename) {
+        if (geoJson == null) {
+           return null;
+        }
          return new ByteArrayResource(geoJson.getBytes(StandardCharsets.UTF_8)) {
              @Override
              public String getFilename() {

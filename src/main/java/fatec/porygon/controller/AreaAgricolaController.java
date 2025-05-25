@@ -3,16 +3,24 @@ package fatec.porygon.controller;
 import fatec.porygon.dto.AreaAgricolaDto;
 import fatec.porygon.dto.CadastroAreaAgricolaDto;
 import fatec.porygon.dto.FazendaDetalhadaDto;
-import fatec.porygon.enums.StatusArea;
 import fatec.porygon.service.AreaAgricolaService;
 import fatec.porygon.service.FazendaDetalhadaService;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import jakarta.persistence.EntityNotFoundException;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Optional;
 
@@ -34,24 +42,51 @@ public class AreaAgricolaController {
     @GetMapping("/{id}/detalhes-completos")
     public ResponseEntity<FazendaDetalhadaDto> getFazendaDetalhada(@PathVariable Long id) {
         Optional<FazendaDetalhadaDto> fazendaDetalhada = fazendaDetalhadaService.getFazendaDetalhadaById(id);
-
         return fazendaDetalhada.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
     }
 
-    @PreAuthorize("hasAuthority('Administrador') or hasAuthority('Consultor')")
-    @PostMapping
-    public ResponseEntity<AreaAgricolaDto> criarAreaAgricola(@RequestBody CadastroAreaAgricolaDto dto) {
-        if (dto.getCidadeNome() == null || dto.getCidadeNome().trim().isEmpty()) {
-            System.out.println("Erro: Nome da cidade está vazio ou nulo.");
-            return ResponseEntity.badRequest().body(null);
+    @PostMapping(
+            consumes = MediaType.MULTIPART_FORM_DATA_VALUE,
+            produces = MediaType.APPLICATION_JSON_VALUE
+    )
+    public ResponseEntity<?> criarAreaAgricola(
+            @RequestPart("nomeFazenda") String nomeFazenda,
+            @RequestPart("estado") String estado,
+            @RequestPart("cidadeNome") String cidadeNome,
+            @RequestPart("arquivoFazenda") MultipartFile arquivoFazenda,
+            @RequestPart(value = "arquivoErvaDaninha", required = false) MultipartFile arquivoErvaDaninha
+    ) {
+        try {
+            if (nomeFazenda == null || nomeFazenda.trim().isEmpty()) {
+                return ResponseEntity.badRequest().body("Nome da fazenda é obrigatório");
+            }
+            if (estado == null || estado.trim().isEmpty()) {
+                return ResponseEntity.badRequest().body("Estado é obrigatório");
+            }
+            if (cidadeNome == null || cidadeNome.trim().isEmpty()) {
+                return ResponseEntity.badRequest().body("Nome da cidade é obrigatório");
+            }
+            if (arquivoFazenda == null || arquivoFazenda.isEmpty()) {
+                return ResponseEntity.badRequest().body("Arquivo da fazenda é obrigatório");
+            }
+
+            CadastroAreaAgricolaDto dto = new CadastroAreaAgricolaDto();
+            dto.setNomeFazenda(nomeFazenda);
+            dto.setEstado(estado);
+            dto.setCidadeNome(cidadeNome);
+            dto.setArquivoFazenda(arquivoFazenda);
+            dto.setArquivoErvaDaninha(arquivoErvaDaninha);
+
+            AreaAgricolaDto novaAreaAgricola = areaAgricolaService.criarAreaAgricolaECriarSafra(dto);
+
+            return ResponseEntity.status(HttpStatus.CREATED)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .body(novaAreaAgricola);
+
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Erro ao criar área agrícola: " + e.getMessage());
         }
-        if (dto.getArquivoFazenda() == null || dto.getArquivoFazenda().trim().isEmpty()) {
-            System.out.println("Erro: Arquivo Fazenda está vazio ou nulo.");
-            return ResponseEntity.badRequest().body(null);
-        }
-        
-        AreaAgricolaDto novaAreaAgricola = areaAgricolaService.criarAreaAgricolaECriarSafra(dto);
-        return new ResponseEntity<>(novaAreaAgricola, HttpStatus.CREATED);
     }
 
     @PreAuthorize("hasAuthority('Administrador') or hasAuthority('Analista') or hasAuthority('Consultor')")
@@ -72,19 +107,56 @@ public class AreaAgricolaController {
         }
     }
 
+    @PutMapping(value = "/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @PreAuthorize("hasAuthority('Administrador') or hasAuthority('Consultor')")
-    @PutMapping("/{id}")
-    public ResponseEntity<AreaAgricolaDto> atualizarAreaAgricola(@PathVariable Long id, 
-                                                               @RequestBody AreaAgricolaDto areaAgricolaDto) {
+    public ResponseEntity<?> atualizarAreaAgricola(
+            @PathVariable Long id,
+            @RequestPart("dados") String dadosJson,
+            @RequestPart(value = "arquivoFazenda", required = false) MultipartFile arquivoFazenda,
+            @RequestPart(value = "arquivoErvaDaninha", required = false) MultipartFile arquivoErvaDaninha
+    ) {
         try {
-            if (areaAgricolaDto.getCidadeNome() == null || areaAgricolaDto.getCidadeNome().trim().isEmpty()) {
-                return ResponseEntity.badRequest().build();
+            ObjectMapper mapper = new ObjectMapper();
+            AreaAgricolaDto areaAgricolaDto = mapper.readValue(dadosJson, AreaAgricolaDto.class);
+
+            if (areaAgricolaDto.getNomeFazenda() == null || areaAgricolaDto.getNomeFazenda().trim().isEmpty()) {
+                return ResponseEntity.badRequest().body("Nome da fazenda é obrigatório");
             }
-            
-            AreaAgricolaDto areaAgricolaAtualizada = areaAgricolaService.atualizarAreaAgricola(id, areaAgricolaDto);
-            return ResponseEntity.ok(areaAgricolaAtualizada);
-        } catch (RuntimeException e) {
-            return ResponseEntity.notFound().build();
+            if (areaAgricolaDto.getEstado() == null || areaAgricolaDto.getEstado().trim().isEmpty()) {
+                return ResponseEntity.badRequest().body("Estado é obrigatório");
+            }
+            if (areaAgricolaDto.getCidadeNome() == null || areaAgricolaDto.getCidadeNome().trim().isEmpty()) {
+                return ResponseEntity.badRequest().body("Nome da cidade é obrigatório");
+            }
+
+            if (arquivoFazenda != null && !arquivoFazenda.isEmpty()) {
+                String conteudoGeoJson = new String(arquivoFazenda.getBytes(), StandardCharsets.UTF_8);
+                areaAgricolaDto.setArquivoFazenda(conteudoGeoJson);
+            }
+
+            if (arquivoErvaDaninha != null && !arquivoErvaDaninha.isEmpty()) {
+                String conteudoGeoJson = new String(arquivoErvaDaninha.getBytes(), StandardCharsets.UTF_8);
+                areaAgricolaDto.setArquivoErvaDaninha(conteudoGeoJson);
+            }
+
+            AreaAgricolaDto areaAtualizada = areaAgricolaService.atualizarAreaAgricola(id, areaAgricolaDto);
+
+            return ResponseEntity.ok()
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .body(areaAtualizada);
+
+        } catch (EntityNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body("Área agrícola não encontrada: " + e.getMessage());
+        } catch (JsonProcessingException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body("Erro ao processar JSON: " + e.getMessage());
+        } catch (IOException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Erro ao processar arquivos: " + e.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Erro interno: " + e.getMessage());
         }
     }
 

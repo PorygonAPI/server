@@ -28,7 +28,6 @@ public class AreaAgricola {
     @JoinColumn(name = "cidade_id", nullable = false)
     private Cidade cidade;
 
-    // Getters
     public Long getId() {return id;}
 
     public String getNomeFazenda() {return nomeFazenda;}
@@ -41,7 +40,6 @@ public class AreaAgricola {
 
     public Geometry getArquivoFazenda() {return arquivoFazenda;}
 
-    // Setters
     public void setId(Long id) {this.id = id;}
 
     public void setNomeFazenda(String nomeFazenda) {this.nomeFazenda = nomeFazenda;}
