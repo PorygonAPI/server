@@ -298,7 +298,12 @@ public class SafraService {
  
      public ByteArrayResource obterArquivoFinalDaninha(Safra safra) {
          String geoJson = conversorGeoJson.convertGeometryToGeoJson(safra.getArquivoFinalDaninha());
+         if (geoJson == null) {
+
+            return null;
+         }
          return criarArquivoGeoJson(geoJson, "arquivoFinalDaninha.geojson");
+        
      }
  
      private ByteArrayResource criarArquivoGeoJson(String geoJson, String filename) {
