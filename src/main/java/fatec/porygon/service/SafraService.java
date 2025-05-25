@@ -342,7 +342,6 @@ public class SafraService {
         Safra safra = safraRepository.findById(idSafra)
                 .orElseThrow(() -> new RuntimeException("Safra não encontrada com ID: " + idSafra));
 
-        @SuppressWarnings("unused")
         AreaAgricola areaAgricola = safra.getTalhao().getAreaAgricola();
 
         SafraGeoJsonDto dto = new SafraGeoJsonDto();
@@ -370,6 +369,9 @@ public class SafraService {
     }
 
     private ByteArrayResource criarArquivoGeoJson(String geoJson, String filename) {
+        if (geoJson == null) {
+            return null;
+        }
         return new ByteArrayResource(geoJson.getBytes(StandardCharsets.UTF_8)) {
             @Override
             public String getFilename() {

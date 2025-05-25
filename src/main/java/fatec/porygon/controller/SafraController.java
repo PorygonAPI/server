@@ -170,10 +170,17 @@ public class SafraController {
         HttpEntity<SafraGeoJsonDto> jsonPart = new HttpEntity<>(dto, jsonHeaders);
         body.add("dadosSafra", jsonPart);
 
-        body.add("arquivoFazenda", new HttpEntity<>(arquivoFazenda, criarHeaders("arquivoFazenda.geojson")));
-        body.add("arquivoDaninha", new HttpEntity<>(arquivoDaninha, criarHeaders("arquivoDaninha.geojson")));
-        body.add("arquivoFinalDaninha",
-                new HttpEntity<>(arquivoFinalDaninha, criarHeaders("arquivoFinalDaninha.geojson")));
+        if (arquivoFazenda != null) {
+            body.add("arquivoFazenda", new HttpEntity<>(arquivoFazenda, criarHeaders("arquivoFazenda.geojson")));
+        }
+
+        if (arquivoDaninha != null) {
+            body.add("arquivoDaninha", new HttpEntity<>(arquivoDaninha, criarHeaders("arquivoDaninha.geojson")));
+        }
+
+        if (arquivoFinalDaninha != null) {
+            body.add("arquivoFinalDaninha", new HttpEntity<>(arquivoFinalDaninha, criarHeaders("arquivoFinalDaninha.geojson")));
+        }
 
         return new ResponseEntity<>(body, HttpStatus.OK);
     }

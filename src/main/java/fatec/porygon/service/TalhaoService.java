@@ -176,39 +176,29 @@ public class TalhaoService {
     }
 
     private TalhaoDto convertToDto(Talhao talhao) {
-        TalhaoDto dto = new TalhaoDto();
-        dto.setId(talhao.getId());
-        dto.setArea(talhao.getArea());
+    TalhaoDto dto = new TalhaoDto();
+    dto.setId(talhao.getId());
+    dto.setArea(talhao.getArea());
+    dto.setAreaAgricola(talhao.getAreaAgricola().getId());
 
-        if (talhao.getAreaAgricola() != null) {
-            dto.setAreaAgricola(talhao.getAreaAgricola().getId());
-        }
-
-        if (talhao.getTipoSolo() != null) {
-            dto.setTipoSoloNome(talhao.getTipoSolo().getTipoSolo());
-        }
-
+    try {
         List<Safra> safras = safraService.buscarPorTalhao(talhao.getId());
         if (!safras.isEmpty()) {
             Safra safraAtual = safras.get(0);
+            dto.setCulturaNome(safraAtual.getCultura().getNome());
             dto.setAno(safraAtual.getAno());
             dto.setStatus(safraAtual.getStatus());
-            dto.setProdutividadeAno(
-                    safraAtual.getProdutividadeAno() != null ? safraAtual.getProdutividadeAno().floatValue() : 0.0f);
-
-            if (safraAtual.getCultura() != null) {
-                dto.setCultura(safraAtual.getCultura().getId());
-                dto.setCulturaNome(safraAtual.getCultura().getNome());
-            }
-
-            if (safraAtual.getArquivoDaninha() != null) {
-                dto.setArquivoDaninha(conversorGeoJson.convertGeometryToGeoJson(
-                        safraAtual.getArquivoDaninha()));
-            }
+            dto.setProdutividadeAno(safraAtual.getProdutividadeAno() != null ? safraAtual.getProdutividadeAno().floatValue() : 0.0f);
         }
-
-        return dto;
+    } catch (RuntimeException e) {
+        dto.setCulturaNome("");
+        dto.setAno(LocalDateTime.now().getYear());
+        dto.setStatus(StatusSafra.Pendente);
+        dto.setProdutividadeAno(0.0f);
     }
+    
+    return dto;
+}
 
     @SuppressWarnings("unused")
     public void editarTalhaoPorAreaAgricola(Long idTalhao, String idSafra, Long idAreaAgricola) {
