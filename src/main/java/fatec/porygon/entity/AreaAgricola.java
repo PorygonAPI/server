@@ -2,6 +2,9 @@ package fatec.porygon.entity;
 
 import fatec.porygon.enums.StatusArea;
 import jakarta.persistence.*;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.annotations.Type;
+import org.hibernate.type.SqlTypes;
 import org.locationtech.jts.geom.Geometry;
 
 @Entity
@@ -21,7 +24,8 @@ public class AreaAgricola {
     @Column(name = "status", nullable = false)
     private StatusArea status = StatusArea.Pendente;
 
-    @Column(name = "arquivo_fazenda", nullable = false, columnDefinition = "GEOMETRY")
+    @JdbcTypeCode(SqlTypes.STRUCT)
+    @Column(name = "arquivo_fazenda", nullable = false, columnDefinition = "SDO_GEOMETRY")
     private Geometry arquivoFazenda;
 
     @ManyToOne
