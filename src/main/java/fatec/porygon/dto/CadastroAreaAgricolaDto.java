@@ -2,14 +2,13 @@ package fatec.porygon.dto;
 
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.List;
 
 public class CadastroAreaAgricolaDto {
     private String nomeFazenda;
     private String estado;
     private String cidadeNome;
-    private String arquivoFazenda;
-    private String arquivoErvaDaninha;
+    private MultipartFile arquivoFazenda;
+    private MultipartFile arquivoErvaDaninha;
 
     public String getNomeFazenda() {
         return nomeFazenda;
@@ -35,19 +34,19 @@ public class CadastroAreaAgricolaDto {
         this.cidadeNome = cidadeNome;
     }
 
-    public String getArquivoFazenda() {
+    public MultipartFile getArquivoFazenda() {
         return arquivoFazenda;
     }
 
-    public void setArquivoFazenda(String arquivoFazenda) {
+    public void setArquivoFazenda(MultipartFile arquivoFazenda) {
         this.arquivoFazenda = arquivoFazenda;
     }
 
-    public String getArquivoErvaDaninha() {
+    public MultipartFile getArquivoErvaDaninha() {
         return arquivoErvaDaninha;
     }
 
-    public void setArquivoErvaDaninha(String arquivoErvaDaninha) {
+    public void setArquivoErvaDaninha(MultipartFile arquivoErvaDaninha) {
         this.arquivoErvaDaninha = arquivoErvaDaninha;
     }
 }

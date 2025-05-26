@@ -3,7 +3,6 @@ package fatec.porygon.entity;
 import fatec.porygon.enums.StatusSafra;
 import jakarta.persistence.*;
 import org.locationtech.jts.geom.Geometry;
-import com.fasterxml.jackson.annotation.JsonBackReference;
 
 import java.time.LocalDateTime;
 
@@ -27,12 +26,11 @@ public class Safra {
     @Enumerated(EnumType.STRING)
     private StatusSafra status;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "talhao_id")
-    @JsonBackReference
     private Talhao talhao;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "cultura_id")
     private Cultura cultura;
 

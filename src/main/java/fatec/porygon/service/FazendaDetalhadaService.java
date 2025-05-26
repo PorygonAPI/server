@@ -6,6 +6,7 @@ import fatec.porygon.repository.AreaAgricolaRepository;
 import fatec.porygon.repository.TalhaoRepository;
 import fatec.porygon.utils.ConvertGeoJsonUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -27,6 +28,7 @@ public class FazendaDetalhadaService {
         this.talhaoRepository = talhaoRepository;
     }
 
+    @PreAuthorize("hasAuthority('Administrador') or hasAuthority('Analista') or hasAuthority('Consultor')")
     public Optional<FazendaDetalhadaDto> getFazendaDetalhadaById(Long fazendaId) {
         Optional<AreaAgricola> areaAgricolaOpt = areaAgricolaRepository.findById(fazendaId);
 

@@ -14,5 +14,16 @@ public interface TalhaoRepository extends JpaRepository<Talhao, Long> {
     @Query("SELECT t FROM Talhao t WHERE t.areaAgricola.id = :areaAgricolaId")
     List<Talhao> findByAreaAgricolaId(@Param("areaAgricolaId") Long areaAgricolaId);
     List<Talhao> findDistinctBySafrasStatusAndSafrasUsuarioAnalistaIsNull(StatusSafra status);
+
+   @Query("""
+    SELECT DISTINCT t FROM Talhao t
+    LEFT JOIN FETCH t.safras s
+    LEFT JOIN FETCH t.areaAgricola a
+    LEFT JOIN FETCH a.cidade c
+    LEFT JOIN FETCH t.tipoSolo ts
+    LEFT JOIN FETCH s.cultura cu
+    WHERE s.status = :status AND s.usuarioAnalista IS NULL
+""")
+List<Talhao> findAllWithPendingSafras(@Param("status") StatusSafra status);
 }
 
