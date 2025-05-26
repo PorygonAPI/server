@@ -7,17 +7,29 @@ import fatec.porygon.repository.SafraRepository;
 import fatec.porygon.repository.TalhaoRepository;
 import fatec.porygon.repository.UsuarioRepository;
 import fatec.porygon.utils.ConvertGeoJsonUtils;
+import jakarta.persistence.EntityNotFoundException;
 import fatec.porygon.dto.SafraDto;
+import fatec.porygon.dto.SafraGeoJsonDto;
+import fatec.porygon.dto.TalhaoPendenteDto;
 import fatec.porygon.dto.TalhaoResumoDto;
 
+import org.locationtech.jts.geom.Geometry;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.ByteArrayResource;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 public class SafraService {
@@ -31,11 +43,10 @@ public class SafraService {
 
     @Autowired
     public SafraService(SafraRepository safraRepository,
-                        UsuarioRepository usuarioRepository,
-                        TalhaoRepository talhaoRepository,
-                        CulturaService culturaService,
-                        TipoSoloService tipoSoloService
-                        ) {
+            UsuarioRepository usuarioRepository,
+            TalhaoRepository talhaoRepository,
+            CulturaService culturaService,
+            TipoSoloService tipoSoloService) {
         this.safraRepository = safraRepository;
         this.usuarioRepository = usuarioRepository;
         this.talhaoRepository = talhaoRepository;
@@ -43,18 +54,20 @@ public class SafraService {
         this.tipoSoloService = tipoSoloService;
     }
 
-
+    @PreAuthorize("hasAuthority('Administrador') or hasAuthority('Consultor')")
     @Transactional
     public Safra salvar(Safra safra) {
         tratarArquivosDaninha(safra);
         return safraRepository.save(safra);
     }
 
+    @PreAuthorize("hasAuthority('Administrador') or hasAuthority('Analista') or hasAuthority('Consultor')")
     public Safra buscarPorId(String id) {
         return safraRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Safra não encontrada"));
+                .orElseThrow(() -> new EntityNotFoundException("Safra não encontrada com ID: " + id));
     }
 
+    @PreAuthorize("hasAuthority('Administrador') or hasAuthority('Analista') or hasAuthority('Consultor')")
     public List<SafraDto> listarTodas() {
         List<Safra> safras = safraRepository.findAll();
         return safras.stream()
@@ -62,41 +75,55 @@ public class SafraService {
                 .toList();
     }
 
+    @PreAuthorize("hasAuthority('Administrador') or hasAuthority('Analista') or hasAuthority('Consultor')")
     @Transactional
-    public void atualizarSafra(String idSafra, AtualizarSafraRequestDto request) {
-        Safra safra = safraRepository.findById(idSafra)
-                .orElseThrow(() -> new RuntimeException("Safra não encontrada com ID: " + idSafra));
+    public void atualizarSafra(String idSafra, AtualizarSafraRequestDto request, MultipartFile arquivoDaninha) {
+        try {
+            Safra safra = safraRepository.findById(idSafra)
+                    .orElseThrow(() -> new RuntimeException("Safra não encontrada com ID: " + idSafra));
 
-        if (request.getIdTalhao() != null) {
-            Talhao novoTalhao = talhaoRepository.findById(request.getIdTalhao())
-                    .orElseThrow(() -> new RuntimeException("Talhão não encontrado com ID: " + request.getIdTalhao()));
-            safra.setTalhao(novoTalhao);
+            if (request.getIdTalhao() != null) {
+                Talhao novoTalhao = talhaoRepository.findById(request.getIdTalhao())
+                        .orElseThrow(
+                                () -> new RuntimeException("Talhão não encontrado com ID: " + request.getIdTalhao()));
+                safra.setTalhao(novoTalhao);
+            }
+
+            if (request.getArea() != null) {
+                safra.getTalhao().setArea(request.getArea());
+            }
+
+            if (request.getAnoSafra() != null) {
+                safra.setAno(request.getAnoSafra());
+            }
+
+            if (request.getCulturaNome() != null) {
+                Cultura cultura = culturaService.buscarOuCriar(request.getCulturaNome());
+                safra.setCultura(cultura);
+            }
+
+            if (request.getProdutividadeAno() != null) {
+                safra.setProdutividadeAno(request.getProdutividadeAno());
+            }
+
+            if (request.getTipoSoloNome() != null) {
+                TipoSolo tipoSolo = tipoSoloService.buscarOuCriar(request.getTipoSoloNome());
+                safra.getTalhao().setTipoSolo(tipoSolo);
+            }
+
+            if (arquivoDaninha != null && !arquivoDaninha.isEmpty()) {
+                String conteudoGeoJson = new String(arquivoDaninha.getBytes(), StandardCharsets.UTF_8);
+                Geometry geometria = conversorGeoJson.convertGeoJsonToGeometry(conteudoGeoJson);
+                safra.setArquivoDaninha(geometria);
+                safra.setDataUltimaVersao(LocalDateTime.now());
+            }
+
+            safraRepository.save(safra);
+        } catch (IOException e) {
+            throw new RuntimeException("Erro ao processar arquivo de erva daninha", e);
         }
-
-        if(request.getArea() != null){
-            safra.getTalhao().setArea(request.getArea());
-        }
-
-        if (request.getAnoSafra() != null) {
-            safra.setAno(request.getAnoSafra());
-        }
-
-        if (request.getCulturaNome() != null) {
-            Cultura cultura = culturaService.buscarOuCriar(request.getCulturaNome());
-            safra.setCultura(cultura);
-        }
-
-        if (request.getProdutividadeAno() != null) {
-            safra.setProdutividadeAno(request.getProdutividadeAno());
-        }
-
-        if (request.getTipoSoloNome() != null) {
-            TipoSolo tipoSolo = tipoSoloService.buscarOuCriar(request.getTipoSoloNome());
-            safra.getTalhao().setTipoSolo(tipoSolo);
-        }
-
-        safraRepository.save(safra);
     }
+
     private SafraDto convertToDto(Safra safra) {
         SafraDto dto = new SafraDto();
         dto.setId(safra.getId());
@@ -104,7 +131,6 @@ public class SafraService {
         dto.setCultura(safra.getCultura() != null ? safra.getCultura().getNome() : null);
         dto.setStatus(safra.getStatus());
         dto.setTalhaoId(safra.getTalhao() != null ? safra.getTalhao().getId() : null);
-
 
         if (safra.getArquivoDaninha() != null) {
             dto.setArquivoDaninha(conversorGeoJson.convertGeometryToGeoJson(safra.getArquivoDaninha()));
@@ -116,6 +142,7 @@ public class SafraService {
         return dto;
     }
 
+    @PreAuthorize("hasAuthority('Administrador') or hasAuthority('Consultor')")
     @Transactional
     public Safra atualizar(String id, Safra safraAtualizada) {
         Safra existente = buscarPorId(id);
@@ -132,32 +159,65 @@ public class SafraService {
         return safraRepository.save(existente);
     }
 
+    @PreAuthorize("hasAuthority('Administrador') or hasAuthority('Consultor')")
     public void deletar(String id) {
         safraRepository.deleteById(id);
     }
 
+    @PreAuthorize("hasAuthority('Analista')")
     @Transactional
-    public List<Safra> associarAnalista(String talhaoId, Long usuarioId) {
-        List<Safra> safras = safraRepository.findByTalhaoId(Long.valueOf(talhaoId));
-        if (safras.isEmpty()) {
-            throw new RuntimeException("Nenhuma safra encontrada para o talhão ID: " + talhaoId);
-        }
+    public Safra associarAnalista(String safraId, Long usuarioId) {
+        Safra safra = safraRepository.findById(safraId)
+                .orElseThrow(() -> new RuntimeException("Safra não encontrada com ID: " + safraId));
 
         Usuario usuario = usuarioRepository.findById(usuarioId)
-                .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
+                .orElseThrow(() -> new RuntimeException("Usuário não encontrado com ID: " + usuarioId));
 
-        for (Safra safra : safras) {
-            safra.setUsuarioAnalista(usuario);
-            safra.setStatus(StatusSafra.Atribuido);
-        }
+        safra.setUsuarioAnalista(usuario);
+        safra.setDataAtribuicao(LocalDateTime.now());
+        safra.setStatus(StatusSafra.Atribuido);
 
-        return safraRepository.saveAll(safras);
+        return safraRepository.save(safra);
     }
 
+    @Query("SELECT MAX(CAST(s.id AS long)) FROM Safra s")
+    private Long findLastId() {
+        List<String> allIds = safraRepository.findAll().stream()
+                .map(Safra::getId)
+                .collect(Collectors.toList());
+
+        return allIds.stream()
+                .mapToLong(Long::parseLong)
+                .max()
+                .orElse(0L);
+    }
+
+    @PreAuthorize("hasAuthority('Administrador') or hasAuthority('Consultor')")
     @Transactional
-    public Safra criarSafra(Safra safra) {
-        tratarArquivosDaninha(safra);
-        return safraRepository.save(safra);
+    public Safra criar(Safra safra, MultipartFile arquivoDaninha) {
+        try {
+            Long nextId = findLastId() + 1;
+            safra.setId(nextId.toString());
+
+            safra.setStatus(StatusSafra.Pendente);
+            LocalDateTime now = LocalDateTime.now();
+            safra.setDataCadastro(now);
+            safra.setDataUltimaVersao(now);
+
+            if (arquivoDaninha != null && !arquivoDaninha.isEmpty()) {
+                String conteudoGeoJson = new String(arquivoDaninha.getBytes(), StandardCharsets.UTF_8);
+                Geometry geometria = conversorGeoJson.convertGeoJsonToGeometry(conteudoGeoJson);
+                safra.setArquivoDaninha(geometria);
+            }
+
+            if (safra.getProdutividadeAno() == null) {
+                safra.setProdutividadeAno(0.0);
+            }
+
+            return safraRepository.save(safra);
+        } catch (IOException e) {
+            throw new RuntimeException("Erro ao processar arquivo de erva daninha: " + e.getMessage(), e);
+        }
     }
 
     public List<Safra> buscarPorTalhao(Long talhaoId) {
@@ -168,42 +228,162 @@ public class SafraService {
         return safras;
     }
 
-public Map<String, List<TalhaoResumoDto>> listarTalhoesPorUsuario(Long idUsuario) {
-    List<TalhaoResumoDto> aprovados = converterParaDto(
-        safraRepository.buscarTalhoesBrutosPorStatus(idUsuario, StatusSafra.Aprovado)
-    );
+    @PreAuthorize("hasAuthority('Administrador') or hasAuthority('Analista') or hasAuthority('Consultor')")
+    public Map<String, List<TalhaoResumoDto>> listarTalhoesPorUsuario(Long idUsuario) {
+        List<TalhaoResumoDto> aprovados = converterParaDto(
+                safraRepository.buscarTalhoesBrutosPorStatus(idUsuario, StatusSafra.Aprovado));
 
-    List<TalhaoResumoDto> atribuidos = converterParaDto(
-        safraRepository.buscarTalhoesBrutosPorStatus(idUsuario, StatusSafra.Atribuido)
-    );
+        List<TalhaoResumoDto> atribuidos = converterParaDto(
+                safraRepository.buscarTalhoesBrutosPorStatus(idUsuario, StatusSafra.Atribuido));
 
-    Map<String, List<TalhaoResumoDto>> resultado = new HashMap<>();
-    resultado.put("aprovados", aprovados);
-    resultado.put("atribuidos", atribuidos);
-    return resultado;
-}
-
-private List<TalhaoResumoDto> converterParaDto(List<Object[]> dadosBrutos) {
-    List<TalhaoResumoDto> resultado = new ArrayList<>();
-    for (Object[] linha : dadosBrutos) {
-        Long talhaoId = (Long) linha[0];
-        String nomeFazenda = (String) linha[1];
-        Long safraId = Long.valueOf(linha[2].toString()); // pode ser String, então converte
-        String cultura = (String) linha[3];
-
-        resultado.add(new TalhaoResumoDto(talhaoId, nomeFazenda, safraId, cultura));
+        Map<String, List<TalhaoResumoDto>> resultado = new HashMap<>();
+        resultado.put("aprovados", aprovados);
+        resultado.put("atribuidos", atribuidos);
+        return resultado;
     }
-    return resultado;
-}
 
+    private List<TalhaoResumoDto> converterParaDto(List<Object[]> dadosBrutos) {
+        List<TalhaoResumoDto> resultado = new ArrayList<>();
+        for (Object[] linha : dadosBrutos) {
+            Long talhaoId = (Long) linha[0];
+            String nomeFazenda = (String) linha[1];
+            Long safraId = Long.valueOf(linha[2].toString());
+            String cultura = (String) linha[3];
+            Integer anoSafra = (Integer) linha[4];
+
+            resultado.add(new TalhaoResumoDto(talhaoId, nomeFazenda, safraId, cultura, anoSafra));
+        }
+        return resultado;
+    }
 
     private void tratarArquivosDaninha(Safra safra) {
-        if (safra.getArquivoDaninha() != null && safra.getArquivoDaninha().toString().contains("{")) {
-            safra.setArquivoDaninha(conversorGeoJson.convertGeoJsonToGeometry(safra.getArquivoDaninha().toString()));
-        }
-        if (safra.getArquivoFinalDaninha() != null && safra.getArquivoFinalDaninha().toString().contains("{")) {
-            safra.setArquivoFinalDaninha(
-                    conversorGeoJson.convertGeoJsonToGeometry(safra.getArquivoFinalDaninha().toString()));
+        try {
+            if (safra.getArquivoDaninha() instanceof MultipartFile) {
+                MultipartFile arquivo = (MultipartFile) safra.getArquivoDaninha();
+                if (!arquivo.isEmpty()) {
+                    String conteudoGeoJson = new String(arquivo.getBytes(), StandardCharsets.UTF_8);
+                    safra.setArquivoDaninha(conversorGeoJson.convertGeoJsonToGeometry(conteudoGeoJson));
+                }
+            }
+
+            if (safra.getArquivoFinalDaninha() instanceof MultipartFile) {
+                MultipartFile arquivoFinal = (MultipartFile) safra.getArquivoFinalDaninha();
+                if (!arquivoFinal.isEmpty()) {
+                    String conteudoGeoJson = new String(arquivoFinal.getBytes(), StandardCharsets.UTF_8);
+                    safra.setArquivoFinalDaninha(conversorGeoJson.convertGeoJsonToGeometry(conteudoGeoJson));
+                }
+            }
+        } catch (IOException e) {
+            throw new RuntimeException("Erro ao processar arquivos de erva daninha", e);
         }
     }
+
+    @PreAuthorize("hasAuthority('Administrador') or hasAuthority('Analista') or hasAuthority('Consultor')")
+    public List<TalhaoPendenteDto> listarSafrasPendentes() {
+        return talhaoRepository.findAll().stream()
+                .flatMap(t -> t.getSafras().stream()
+                        .filter(s -> s.getStatus() == StatusSafra.Pendente && s.getUsuarioAnalista() == null)
+                        .map(safra -> new TalhaoPendenteDto(
+                                safra.getId(),
+                                t.getAreaAgricola().getNomeFazenda(),
+                                safra.getCultura().getNome(),
+                                safra.getProdutividadeAno(),
+                                t.getArea(),
+                                t.getTipoSolo().getTipoSolo(),
+                                t.getAreaAgricola().getCidade().getNome(),
+                                t.getAreaAgricola().getEstado())))
+                .collect(Collectors.toList());
+    }
+
+    @PreAuthorize("hasAuthority('Analista')")
+    @Transactional
+    public void salvarEdicaoSafra(String idSafra, MultipartFile geoJsonFile) throws IOException {
+        Safra safra = safraRepository.findById(idSafra)
+                .orElseThrow(() -> new EntityNotFoundException("Safra não encontrada"));
+
+        if (safra.getUsuarioAnalista() == null || safra.getStatus() != StatusSafra.Atribuido) {
+            throw new IllegalStateException("Safra não atribuída para edição");
+        }
+
+        if (geoJsonFile != null && !geoJsonFile.isEmpty()) {
+            String conteudoGeoJson = new String(geoJsonFile.getBytes(), StandardCharsets.UTF_8);
+            Geometry geometria = conversorGeoJson.convertGeoJsonToGeometry(conteudoGeoJson);
+            safra.setArquivoFinalDaninha(geometria);
+        }
+
+        safra.setDataUltimaVersao(LocalDateTime.now());
+        safraRepository.save(safra);
+    }
+
+    @PreAuthorize("hasAuthority('Analista')")
+    @Transactional
+    public void aprovarSafra(String idSafra, MultipartFile geoJsonFile) throws IOException {
+        Safra safra = safraRepository.findById(idSafra)
+                .orElseThrow(() -> new EntityNotFoundException("Safra não encontrada"));
+
+        if (safra.getUsuarioAnalista() == null || safra.getStatus() != StatusSafra.Atribuido) {
+            throw new IllegalStateException("Safra não atribuída para aprovação");
+        }
+
+        if (geoJsonFile != null && !geoJsonFile.isEmpty()) {
+            String conteudoGeoJson = new String(geoJsonFile.getBytes(), StandardCharsets.UTF_8);
+            Geometry geometria = conversorGeoJson.convertGeoJsonToGeometry(conteudoGeoJson);
+            safra.setArquivoFinalDaninha(geometria);
+        }
+
+        safra.setStatus(StatusSafra.Aprovado);
+        safra.setDataAprovacao(LocalDateTime.now());
+        safra.setDataUltimaVersao(LocalDateTime.now());
+        safraRepository.save(safra);
+    }
+
+    @PreAuthorize("hasAuthority('Administrador') or hasAuthority('Analista') or hasAuthority('Consultor')")
+    @Transactional
+    public SafraGeoJsonDto buscarSafraGeoJson(String idSafra) {
+        Safra safra = safraRepository.findById(idSafra)
+                .orElseThrow(() -> new RuntimeException("Safra não encontrada com ID: " + idSafra));
+
+        AreaAgricola areaAgricola = safra.getTalhao().getAreaAgricola();
+
+        SafraGeoJsonDto dto = new SafraGeoJsonDto();
+        dto.setIdSafra(safra.getId());
+        dto.setDataCadastro(safra.getDataCadastro());
+        dto.setDataUltimaVersao(safra.getDataUltimaVersao());
+
+        return dto;
+    }
+
+    public ByteArrayResource obterArquivoFazenda(Safra safra) {
+        String geoJson = conversorGeoJson
+                .convertGeometryToGeoJson(safra.getTalhao().getAreaAgricola().getArquivoFazenda());
+        return criarArquivoGeoJson(geoJson, "arquivoFazenda.geojson");
+    }
+
+    public ByteArrayResource obterArquivoDaninha(Safra safra) {
+        String geoJson = conversorGeoJson.convertGeometryToGeoJson(safra.getArquivoDaninha());
+        return criarArquivoGeoJson(geoJson, "arquivoDaninha.geojson");
+    }
+
+    public ByteArrayResource obterArquivoFinalDaninha(Safra safra) {
+        String geoJson = conversorGeoJson.convertGeometryToGeoJson(safra.getArquivoFinalDaninha());
+        return criarArquivoGeoJson(geoJson, "arquivoFinalDaninha.geojson");
+    }
+
+    private ByteArrayResource criarArquivoGeoJson(String geoJson, String filename) {
+        if (geoJson == null) {
+            return null;
+        }
+        return new ByteArrayResource(geoJson.getBytes(StandardCharsets.UTF_8)) {
+            @Override
+            public String getFilename() {
+                return filename;
+            }
+        };
+    }
+
+    public Safra buscarSafra(String idSafra) {
+        return safraRepository.findById(idSafra)
+                .orElseThrow(() -> new RuntimeException("Safra não encontrada com ID: " + idSafra));
+    }
+
 }

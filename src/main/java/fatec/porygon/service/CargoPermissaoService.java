@@ -3,6 +3,8 @@ package fatec.porygon.service;
 import fatec.porygon.dto.CargoPermissaoDto;
 import fatec.porygon.entity.CargoPermissao;
 import fatec.porygon.repository.CargoPermissaoRepository;
+
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -24,6 +26,7 @@ public class CargoPermissaoService {
                 .collect(Collectors.toList());
     }
 
+    @PreAuthorize("hasAuthority('Administrador') or hasAuthority('Analista') or hasAuthority('Consultor')")
     public List<Long> buscarCargos() {
         return cargoPermissaoRepository.findAll().stream()
                 .map(cp -> cp.getCargo().getId())
