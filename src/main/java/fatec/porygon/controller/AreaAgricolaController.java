@@ -15,7 +15,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -33,29 +32,24 @@ public class AreaAgricolaController {
 
     @Autowired
     public AreaAgricolaController(AreaAgricolaService areaAgricolaService,
-                                  FazendaDetalhadaService fazendaDetalhadaService) {
+            FazendaDetalhadaService fazendaDetalhadaService) {
         this.fazendaDetalhadaService = fazendaDetalhadaService;
         this.areaAgricolaService = areaAgricolaService;
     }
 
-    @PreAuthorize("hasAuthority('Administrador') or hasAuthority('Analista') or hasAuthority('Consultor')")
     @GetMapping("/{id}/detalhes-completos")
     public ResponseEntity<FazendaDetalhadaDto> getFazendaDetalhada(@PathVariable Long id) {
         Optional<FazendaDetalhadaDto> fazendaDetalhada = fazendaDetalhadaService.getFazendaDetalhadaById(id);
         return fazendaDetalhada.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
     }
 
-    @PostMapping(
-            consumes = MediaType.MULTIPART_FORM_DATA_VALUE,
-            produces = MediaType.APPLICATION_JSON_VALUE
-    )
+    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> criarAreaAgricola(
             @RequestPart("nomeFazenda") String nomeFazenda,
             @RequestPart("estado") String estado,
             @RequestPart("cidadeNome") String cidadeNome,
             @RequestPart("arquivoFazenda") MultipartFile arquivoFazenda,
-            @RequestPart(value = "arquivoErvaDaninha", required = false) MultipartFile arquivoErvaDaninha
-    ) {
+            @RequestPart(value = "arquivoErvaDaninha", required = false) MultipartFile arquivoErvaDaninha) {
         try {
             if (nomeFazenda == null || nomeFazenda.trim().isEmpty()) {
                 return ResponseEntity.badRequest().body("Nome da fazenda é obrigatório");
@@ -89,14 +83,12 @@ public class AreaAgricolaController {
         }
     }
 
-    @PreAuthorize("hasAuthority('Administrador') or hasAuthority('Analista') or hasAuthority('Consultor')")
     @GetMapping
     public ResponseEntity<List<AreaAgricolaDto>> listarAreasAgricolas() {
         List<AreaAgricolaDto> areasAgricolas = areaAgricolaService.listarAreasAgricolas();
         return ResponseEntity.ok(areasAgricolas);
     }
 
-    @PreAuthorize("hasAuthority('Administrador') or hasAuthority('Analista') or hasAuthority('Consultor')")
     @GetMapping("/{id}")
     public ResponseEntity<AreaAgricolaDto> buscarAreaAgricolaPorId(@PathVariable Long id) {
         try {
@@ -108,13 +100,11 @@ public class AreaAgricolaController {
     }
 
     @PutMapping(value = "/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    @PreAuthorize("hasAuthority('Administrador') or hasAuthority('Consultor')")
     public ResponseEntity<?> atualizarAreaAgricola(
             @PathVariable Long id,
             @RequestPart("dados") String dadosJson,
             @RequestPart(value = "arquivoFazenda", required = false) MultipartFile arquivoFazenda,
-            @RequestPart(value = "arquivoErvaDaninha", required = false) MultipartFile arquivoErvaDaninha
-    ) {
+            @RequestPart(value = "arquivoErvaDaninha", required = false) MultipartFile arquivoErvaDaninha) {
         try {
             ObjectMapper mapper = new ObjectMapper();
             AreaAgricolaDto areaAgricolaDto = mapper.readValue(dadosJson, AreaAgricolaDto.class);
@@ -160,7 +150,6 @@ public class AreaAgricolaController {
         }
     }
 
-    @PreAuthorize("hasAuthority('Administrador') or hasAuthority('Consultor')")
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> removerAreaAgricola(@PathVariable Long id) {
         try {

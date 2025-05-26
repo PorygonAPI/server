@@ -1,6 +1,5 @@
 package fatec.porygon.config;
 
-import org.apache.catalina.connector.Connector;
 import org.apache.coyote.http11.AbstractHttp11Protocol;
 import org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory;
 import org.springframework.boot.web.server.WebServerFactoryCustomizer;
@@ -15,9 +14,7 @@ public class TomcatConfig {
         return (factory) -> {
             factory.addConnectorCustomizers((connector) -> {
                 if (connector.getProtocolHandler() instanceof AbstractHttp11Protocol) {
-                    // -1 significa sem limite
                     ((AbstractHttp11Protocol<?>) connector.getProtocolHandler()).setMaxSwallowSize(-1);
-                    // 15MB = 15 * 1024 * 1024
                     connector.setMaxPostSize(15 * 1024 * 1024);
                 }
             });

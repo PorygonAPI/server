@@ -15,20 +15,15 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.http.HttpHeaders;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import org.springframework.http.MediaType;
-import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
-
 
 @RestController
 @RequestMapping("/safras")
@@ -42,85 +37,71 @@ public class SafraController {
         this.safraService = safraService;
         this.objectMapper = objectMapper;
     }
-    @PostMapping(
-        consumes = MediaType.MULTIPART_FORM_DATA_VALUE,
-        produces = MediaType.APPLICATION_JSON_VALUE
-    )
+
+    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> criar(
-        @RequestPart("dados") String dadosJson,
-        @RequestPart(value = "arquivoDaninha", required = false) MultipartFile arquivoDaninha
-    ) {
+            @RequestPart("dados") String dadosJson,
+            @RequestPart(value = "arquivoDaninha", required = false) MultipartFile arquivoDaninha) {
         try {
             Safra safra = objectMapper.readValue(dadosJson, Safra.class);
             safra.setDataCadastro(LocalDateTime.now());
-            
+
             Safra novaSafra = safraService.criar(safra, arquivoDaninha);
-            
+
             return ResponseEntity.status(HttpStatus.CREATED).body(novaSafra);
         } catch (Exception e) {
             return ResponseEntity
-                .status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body("Erro ao criar safra: " + e.getMessage());
+                    .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Erro ao criar safra: " + e.getMessage());
         }
     }
 
-    @PreAuthorize("hasAuthority('Administrador') or hasAuthority('Analista') or hasAuthority('Consultor')")
     @GetMapping
     public ResponseEntity<List<SafraDto>> listar() {
         return ResponseEntity.ok(safraService.listarTodas());
     }
 
-    @PreAuthorize("hasAuthority('Administrador') or hasAuthority('Analista') or hasAuthority('Consultor')")
     @GetMapping("/{id}")
     public ResponseEntity<Safra> buscar(@PathVariable String id) {
         return ResponseEntity.ok(safraService.buscarPorId(id));
     }
 
-    @PreAuthorize("hasAuthority('Administrador') or hasAuthority('Consultor')")
     @PutMapping("/{id}")
     public ResponseEntity<Safra> atualizar(@PathVariable String id, @RequestBody Safra safra) {
         return ResponseEntity.ok(safraService.atualizar(id, safra));
     }
 
-    @PutMapping(
-    value = "/{idSafra}/atualizar",
-    consumes = MediaType.MULTIPART_FORM_DATA_VALUE,
-    produces = MediaType.APPLICATION_JSON_VALUE
-    )
+    @PutMapping(value = "/{idSafra}/atualizar", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<String> atualizarSafra(
-        @PathVariable String idSafra,
-        @RequestPart("dados") String dadosJson,
-        @RequestPart(value = "arquivoDaninha", required = false) MultipartFile arquivoDaninha
-    ) {
+            @PathVariable String idSafra,
+            @RequestPart("dados") String dadosJson,
+            @RequestPart(value = "arquivoDaninha", required = false) MultipartFile arquivoDaninha) {
         try {
             ObjectMapper mapper = new ObjectMapper();
             AtualizarSafraRequestDto request = mapper.readValue(dadosJson, AtualizarSafraRequestDto.class);
-            
+
             safraService.atualizarSafra(idSafra, request, arquivoDaninha);
             return ResponseEntity.ok()
-                .contentType(MediaType.APPLICATION_JSON)
-                .body("{\"message\": \"Safra atualizada com sucesso.\"}");
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .body("{\"message\": \"Safra atualizada com sucesso.\"}");
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .contentType(MediaType.APPLICATION_JSON)
-                .body("{\"error\": \"" + e.getMessage() + "\"}");
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .body("{\"error\": \"" + e.getMessage() + "\"}");
         }
     }
 
-    @PreAuthorize("hasAuthority('Administrador') or hasAuthority('Consultor')")
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deletar(@PathVariable String id) {
         safraService.deletar(id);
         return ResponseEntity.noContent().build();
     }
 
-    @PreAuthorize("hasAuthority('Analista')")
     @GetMapping("/api/talhoes/usuario/{idUsuario}")
     public ResponseEntity<Map<String, List<TalhaoResumoDto>>> listarTalhoesDoUsuario(@PathVariable Long idUsuario) {
         return ResponseEntity.ok(safraService.listarTalhoesPorUsuario(idUsuario));
     }
 
-    @PreAuthorize("hasAuthority('Analista')")
     @PutMapping("/{safraId}/associar-analista/{usuarioId}")
     public ResponseEntity<String> associarAnalista(
             @PathVariable String safraId,
@@ -134,13 +115,11 @@ public class SafraController {
         }
     }
 
-    @PreAuthorize("hasAuthority('Analista')")
     @GetMapping("/pendentes")
     public List<TalhaoPendenteDto> listarSafrasPendentes() {
         return safraService.listarSafrasPendentes();
     }
 
-    @PreAuthorize("hasAuthority('Analista')")
     @PutMapping("/{id}/salvar")
     public ResponseEntity<String> salvarSafra(
             @PathVariable String id,
@@ -158,7 +137,6 @@ public class SafraController {
         }
     }
 
-    @PreAuthorize("hasAuthority('Analista')")
     @PutMapping("/{id}/aprovar")
     public ResponseEntity<String> aprovarSafra(
             @PathVariable String id,
@@ -176,7 +154,6 @@ public class SafraController {
         }
     }
 
-    @PreAuthorize("hasAuthority('Administrador') or hasAuthority('Analista') or hasAuthority('Consultor')")
     @GetMapping(value = "/{id}/vetor", produces = MediaType.MULTIPART_MIXED_VALUE)
     public ResponseEntity<MultiValueMap<String, Object>> buscarSafraGeoJson(@PathVariable String id) {
         SafraGeoJsonDto dto = safraService.buscarSafraGeoJson(id);

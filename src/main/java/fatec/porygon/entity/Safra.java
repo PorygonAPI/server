@@ -3,7 +3,6 @@ package fatec.porygon.entity;
 import fatec.porygon.enums.StatusSafra;
 import jakarta.persistence.*;
 import org.locationtech.jts.geom.Geometry;
-import com.fasterxml.jackson.annotation.JsonBackReference;
 
 import java.time.LocalDateTime;
 

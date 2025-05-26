@@ -2,7 +2,6 @@ package fatec.porygon.dto;
 
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.List;
 
 public class CadastroAreaAgricolaDto {
     private String nomeFazenda;
