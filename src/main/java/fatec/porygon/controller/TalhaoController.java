@@ -80,29 +80,38 @@ public class TalhaoController {
             @RequestPart("dados") String dadosJson,
             @RequestPart(value = "arquivoDaninha", required = false) MultipartFile arquivoDaninha) {
         try {
-            ObjectMapper mapper = new ObjectMapper();
-            TalhaoDto talhaoDto = mapper.readValue(dadosJson, TalhaoDto.class);
+        ObjectMapper mapper = new ObjectMapper();
+        TalhaoDto talhaoDto = mapper.readValue(dadosJson, TalhaoDto.class);
 
-            if (talhaoDto.getArea() == null || talhaoDto.getArea() <= 0) {
-                return ResponseEntity
-                        .badRequest()
-                        .body(new ErrorResponse("Área inválida"));
-            }
-            if (talhaoDto.getTipoSoloNome() == null) {
-                return ResponseEntity
-                        .badRequest()
-                        .body(new ErrorResponse("Tipo de solo é obrigatório"));
-            }
-            if (talhaoDto.getAreaAgricola() == null) {
-                return ResponseEntity
-                        .badRequest()
-                        .body(new ErrorResponse("Área agrícola é obrigatória"));
-            }
-            if (talhaoDto.getCulturaNome() == null || talhaoDto.getCulturaNome().trim().isEmpty()) {
-                return ResponseEntity
-                        .badRequest()
-                        .body(new ErrorResponse("Cultura é obrigatória"));
-            }
+        // Existing validations
+        if (talhaoDto.getArea() == null || talhaoDto.getArea() <= 0) {
+            return ResponseEntity
+                    .badRequest()
+                    .body(new ErrorResponse("Área inválida"));
+        }
+        if (talhaoDto.getTipoSoloNome() == null) {
+            return ResponseEntity
+                    .badRequest()
+                    .body(new ErrorResponse("Tipo de solo é obrigatório"));
+        }
+        if (talhaoDto.getAreaAgricola() == null) {
+            return ResponseEntity
+                    .badRequest()
+                    .body(new ErrorResponse("Área agrícola é obrigatória"));
+        }
+        if (talhaoDto.getCulturaNome() == null || talhaoDto.getCulturaNome().trim().isEmpty()) {
+            return ResponseEntity
+                    .badRequest()
+                    .body(new ErrorResponse("Cultura é obrigatória"));
+        }
+        // Add productivity validation
+        if (talhaoDto.getProdutividadeAno() == null) {
+            talhaoDto.setProdutividadeAno(0.0f); // Default value if not provided
+        } else if (talhaoDto.getProdutividadeAno() < 0) {
+            return ResponseEntity
+                    .badRequest()
+                    .body(new ErrorResponse("Produtividade não pode ser negativa"));
+        }
 
             TalhaoDto talhaoAtualizado = talhaoService.atualizarTalhao(id, talhaoDto, arquivoDaninha);
             return ResponseEntity.ok(talhaoAtualizado);

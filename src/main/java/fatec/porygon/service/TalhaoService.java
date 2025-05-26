@@ -119,11 +119,15 @@ public class TalhaoService {
             }
 
             List<Safra> safras = safraService.buscarPorTalhao(id);
-            if (!safras.isEmpty()) {
-                Safra safraExistente = safras.get(0);
-                safraExistente.setAno(talhaoDto.getAno());
-                safraExistente.setStatus(talhaoDto.getStatus());
-                safraExistente.setCultura(culturaService.buscarOuCriar(talhaoDto.getCulturaNome()));
+        if (!safras.isEmpty()) {
+            Safra safraExistente = safras.get(0);
+            safraExistente.setAno(talhaoDto.getAno());
+            safraExistente.setStatus(talhaoDto.getStatus());
+            safraExistente.setCultura(culturaService.buscarOuCriar(talhaoDto.getCulturaNome()));
+            
+            // Add this line to update productivity
+            safraExistente.setProdutividadeAno(talhaoDto.getProdutividadeAno() != null ? 
+                talhaoDto.getProdutividadeAno().doubleValue() : 0.0);
 
                 if (arquivoDaninha != null && !arquivoDaninha.isEmpty()) {
                     String conteudoGeoJson = new String(arquivoDaninha.getBytes(), StandardCharsets.UTF_8);
