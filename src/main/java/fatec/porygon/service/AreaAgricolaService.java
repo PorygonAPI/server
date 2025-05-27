@@ -193,128 +193,162 @@ public class AreaAgricolaService {
         areaAgricolaRepository.deleteById(id);
     }
 
-    private AreaAgricola convertToEntity(AreaAgricolaDto dto) {
-        AreaAgricola areaAgricola = new AreaAgricola();
-        areaAgricola.setId(dto.getId());
+    // private AreaAgricola convertToEntity(AreaAgricolaDto dto) {
+    //     AreaAgricola areaAgricola = new AreaAgricola();
+    //     areaAgricola.setId(dto.getId());
 
-        String cidadeNome = dto.getCidadeNome();
-        if (cidadeNome != null && !cidadeNome.isEmpty()) {
-            Cidade cidade = cidadeService.buscarOuCriar(cidadeNome);
-            areaAgricola.setCidade(cidade);
-        } else {
-            throw new RuntimeException("Nome da cidade não informado.");
-        }
+    //     String cidadeNome = dto.getCidadeNome();
+    //     if (cidadeNome != null && !cidadeNome.isEmpty()) {
+    //         Cidade cidade = cidadeService.buscarOuCriar(cidadeNome);
+    //         areaAgricola.setCidade(cidade);
+    //     } else {
+    //         throw new RuntimeException("Nome da cidade não informado.");
+    //     }
 
-        areaAgricola.setNomeFazenda(dto.getNomeFazenda());
-        areaAgricola.setEstado(dto.getEstado());
+    //     areaAgricola.setNomeFazenda(dto.getNomeFazenda());
+    //     areaAgricola.setEstado(dto.getEstado());
 
-        if (dto.getStatus() != null) {
-            areaAgricola.setStatus(dto.getStatus());
-        } else {
-            areaAgricola.setStatus(StatusArea.Pendente);
-        }
+    //     if (dto.getStatus() != null) {
+    //         areaAgricola.setStatus(dto.getStatus());
+    //     } else {
+    //         areaAgricola.setStatus(StatusArea.Pendente);
+    //     }
 
-        return areaAgricola;
-    }
+    //     return areaAgricola;
+    // }
 
-    private void processarTalhoesGeoJson(String arquivo, AreaAgricola areaAgricola, String ervaDaninha) {
-        ObjectMapper objectMapper = new ObjectMapper();
-        try {
-            JsonNode rootNode = objectMapper.readTree(arquivo);
+    // private void processarTalhoesGeoJson(String arquivo, AreaAgricola areaAgricola, String ervaDaninha) {
+    //     ObjectMapper objectMapper = new ObjectMapper();
+    //     try {
+    //         JsonNode rootNode = objectMapper.readTree(arquivo);
 
-            if (!rootNode.has("type") ||
-                    !rootNode.get("type").asText().equals("FeatureCollection") ||
-                    !rootNode.has("features")) {
-                throw new RuntimeException("Arquivo GeoJSON inválido: deve ser um FeatureCollection");
-            }
+    //         if (!rootNode.has("type") ||
+    //                 !rootNode.get("type").asText().equals("FeatureCollection") ||
+    //                 !rootNode.has("features")) {
+    //             throw new RuntimeException("Arquivo GeoJSON inválido: deve ser um FeatureCollection");
+    //         }
 
-            JsonNode features = rootNode.get("features");
+    //         JsonNode features = rootNode.get("features");
 
-            Geometry geometryErvaDaninha = null;
-            if (ervaDaninha != null && !ervaDaninha.trim().isEmpty()) {
-                JsonNode ervaDaninhaNode = objectMapper.readTree(ervaDaninha);
-                if (!ervaDaninhaNode.has("type") ||
-                        !ervaDaninhaNode.get("type").asText().equals("FeatureCollection")) {
-                    throw new RuntimeException("Arquivo erva daninha inválido: deve ser um FeatureCollection");
-                }
+    //         Geometry geometryErvaDaninha = null;
+    //         if (ervaDaninha != null && !ervaDaninha.trim().isEmpty()) {
+    //             JsonNode ervaDaninhaNode = objectMapper.readTree(ervaDaninha);
+    //             if (!ervaDaninhaNode.has("type") ||
+    //                     !ervaDaninhaNode.get("type").asText().equals("FeatureCollection")) {
+    //                 throw new RuntimeException("Arquivo erva daninha inválido: deve ser um FeatureCollection");
+    //             }
 
-                @SuppressWarnings("unused")
-                GeometryFactory geometryFactory = new GeometryFactory();
-                for (JsonNode feature : ervaDaninhaNode.get("features")) {
-                    String geometryJson = feature.get("geometry").toString();
-                    Geometry geometry = conversorGeoJson.convertGeoJsonToGeometry(geometryJson);
-                    if (geometryErvaDaninha == null) {
-                        geometryErvaDaninha = geometry;
-                    } else {
-                        geometryErvaDaninha = geometryErvaDaninha.union(geometry);
-                    }
-                }
-            }
+    //             @SuppressWarnings("unused")
+    //             GeometryFactory geometryFactory = new GeometryFactory();
+    //             for (JsonNode feature : ervaDaninhaNode.get("features")) {
+    //                 String geometryJson = feature.get("geometry").toString();
+    //                 Geometry geometry = conversorGeoJson.convertGeoJsonToGeometry(geometryJson);
+    //                 if (geometryErvaDaninha == null) {
+    //                     geometryErvaDaninha = geometry;
+    //                 } else {
+    //                     geometryErvaDaninha = geometryErvaDaninha.union(geometry);
+    //                 }
+    //             }
+    //         }
 
-            for (JsonNode feature : features) {
-                processarTalhaoFeature(feature, areaAgricola, geometryErvaDaninha);
-            }
+    //         for (JsonNode feature : features) {
+    //             processarTalhaoFeature(feature, areaAgricola, geometryErvaDaninha);
+    //         }
 
-        } catch (Exception e) {
-            throw new RuntimeException("Erro ao processar arquivo GeoJSON: " + e.getMessage(), e);
-        }
-    }
+    //     } catch (Exception e) {
+    //         throw new RuntimeException("Erro ao processar arquivo GeoJSON: " + e.getMessage(), e);
+    //     }
+    // }
 
-    private void processarFeatures(JsonNode featuresNode, AreaAgricola areaAgricola, String ervaDaninha) {
-        if (featuresNode == null || !featuresNode.isArray()) {
-            throw new RuntimeException("Features inválidas no GeoJSON");
-        }
+    // private void processarFeatures(JsonNode featuresNode, AreaAgricola areaAgricola, String ervaDaninha) {
+    //     if (featuresNode == null || !featuresNode.isArray()) {
+    //         throw new RuntimeException("Features inválidas no GeoJSON");
+    //     }
 
-        Geometry geometryErvaDaninha = null;
-        if (ervaDaninha != null && !ervaDaninha.trim().isEmpty()) {
-            try {
-                geometryErvaDaninha = conversorGeoJson.convertGeoJsonToGeometry(ervaDaninha);
-            } catch (Exception e) {
-                throw new RuntimeException("Erro ao converter arquivo de erva daninha: " + e.getMessage());
-            }
-        }
+    //     Geometry geometryErvaDaninha = null;
+    //     if (ervaDaninha != null && !ervaDaninha.trim().isEmpty()) {
+    //         try {
+    //             geometryErvaDaninha = conversorGeoJson.convertGeoJsonToGeometry(ervaDaninha);
+    //         } catch (Exception e) {
+    //             throw new RuntimeException("Erro ao converter arquivo de erva daninha: " + e.getMessage());
+    //         }
+    //     }
 
-        for (JsonNode feature : featuresNode) {
-            processarTalhaoFeature(feature, areaAgricola, geometryErvaDaninha);
-        }
-    }
+    //     for (JsonNode feature : featuresNode) {
+    //         processarTalhaoFeature(feature, areaAgricola, geometryErvaDaninha);
+    //     }
+    // }
 
-    @Transactional
-    public void processarTalhaoFeature(JsonNode feature, AreaAgricola areaAgricola, Geometry geometryErvaDaninha) {
+@Transactional
+public void processarTalhaoFeature(JsonNode feature, AreaAgricola areaAgricola, Geometry geometryErvaDaninha) {
+    try {
         JsonNode properties = feature.get("properties");
+        JsonNode geometryNode = feature.get("geometry");
 
+        // 1. Criar e configurar o novo talhão
         Talhao novoTalhao = new Talhao();
         novoTalhao.setAreaAgricola(areaAgricola);
         novoTalhao.setArea(properties.get("AREA_HA_TL").asDouble());
 
+        // 2. Process and store the geometry temporarily for erva daninha intersection
+        Geometry talhaoGeometry = null;
+        if (geometryNode != null && !geometryNode.isNull()) {
+            String geometryJson = geometryNode.toString();
+            talhaoGeometry = conversorGeoJson.convertGeoJsonToGeometry(geometryJson);
+        } else {
+            throw new RuntimeException("Geometria do talhão não encontrada");
+        }
+
+        // 3. Processar tipo de solo
         String nomeTipoSolo = properties.get("SOLO").asText();
         String nomeTipoSoloCap = nomeTipoSolo.substring(0, 1).toUpperCase() + nomeTipoSolo.substring(1).toLowerCase();
         TipoSolo tipoSolo = tipoSoloRepository.findByTipoSolo(nomeTipoSoloCap)
                 .orElseThrow(() -> new RuntimeException("TipoSolo não encontrado: " + nomeTipoSoloCap));
         novoTalhao.setTipoSolo(tipoSolo);
 
+        // 4. Salvar talhão
         Talhao talhaoSalvo = talhaoRepository.save(novoTalhao);
 
-        String idSafra = properties.get("MN_TL").asText();
+        // 5. Criar e configurar nova safra usando MN_TL como ID
+        String mnTl = properties.get("MN_TL").asText();
         Safra novaSafra = new Safra();
-        novaSafra.setId(idSafra);
+        novaSafra.setId(mnTl); // Usando MN_TL como ID da safra
         novaSafra.setTalhao(talhaoSalvo);
         novaSafra.setProdutividadeAno(0.0);
         novaSafra.setAno(Integer.parseInt(properties.get("SAFRA").asText().split("/")[0]));
         novaSafra.setStatus(StatusSafra.Pendente);
 
+        // 6. Processar cultura
         String nomeCultura = properties.get("CULTURA").asText();
         String nomeCulturaCap = nomeCultura.substring(0, 1).toUpperCase() + nomeCultura.substring(1).toLowerCase();
         Cultura cultura = culturaRepository.findByNome(nomeCulturaCap)
                 .orElseThrow(() -> new RuntimeException("Cultura não encontrada: " + nomeCulturaCap));
         novaSafra.setCultura(cultura);
 
-        novaSafra.setArquivoDaninha(geometryErvaDaninha);
-        novaSafra.setDataCadastro(LocalDateTime.now());
-        novaSafra.setDataUltimaVersao(LocalDateTime.now());
+        // 7. Process erva daninha geometry for this talhão
+        if (geometryErvaDaninha != null && talhaoGeometry != null) {
+            try {
+                Geometry ervaDaninhaTalhao = geometryErvaDaninha.intersection(talhaoGeometry);
+                if (!ervaDaninhaTalhao.isEmpty()) {
+                    novaSafra.setArquivoDaninha(ervaDaninhaTalhao);
+                }
+            } catch (Exception e) {
+                throw new RuntimeException("Erro ao processar geometria da erva daninha para a safra " + mnTl + ": " + e.getMessage());
+            }
+        }
 
+        // 8. Configurar timestamps
+        LocalDateTime now = LocalDateTime.now();
+        novaSafra.setDataCadastro(now);
+        novaSafra.setDataUltimaVersao(now);
+
+        // 9. Salvar safra
         safraRepository.save(novaSafra);
+
+    } catch (Exception e) {
+        throw new RuntimeException("Erro ao processar talhão e safra: " + e.getMessage(), e);
     }
+}
 
     private AreaAgricolaDto convertToDto(AreaAgricola areaAgricola) {
         AreaAgricolaDto dto = new AreaAgricolaDto();

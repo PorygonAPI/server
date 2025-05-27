@@ -45,31 +45,27 @@ public class AreaAgricolaController {
 
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> criarAreaAgricola(
-            @RequestPart("nomeFazenda") String nomeFazenda,
-            @RequestPart("estado") String estado,
-            @RequestPart("cidadeNome") String cidadeNome,
+            @RequestPart("dados") String dadosJson,
             @RequestPart("arquivoFazenda") MultipartFile arquivoFazenda,
             @RequestPart(value = "arquivoErvaDaninha", required = false) MultipartFile arquivoErvaDaninha) {
         try {
-            if (nomeFazenda == null || nomeFazenda.trim().isEmpty()) {
-                return ResponseEntity.badRequest().body("Nome da fazenda é obrigatório");
-            }
-            if (estado == null || estado.trim().isEmpty()) {
-                return ResponseEntity.badRequest().body("Estado é obrigatório");
-            }
-            if (cidadeNome == null || cidadeNome.trim().isEmpty()) {
-                return ResponseEntity.badRequest().body("Nome da cidade é obrigatório");
-            }
-            if (arquivoFazenda == null || arquivoFazenda.isEmpty()) {
-                return ResponseEntity.badRequest().body("Arquivo da fazenda é obrigatório");
-            }
-
-            CadastroAreaAgricolaDto dto = new CadastroAreaAgricolaDto();
-            dto.setNomeFazenda(nomeFazenda);
-            dto.setEstado(estado);
-            dto.setCidadeNome(cidadeNome);
+            ObjectMapper mapper = new ObjectMapper();
+            CadastroAreaAgricolaDto dto = mapper.readValue(dadosJson, CadastroAreaAgricolaDto.class);
+            
+            // Set the files
             dto.setArquivoFazenda(arquivoFazenda);
             dto.setArquivoErvaDaninha(arquivoErvaDaninha);
+
+            // Validations
+            if (dto.getNomeFazenda() == null || dto.getNomeFazenda().trim().isEmpty()) {
+                return ResponseEntity.badRequest().body("Nome da fazenda é obrigatório");
+            }
+            if (dto.getEstado() == null || dto.getEstado().trim().isEmpty()) {
+                return ResponseEntity.badRequest().body("Estado é obrigatório");
+            }
+            if (dto.getCidadeNome() == null || dto.getCidadeNome().trim().isEmpty()) {
+                return ResponseEntity.badRequest().body("Nome da cidade é obrigatório");
+            }
 
             AreaAgricolaDto novaAreaAgricola = areaAgricolaService.criarAreaAgricolaECriarSafra(dto);
 
